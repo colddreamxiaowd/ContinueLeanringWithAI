@@ -1,0 +1,38 @@
+name: Feishu PPTX SHA256 (manual, no publication)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: feishu-hash-inventory
+  cancel-in-progress: false
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Restore last fingerprints (no course contents)
+        uses: actions/cache/restore@v4
+        with:
+          path: .feishu-state/fingerprints.json
+          key: feishu-pptx-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            feishu-pptx-v1-
+      - name: Stream PPTX temporarily and compare SHA-256
+        env:
+          FEISHU_USER_ACCESS_TOKEN: ${{ secrets.FEISHU_USER_ACCESS_TOKEN }}
+          FEISHU_FOLDER_TOKEN: ${{ secrets.FEISHU_FOLDER_TOKEN }}
+        run: python scripts/feishu_hash_inventory.py
+      - name: Save hashes for next manual comparison
+        uses: actions/cache/save@v4
+        with:
+          path: .feishu-state/fingerprints.json
+          key: feishu-pptx-v1-${{ github.run_id }}-${{ github.run_attempt }}

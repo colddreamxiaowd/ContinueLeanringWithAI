@@ -6,7 +6,7 @@
 - `/sources` 新增合成演示资料区域；`/sources/demo/[documentId]` 逐页展示标题、正文层级、表格、页码和 `shape_index`。
 - unsupported 图片块显示明确提示；无效 documentId 返回 404。
 - 默认构建 15 个页面；GitHub Pages basePath 构建与链接检查通过。
-- V4.5 数据/页面测试 5/5；根目录 Python 32/32；网站 CI 增加导出复现、页面测试和静态检查。
+- V4.5 数据/页面测试 5/5；根目录 Python 33/33；网站 CI 增加导出复现、页面测试和静态检查。
 - 用户合并 PR #10（merge `3694a02`）；Pages 构建成功，公开预览已包含 V4.5 合成资料。Qoder 未手动触发 Pages 工作流。
 
 ## V4.4 · 2026-10-22 · 原 V4.1 网站恢复 + GitHub Pages 预览

@@ -10,29 +10,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Configure Pages
-        id: pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,27 +31,25 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install dependencies from lockfile
+        working-directory: web
         run: npm ci
 
       - name: Build static export for the project Pages path
+        working-directory: web
         env:
-          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          NEXT_PUBLIC_BASE_PATH: /ContinueLeanringWithAI
         run: npm run build
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish web/out to the gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: web/out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web/out
+          publish_branch: gh-pages
+          force_orphan: true
+          enable_jekyll: false
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: "deploy: ${{ github.sha }}"
 
       # Public static preview only: no backend, no Feishu calls, no secrets.

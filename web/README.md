@@ -73,8 +73,8 @@ python -m http.server 8000 -d out
 ## 公开审查部署
 
 - 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)
-- 托管：GitHub Pages 项目站点；Next.js 静态导出，构建时使用 `NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI`。
-- 工作流：`.github/workflows/v44-pages.yml`，仅在 `main` 的 `web/**` 变更后构建并部署。
+- 托管：GitHub Pages 项目站点（`gh-pages` 分支）；Next.js 静态导出，构建时使用 `NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI`。
+- 工作流：`.github/workflows/v44-pages.yml`，仅在 `main` 的 `web/**` 变更后构建并发布到 `gh-pages` 分支。
 - 这是静态只读审查预览，不是生产环境；没有后端、账号、数据库、飞书调用或自动发布。
 - 本地 basePath 构建：
 

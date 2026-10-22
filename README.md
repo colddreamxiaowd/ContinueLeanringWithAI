@@ -61,7 +61,7 @@ npm run typecheck
 npm run build
 ```
 
-网站 CI 见 `.github/workflows/v44-web-tests.yml`，只针对 `web/` 变更执行安装、测试、类型检查和构建。公开审查预览由 `.github/workflows/v44-pages.yml` 在 `main` 的 `web/` 变更后部署到 GitHub Pages；不包含后端、飞书调用或 secrets。
+网站 CI 见 `.github/workflows/v44-web-tests.yml`，只针对 `web/` 变更执行安装、测试、类型检查和构建。公开审查预览由 `.github/workflows/v44-pages.yml` 在 `main` 的 `web/` 变更后构建并发布到 `gh-pages` 分支；不包含后端、飞书调用或 secrets。
 
 ## 边界
 

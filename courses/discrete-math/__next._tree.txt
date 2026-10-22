@@ -1,0 +1,5 @@
+:HL["/ContinueLeanringWithAI/_next/static/chunks/1yel2zyo8sv2q.css","style"]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"slug","t":"d","k":"discrete-math","s":[]},"h":96,"c":"$Q3"}]]
+1:[["children",{"s":"courses","h":96,"c":"$Q2"}]]
+0:{"b":"QkXhqRwb5COm_RvhV9S93","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

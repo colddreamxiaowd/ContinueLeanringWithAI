@@ -137,7 +137,7 @@ class V46PrivateGatewayTests(unittest.TestCase):
         status, headers, body = self.request("GET", "/private/")
         self.assertEqual(status, 200)
         self.assertIn("content-security-policy", headers)
-        self.assertIn(b"私有资料空间", body)
+        self.assertIn("私有资料空间".encode("utf-8"), body)
 
         status, _headers, body = self.request("GET", "/private/app.js")
         self.assertEqual(status, 200)

@@ -233,11 +233,14 @@ class PrivateGatewayHandler(BaseHTTPRequestHandler):
             return
         if path == "/private/" or path.startswith("/private/"):
             relative = path[len("/private/"):] or "index.html"
-            file_path = _safe_static_file(self.server.private_ui_root, relative)
-            if file_path is None:
+            try:
+                file_path = _safe_static_file(self.server.private_ui_root, relative)
+                body = file_path.read_bytes() if file_path is not None else None
+            except (OSError, RuntimeError):
+                file_path, body = None, None
+            if file_path is None or body is None:
                 self._json(404, {"error": "NOT_FOUND"})
                 return
-            body = file_path.read_bytes()
             content_type = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
             if content_type.startswith("text/") or content_type in {
                 "application/javascript", "application/json"
@@ -247,11 +250,14 @@ class PrivateGatewayHandler(BaseHTTPRequestHandler):
             return
 
         relative = path.lstrip("/") or "index.html"
-        file_path = _safe_static_file(self.server.static_root, relative)
-        if file_path is None:
+        try:
+            file_path = _safe_static_file(self.server.static_root, relative)
+            body = file_path.read_bytes() if file_path is not None else None
+        except (OSError, RuntimeError):
+            file_path, body = None, None
+        if file_path is None or body is None:
             self._json(404, {"error": "NOT_FOUND"})
             return
-        body = file_path.read_bytes()
         content_type = mimetypes.guess_type(str(file_path))[0] or "application/octet-stream"
         if content_type.startswith("text/") or content_type in {
             "application/javascript", "application/json"

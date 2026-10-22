@@ -56,6 +56,12 @@ button.secondary { background: #edf2f1; color: var(--ink); border: 1px solid var
 .slide-title { margin: 0; font-size: 1.12rem; }
 .slide-meta { margin: 4px 0 16px; }
 .text-block { white-space: pre-wrap; overflow-wrap: anywhere; }
+.text-block.level-1 { margin-left: 14px; }
+.text-block.level-2 { margin-left: 28px; }
+.text-block.level-3 { margin-left: 42px; }
+.text-block.level-4 { margin-left: 56px; }
+.text-block.level-5 { margin-left: 70px; }
+.text-block.level-6 { margin-left: 84px; }
 .block-meta { margin: 18px 0 8px; }
 .content-table { border-collapse: collapse; width: 100%; font-size: .92rem; }
 .content-table td { border: 1px solid var(--line); padding: 8px 10px; overflow-wrap: anywhere; }

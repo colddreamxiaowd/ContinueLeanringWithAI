@@ -103,7 +103,7 @@
           paragraphs.forEach((paragraph) => {
             const p = element("p", "text-block", paragraph.text || "");
             const level = Math.max(0, Math.min(6, Number(paragraph.level) || 0));
-            p.style.marginLeft = String(level * 14) + "px";
+            p.classList.add("level-" + level);
             p.dataset.shapeIndex = String(shapeIndex);
             section.appendChild(p);
           });

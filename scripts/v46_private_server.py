@@ -41,6 +41,7 @@ class GatewayConfigError(ValueError):
 def _token_is_valid_config(token: str) -> bool:
     return (
         isinstance(token, str)
+        and token.isascii()
         and len(token) >= TOKEN_MIN_LENGTH
         and token.strip() == token
         and not any(character.isspace() for character in token)
@@ -342,7 +343,10 @@ class PrivateGatewayHandler(BaseHTTPRequestHandler):
         if payload is None or not isinstance(payload.get("token"), str):
             self._json(400, {"error": "REQUEST_INVALID"})
             return
-        if not hmac.compare_digest(payload["token"], self.server.access_token):
+        candidate_token = payload["token"]
+        if not hmac.compare_digest(
+            candidate_token.encode("utf-8"), self.server.access_token.encode("utf-8")
+        ):
             self._json(401, {"error": "AUTH_FAILED"})
             return
         cookie_value = _make_session_cookie(self.server.access_token)

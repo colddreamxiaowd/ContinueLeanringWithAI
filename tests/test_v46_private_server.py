@@ -161,15 +161,17 @@ class V46PrivateGatewayTests(unittest.TestCase):
         self.assertEqual(json.loads(body)["error"], "AUTH_REQUIRED")
 
     def test_wrong_token_is_rejected(self) -> None:
-        status, headers, body = self.request(
-            "POST",
-            "/api/private/session",
-            payload={"token": "wrong-" + ("x" * 40)},
-            origin=self.origin,
-        )
-        self.assertEqual(status, 401)
-        self.assertEqual(json.loads(body)["error"], "AUTH_FAILED")
-        self.assertNotIn("set-cookie", headers)
+        for candidate in ("wrong-" + ("x" * 40), "秘密" * 20):
+            with self.subTest(candidate_kind="ascii" if candidate.isascii() else "unicode"):
+                status, headers, body = self.request(
+                    "POST",
+                    "/api/private/session",
+                    payload={"token": candidate},
+                    origin=self.origin,
+                )
+                self.assertEqual(status, 401)
+                self.assertEqual(json.loads(body)["error"], "AUTH_FAILED")
+                self.assertNotIn("set-cookie", headers)
 
     def test_valid_token_cookie_and_private_read(self) -> None:
         cookie = self.login()

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft, ArrowRight, BookOpen, CheckCircle2, ChevronRight, File, FileImage,
   FileText, Folder, FolderOpen, LoaderCircle, RefreshCw, Search, ShieldCheck,
-  Unplug, ExternalLink, Download,
+  Unplug, ExternalLink, Download, LogOut,
 } from "lucide-react";
 import { previewKind, type PreviewKind } from "@/lib/file-types.mjs";
 
@@ -74,6 +74,8 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
   const [activeTab, setActiveTab] = useState<"browse" | "synced">("browse");
   const [browsePath, setBrowsePath] = useState<Crumb[]>([{ token: null, name: "我的飞书" }]);
   const [driveItems, setDriveItems] = useState<DriveItem[]>([]);
+  const [driveNextPageToken, setDriveNextPageToken] = useState<string | null>(null);
+  const [driveHasMore, setDriveHasMore] = useState(false);
   const [browseLoading, setBrowseLoading] = useState(false);
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
@@ -94,16 +96,23 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     setIsError(error);
   };
 
-  const loadDriveFolder = useCallback(async (token: string | null) => {
+  const loadDriveFolder = useCallback(async (token: string | null, pageToken: string | null = null, append = false) => {
     setBrowseLoading(true);
     try {
-      const query = token ? "?folder_token=" + encodeURIComponent(token) : "";
+      const params = new URLSearchParams();
+      if (token) params.set("folder_token", token);
+      if (pageToken) params.set("page_token", pageToken);
+      const query = params.size ? "?" + params.toString() : "";
       const response = await fetch("/api/feishu/files" + query, { cache: "no-store" });
-      const result = (await response.json()) as { files?: DriveItem[]; error?: string };
+      const result = (await response.json()) as { files?: DriveItem[]; error?: string; has_more?: boolean; next_page_token?: string | null };
       if (!response.ok) throw new Error(result.error || "FEISHU_API_FAILED");
-      setDriveItems(result.files || []);
+      setDriveItems(previous => append ? [...previous, ...(result.files || [])] : (result.files || []));
+      setDriveHasMore(result.has_more === true);
+      setDriveNextPageToken(result.next_page_token || null);
     } catch (error) {
-      setDriveItems([]);
+      if (!append) setDriveItems([]);
+      setDriveHasMore(false);
+      setDriveNextPageToken(null);
       setMessage(errorText(error instanceof Error ? error.message : "FEISHU_API_FAILED"), true);
     } finally {
       setBrowseLoading(false);
@@ -136,7 +145,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       if (!response.ok) throw new Error(result.error || "SERVER_NOT_CONFIGURED");
       setConnection(result);
       if (result.connected) {
-        await loadDriveFolder(browsePath[browsePath.length - 1]?.token || null);
+        await loadDriveFolder(null);
         await loadLibrary();
       }
     } catch (error) {
@@ -144,7 +153,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     } finally {
       setConnectionLoading(false);
     }
-  }, [loadDriveFolder, loadLibrary, browsePath]);
+  }, [loadDriveFolder, loadLibrary]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -181,6 +190,14 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     return () => { cancelled = true; };
   }, [selectedItem]);
 
+  async function logout() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      window.location.href = "/login";
+    }
+  }
+
   async function openDriveFolder(item: DriveItem) {
     const next = [...browsePath, { token: item.token, name: item.name }];
     setBrowsePath(next);
@@ -206,6 +223,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       if (!startResponse.ok || !start.job_id) throw new Error(start.error || "SYNC_START_FAILED");
 
       let finished = false;
+      let finalProgress: SyncProgress | null = null;
       for (let stepNumber = 0; stepNumber < 2000; stepNumber++) {
         const response = await fetch("/api/library/sync/step", {
           method: "POST",
@@ -217,6 +235,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
         const job = result.job;
         if (!job) throw new Error("SYNC_STEP_FAILED");
         setProgress(job);
+        finalProgress = job;
         if (job.status === "failed") throw new Error(job.last_error || "SYNC_STEP_FAILED");
         if (job.status === "completed") {
           finished = true;
@@ -229,7 +248,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       setActiveTab("synced");
       setSyncedFolderPath(null);
       setSelectedItem(null);
-      setMessage("同步完成。已索引 " + (progress?.items_seen ?? 0) + " 项；打开“我的资料”即可预览支持的文件。");
+      setMessage("同步完成。已索引 " + (finalProgress?.items_seen ?? 0) + " 项；打开“我的资料”即可预览支持的文件。");
     } catch (error) {
       const code = error instanceof Error ? error.message : "SYNC_FAILED";
       setMessage(errorText(code), true);
@@ -286,6 +305,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
         <div className="library-account-icon"><ShieldCheck size={22}/></div>
         <div className="library-account-copy"><strong>{accountEmail}</strong><span>{connection?.connected ? "已连接飞书账号：" + (connection.name || "已授权") : "网站账号已登录，尚未连接飞书"}</span></div>
         {connection?.connected ? <span className="tag tag-success"><CheckCircle2 size={13}/> 飞书已连接</span> : <a className="button button-primary" href="/api/feishu/connect">连接我的飞书 <ArrowRight size={15}/></a>}
+        <button className="button button-ghost library-logout" onClick={() => void logout()}><LogOut size={15}/> 退出登录</button>
       </section>
 
       {connection?.connected && !connection.refresh_available && <div className="inline-info"><Unplug size={17}/><p>当前授权没有可用的长期刷新凭证。若同步一段时间后提示重新授权，请重新连接飞书；请在飞书授权页允许离线访问。</p></div>}
@@ -321,6 +341,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
               </div>;
             })}
           </div>}
+          {driveHasMore && <button className="button button-ghost library-load-more" disabled={browseLoading} onClick={() => void loadDriveFolder(currentFolder.token, driveNextPageToken, true)}>{browseLoading ? <LoaderCircle className="spin" size={15}/> : <ChevronRight size={15}/>} 加载更多目录项</button>}
           {busy && progress && <div className="library-progress"><div className="library-progress-copy"><LoaderCircle className="spin" size={16}/> 正在递归同步：已处理 {progress.items_seen} 项、发现 {progress.folders_seen} 个子文件夹、完成 {progress.pages_processed} 页目录</div><div className="library-progress-track"><span style={{ width: progress.status === "completed" ? "100%" : Math.min(92, progress.pages_processed * 4) + "%" }}/></div></div>}
         </section>}
 

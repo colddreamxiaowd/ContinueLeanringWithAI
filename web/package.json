@@ -9,7 +9,8 @@
     "test:models": "node --test tests/*.test.mjs",
     "test:v3": "node --test tests/v3/*.test.mjs",
     "test:v45": "node --test tests/v45/*.test.mjs",
-    "check:v45:static": "node scripts/check-v45-static.mjs"
+    "check:v45:static": "node scripts/check-v45-static.mjs",
+    "test:library": "node --test tests/library/*.test.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",

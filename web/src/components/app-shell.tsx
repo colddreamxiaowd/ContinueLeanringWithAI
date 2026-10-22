@@ -16,6 +16,7 @@ const primary = [
   {href: '/read/circular-queue', label: '技术文章', icon: BookOpen},
   {href: '/experiments', label: '交互实验', icon: FlaskConical},
   {href: '/sources', label: '资料管理', icon: FolderOpen},
+  {href: '/library', label: '我的资料', icon: LibraryBig},
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {

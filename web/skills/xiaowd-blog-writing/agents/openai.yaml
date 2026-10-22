@@ -1,0 +1,4 @@
+interface:
+  display_name: "Xiaowd 技术博客写作"
+  short_description: "把真实技术实践写成深入、可复现的中文系列博客"
+  default_prompt: "请使用 xiaowd-blog-writing 的写作标准：忠实读取现有材料，围绕问题与原理写深度技术文章，并包含实践、反例、验收和局限。"

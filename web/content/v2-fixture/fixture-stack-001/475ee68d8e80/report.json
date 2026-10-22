@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 2,
+  "sourceId": "fixture-stack-001",
+  "sourceKind": "fixture",
+  "sourceFilename": "synthetic-stack-lesson.pptx",
+  "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+  "jobKey": "f3a22e7d4f1707ffe549c7109443ebad6073ea8f9ecaa4cb8cc93d20f70ccced",
+  "generationVersion": "v2.1-offline-verified",
+  "sourceSlideCount": 4,
+  "changedSlides": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "knowledgePoints": [
+    {
+      "id": "stack-lifo",
+      "courseId": "data-structures",
+      "chapterId": "stack-queue",
+      "name": "栈的定义与后进先出",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 2
+        }
+      ]
+    },
+    {
+      "id": "stack-operations",
+      "courseId": "data-structures",
+      "chapterId": "stack-queue",
+      "name": "push / pop / top 操作",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 3
+        },
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 4
+        }
+      ]
+    },
+    {
+      "id": "stack-boundaries",
+      "courseId": "data-structures",
+      "chapterId": "stack-queue",
+      "name": "栈空、下溢与容量边界",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 4
+        }
+      ]
+    }
+  ],
+  "questions": 3,
+  "blockingIssues": [],
+  "warnings": [],
+  "status": "draft_ready_for_human_review",
+  "publishStatus": "not_published",
+  "reviewRequired": true,
+  "generatedFiles": [
+    "slides.json",
+    "knowledge-points.json",
+    "blog.md",
+    "questions.json"
+  ],
+  "action": "create_drafts",
+  "note": "V2 默认只有人工审查稿；不会覆盖现有正式文章或执行远端发布。"
+}

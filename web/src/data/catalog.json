@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "datasetId": "v1-fixture",
+  "kind": "demonstration",
+  "description": "V1 页面结构演示内容；尚未从用户提供的 PPT/PDF 提取。所有学习数量与掌握率都保持零或未开始。",
+  "subjects": [
+    { "id": "cs", "name": "计算机科学", "icon": "cpu" },
+    { "id": "math", "name": "数学", "icon": "sigma" }
+  ],
+  "courses": [
+    {
+      "id": "data-structures", "subjectId": "cs", "slug": "data-structures",
+      "title": "数据结构与算法", "subtitle": "从存储结构到算法行为", "label": "重点课程", "accent": "indigo",
+      "chapters": [
+        { "id": "linear-list", "title": "第 1 章 · 线性表", "lessons": [{"id":"linear-list-intro","title":"线性表基本概念","status":"planned"}] },
+        { "id": "stack-queue", "title": "第 2 章 · 栈与队列", "lessons": [
+          {"id":"stack-intro","title":"2.1 栈的基本概念","status":"planned"},
+          {"id":"queue-intro","title":"2.2 队列与顺序存储","status":"planned"},
+          {"id":"circular-queue","title":"2.3 循环队列：从假溢出到取模回绕","status":"sample","articleSlug":"circular-queue"}
+        ]},
+        { "id": "matrix", "title": "第 3 章 · 特殊矩阵", "lessons": [{"id":"matrix-compression","title":"3.1 对称矩阵的压缩存储","status":"planned"}] }
+      ]
+    },
+    {
+      "id": "cpp", "subjectId": "cs", "slug": "cpp",
+      "title": "C++ 程序设计", "subtitle": "用程序验证算法与抽象", "label": "课程规划", "accent": "sky",
+      "chapters": [{"id":"basics","title":"第 1 章 · 基础语法","lessons":[{"id":"basics-1","title":"变量、函数与编译","status":"planned"}]}]
+    },
+    {
+      "id": "discrete-math", "subjectId": "math", "slug": "discrete-math",
+      "title": "离散数学", "subtitle": "逻辑、关系与证明", "label": "课程规划", "accent": "mint",
+      "chapters": [{"id":"logic","title":"第 1 章 · 命题逻辑","lessons":[{"id":"logic-1","title":"命题与联结词","status":"planned"}]}]
+    }
+  ],
+  "articles": [
+    {
+      "id": "article-circular-queue", "slug": "circular-queue", "courseId": "data-structures",
+      "lessonId": "circular-queue", "title": "循环队列：从假溢出到取模回绕",
+      "summary": "为什么顺序队列会浪费数组空间？用一个可推演的小例子理解 front、rear 与模运算。",
+      "readingMinutes": 12, "status": "sample",
+      "provenance": { "kind": "demo", "sourceDocumentId": null, "pages": [], "message": "这是 V1 版式与内容模型演示文章。尚未绑定课程原始 PPT 或经过教学审核，不代表正式发布内容。" },
+      "knowledgePointIds": ["queue-false-overflow", "queue-ring-index", "queue-empty-full"],
+      "sections": [
+        {"id":"problem","title":"为什么需要循环队列？"},
+        {"id":"model","title":"从直觉到环形模型"},
+        {"id":"formula","title":"取模回绕与判空判满"},
+        {"id":"code","title":"C++ 实现示例"},
+        {"id":"check","title":"自己预测下一步"}
+      ]
+    }
+  ],
+  "knowledgePoints": [
+    {"id":"queue-false-overflow","courseId":"data-structures","chapterId":"stack-queue","label":"顺序队列的假溢出"},
+    {"id":"queue-ring-index","courseId":"data-structures","chapterId":"stack-queue","label":"下标取模回绕"},
+    {"id":"queue-empty-full","courseId":"data-structures","chapterId":"stack-queue","label":"循环队列判空与判满"}
+  ],
+  "sourceDocuments": [],
+  "publishedContent": [],
+  "questionBank": [],
+  "learningEvents": []
+}

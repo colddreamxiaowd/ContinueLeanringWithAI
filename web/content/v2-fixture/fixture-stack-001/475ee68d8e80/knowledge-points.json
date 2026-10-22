@@ -1,0 +1,46 @@
+[
+  {
+    "id": "stack-lifo",
+    "courseId": "data-structures",
+    "chapterId": "stack-queue",
+    "name": "栈的定义与后进先出",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 2
+      }
+    ]
+  },
+  {
+    "id": "stack-operations",
+    "courseId": "data-structures",
+    "chapterId": "stack-queue",
+    "name": "push / pop / top 操作",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 3
+      },
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 4
+      }
+    ]
+  },
+  {
+    "id": "stack-boundaries",
+    "courseId": "data-structures",
+    "chapterId": "stack-queue",
+    "name": "栈空、下溢与容量边界",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 4
+      }
+    ]
+  }
+]

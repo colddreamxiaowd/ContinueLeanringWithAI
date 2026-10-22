@@ -1,62 +1,89 @@
 # ContinueLeanringWithAI — 项目来源与初始化快照
 
 记录日期：2026-10-22（Asia/Singapore）
-主仓库：[colddreamxiaowd/ContinueLeanringWithAI](https://github.com/colddreamxiaowd/ContinueLeanringWithAI)（私有，`main`）
+主仓库：[colddreamxiaowd/ContinueLeanringWithAI](https://github.com/colddreamxiaowd/ContinueLeanringWithAI)（公开；按公开仓库隐私边界处理）
 核对起点：`c651c455b5be6b70818ea97f0d9d255cae16fd4e`
+V4.4 恢复分支起点：`e5130a93b5bdff91fc98aa3cea7adf581029a9ea`
 
 ## 1. 项目定位
 
 长期目标：AI 驱动的个人学习网站，面向学习资料、Blog、题库、交互实验与学习成果的整理、呈现和积累。
 
-此前确认的方向（来自既有项目沟通，**不代表已在当前仓库核验到源代码**）：
+已确认的方向：
 - A+B+C 融合视觉，浅色主界面与完整深色主题。
-- 曾有 Next.js + React + TypeScript 的 V1 本地页面与测试记录。
-- V4.1 的「资料与内容」方向已被接受。
+- Next.js + React + TypeScript 的 V1–V4.1 网站。
+- V4.1 的“资料与内容”方向已被接受。
 - 按版本审查；未获授权不改变产品方向、不部署、不自动发布、不进入下一版。
 
-## 2. 当前远端仓库已经核实的文件
+## 2. 当前仓库实际内容
 
-- `README.md`：总入口和飞书接入安全边界。
-- `.github/workflows/feishu-inventory-manual.yml` / `scripts/feishu_inventory.py`：手动应用凭证读取 PPTX 元数据。
-- `.github/workflows/feishu-user-inventory-manual.yml` / `scripts/feishu_user_inventory.py`：手动用户 OAuth 读取文件夹 PPTX 数量。
-- `.github/workflows/feishu-hash-manual.yml` / `scripts/feishu_hash_inventory.py`：手动下载 PPTX 到临时文件、校验 ZIP、计算 SHA-256，并在 GitHub Actions cache 保存匿名化指纹。
-- `tests/test_feishu_hash_inventory.py`：5 个离线单元测试用例；存在不等于已在此次审查中执行通过。
-- `docs/FEISHU_GITHUB_ACTIONS.md`、`docs/FEISHU_USER_OAUTH.md`、`docs/FEISHU_HASH_INVENTORY.md`：连接、授权、下载/哈希阶段的操作说明。
+### 2.1 根目录 Python 内容流水线（V4.1–V4.3）
 
-**差异说明：** 最早的元数据清单工作流不下载文件；但新加入的独立 SHA-256 手动工作流在明确手动触发后会下载 PPTX 到临时目录。不能再笼统描述所有工作流“从不下载”。
+- `scripts/pptx_content.py`：PPTX 内容解析与确定性 JSON 输出。
+- `scripts/v43_pipeline.py`：增量处理、内容指纹与私有内容导入。
+- `scripts/v43_import.py`：私有内容导入接口。
+- `scripts/feishu_*` 与 `.github/workflows/feishu-*-manual.yml`：手动、只读或受控下载的飞书实验入口。
+- `tests/`：30 项离线测试（V4.1 5、V4.2 9、V4.3 16）。
+- `docs/V43_PRIVATE_PIPELINE.md`：私有内容存储与凭证边界。
 
-## 3. 未就绪或未独立核验的部分
+### 2.2 网站 `web/`（V4.4 恢复）
 
-- 远端 `main` 目前没有 `package.json`、`app/` 或 `src/app/` 等正式网页工程入口；没有可直接执行 `npm run dev` 的网站代码。
-- 既有 V1–V4.1 完整网站源码仍待从原本地工作区同步、审查；本次未获取本地 Windows 工作目录的源码。
-- 尚未检查 GitHub Secrets 是否已正确设置，也未手动触发飞书真实 API 测试；没有验证线上运行成功或网站部署。
-- GitHub Actions Cache 中的 SHA-256 比对记录不是可靠的长期数据库。
-- 不记录、不在文档中展示任何 App Secret、用户 token、refresh token、文件 token。
+- 来源：用户指定的 `dev_网站` 会话中的 `ContinueLeanringWithAI_V4_1_review.zip`。
+- 归档 SHA-256：`cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`。
+- 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+，静态导出。
+- 入口：`web/src/app/page.tsx`、`web/src/app/layout.tsx`、`web/src/app/globals.css`、`web/src/components/app-shell.tsx`。
+- 路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
+- 锁文件：`web/package-lock.json`；本轮验证环境 Node v24.12.0、npm 11.6.2。
+- 网站 CI：`.github/workflows/v44-web-tests.yml`，只对 `web/` 变更执行 `npm ci`、测试、类型检查和构建。
 
-## 4. 初始化后的项目读取顺序
+### 2.3 隐私处理
 
-1. 阅读 `README.md` 和本文，确认当前项目与主仓库的对应关系。
-2. 阅读 `docs/FEISHU_GITHUB_ACTIONS.md`、`docs/FEISHU_USER_OAUTH.md`、`docs/FEISHU_HASH_INVENTORY.md`，核对飞书数据通路和阶段边界。
-3. 对后续网站工作先找到**原有本地网站源码**，记录 Git/文件版本、框架入口、依赖锁文件、可重复测试及构建方式。
-4. 审查后在单独分支同步原有源码，以 PR 保留审查点；不要直接拿新模板替代 V1–V4.1。
-5. 只有核验了实际网页源码，才进行依赖安装、构建、浏览器验收。飞书在线鉴权与真实文件下载另行取得明确授权。
+- 公开目录不包含真实课程文件名、真实文件 SHA-256、真实页码映射或派生矩阵数据。
+- V3 使用 `web/content/v3-sample/source.json` 合成样例；V2 使用 `web/fixtures/v2/synthetic-stack-lesson.pptx` 合成课件。
+- 原 V4.1 归档中的 `pipeline/`、v2/v4 Python 原型、真实来源提取脚本未复制到 `web/`；根目录 Python 流水线是唯一内容处理实现。
+- 原归档不含 `review-preview/`；恢复版修正了 README/文档链接，指向实际存在的 `web/public/lab-v3.html`、`web/public/v4-review.html` 和 Next.js 路由，没有伪造历史预览文件。
 
-## 5. 已有代码可独立执行的本地入口
+## 3. 已验证与未验证
 
-前提：克隆私有仓库需要使用本人有权限的 GitHub 凭证。
+已验证（本轮实际执行）：
+- `web`：`npm ci` 通过；`test:models` 5/5；`test:v3` 14/14；`typecheck` 通过；`next build` 通过并生成 13 个静态页面。
+- 根目录：30/30 Python 测试通过。
+- 网站静态预览可显示“知序 Learning Hub”首页。
 
-```powershell
-git clone https://github.com/colddreamxiaowd/ContinueLeanringWithAI.git
-cd ContinueLeanringWithAI
-python -m unittest discover -s tests -p "test_feishu_hash_inventory.py" -v
+未验证/未启用：
+- 网站尚未部署或公开发布。
+- 真实飞书 OAuth、文件夹读取、下载和写入尚未在本轮验证。
+- 真实课程内容处理、模型生成、数据库、账号、学习记录和每日调度未启用。
+- 原归档的 Chromium 交互检查记录沿用归档说明，本轮未重新执行该套件。
+
+## 4. 读取顺序
+
+1. 本文与根目录 `README.md`，确认当前项目状态和边界。
+2. `web/README.md`，了解网站结构、运行命令和隐私处理。
+3. `web/docs/ARCHITECTURE.md`、`DESIGN_SYSTEM.md`、`PROJECT_DECISIONS.md`、`ROADMAP.md`，了解原设计与版本决策。
+4. `docs/V43_PRIVATE_PIPELINE.md` 与飞书文档，核对根目录数据通路和安全边界。
+5. 任何真实飞书或私人课件操作，先取得明确授权并确认本地凭证。
+
+## 5. 本地入口
+
+```bash
+# 根目录 Python 流水线
+python -m unittest discover -s tests -p "test_*.py" -v
+
+# 网站
+cd web
+npm ci
+npm run test:models
+npm run test:v3
+npm run typecheck
+npm run build
+npm run dev
 ```
 
-此测试验证离线哈希状态逻辑，**不会**访问飞书或启动网站。
+## 6. 当前边界
 
-## 6. 本次初始化边界
+完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成测试和构建。
 
-完成：找回权威仓库、核对当前 `main` 文件结构、整理已有集成入口与真实状态。
+未完成：网站部署、真实飞书联机验证、真实课程内容导入、V4.5 网站与流水线集成。
 
-未完成：同步原有网站源码、网站依赖初始化及构建、真实飞书鉴权/文件读取、任何形式的部署。
-
-本文是初始化状态索引，不是新版本实现授权或宣称线上产品已完成。
+本文是当前状态索引，不是新版本实现授权或线上产品完成声明。

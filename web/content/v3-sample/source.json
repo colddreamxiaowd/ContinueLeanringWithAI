@@ -1,0 +1,68 @@
+{
+  "original_filename": "synthetic-sparse-matrix-sample.pptx",
+  "sha256": "10903e0110428b535f74bcd6dff4b76a69420cfd5a79a09379442f36355e93ea",
+  "sha256_note": "synthetic placeholder; not derived from a real file",
+  "slide_count": 12,
+  "topic": "合成样例 / 稀疏矩阵快速转置",
+  "source_pages": {
+    "sample": 2,
+    "transpose_definition": 3,
+    "naive": 4,
+    "fast_intuition": 5,
+    "arrays": 6,
+    "fast_algorithm": [
+      7,
+      8
+    ]
+  },
+  "matrix_shape": [
+    6,
+    7
+  ],
+  "triples": [
+    [
+      0,
+      0,
+      5
+    ],
+    [
+      0,
+      3,
+      -2
+    ],
+    [
+      1,
+      2,
+      7
+    ],
+    [
+      2,
+      4,
+      3
+    ],
+    [
+      3,
+      1,
+      9
+    ],
+    [
+      4,
+      5,
+      -4
+    ],
+    [
+      5,
+      0,
+      6
+    ],
+    [
+      5,
+      3,
+      8
+    ]
+  ],
+  "source_inconsistency": "这是合成的教学样例，不对应任何真实课程文件。",
+  "code_safety_note": "合成样例仅用于交互演示；目的容器需预先分配空间。",
+  "review_status": "synthetic sample for V3 interaction demo; not real course content",
+  "input_type": "synthetic-sample"
+}

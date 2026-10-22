@@ -1,0 +1,24 @@
+node_modules/
+.next/
+out/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+coverage/
+test-results/
+playwright-report/
+__pycache__/
+*.pyc
+
+# V2 local registries and review artifacts
+.local/
+content/v2-user/
+# User course files remain private unless separately authorized
+sources/private/
+
+# V4.4 privacy: never commit real-course metadata
+content/v3-real-source/
+# The only committed PPTX is the synthetic V2 fixture
+!fixtures/v2/synthetic-stack-lesson.pptx

@@ -1,0 +1,54 @@
+[
+  {
+    "page": 1,
+    "lines": [
+      "数据结构:栈(合成测试课件)",
+      "仅用于 V2 工程验收,非用户课程原始资料。",
+      "课程:数据结构与算法;章节:栈与队列。"
+    ],
+    "text": "数据结构:栈(合成测试课件)\n仅用于 V2 工程验收,非用户课程原始资料。\n课程:数据结构与算法;章节:栈与队列。",
+    "sha256": "34184201b633ca21f573c0d76ff1b33fbf51765f6e4015781c8eea6159a294cb",
+    "has_visual": false,
+    "parse_warning": null
+  },
+  {
+    "page": 2,
+    "lines": [
+      "栈的定义和 LIFO",
+      "栈(Stack)只允许在同一端插入与删除。",
+      "该端叫栈顶 top;另一端叫栈底 bottom。",
+      "栈遵循后进先出(LIFO)。"
+    ],
+    "text": "栈的定义和 LIFO\n栈(Stack)只允许在同一端插入与删除。\n该端叫栈顶 top;另一端叫栈底 bottom。\n栈遵循后进先出(LIFO)。",
+    "sha256": "95ea13e252aae77411bb3079b2ae7af864948966b0959f38d3041f8656793254",
+    "has_visual": false,
+    "parse_warning": null
+  },
+  {
+    "page": 3,
+    "lines": [
+      "栈的基本操作",
+      "push(x):将元素 x 压入栈顶。",
+      "pop():移除栈顶元素。",
+      "top():读取栈顶但不移除。"
+    ],
+    "text": "栈的基本操作\npush(x):将元素 x 压入栈顶。\npop():移除栈顶元素。\ntop():读取栈顶但不移除。",
+    "sha256": "0ae894dace1b31fc6aeda50c7cd2b3bf909cfd2cdcd359a876e0139c7ab2fd5c",
+    "has_visual": false,
+    "parse_warning": null
+  },
+  {
+    "page": 4,
+    "lines": [
+      "空栈、边界与验证",
+      "对空栈调用 pop() 必须返回明确的下溢错误或失败状态。",
+      "顺序栈若容量固定,入栈时应检测栈满。",
+      "例:依次 push(4)、push(9)、pop()、push(2),最终 top 为 2。",
+      "掌握标准:不借助动画独立跟踪栈内容。"
+    ],
+    "text": "空栈、边界与验证\n对空栈调用 pop() 必须返回明确的下溢错误或失败状态。\n顺序栈若容量固定,入栈时应检测栈满。\n例:依次 push(4)、push(9)、pop()、push(2),最终 top 为 2。\n掌握标准:不借助动画独立跟踪栈内容。",
+    "sha256": "73c0e51c1265a5a669e432bd9dbb0ddc185194ab5581b5f4741d67c0633d78d6",
+    "has_visual": false,
+    "parse_warning": null
+  }
+]

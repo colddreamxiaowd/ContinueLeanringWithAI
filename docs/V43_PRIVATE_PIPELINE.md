@@ -1,7 +1,12 @@
 # V4.3 私有内容流水线
 
-状态：本地实现；堆叠在 PR #6（V4.2）之上，未合并、未发布。V4.3 不包含 AI
-文章生成、自动发布、公开网站部署或新的飞书授权。
+状态：V4.3 的代码与审查修复已经进入 `main`；PR #6 和 PR #7 均已合并。本文档的
+PowerShell 凭证说明通过 PR #8 收尾。
+
+- V4.3 的解析、私有存储和导入接口已在主分支；未部署、未发布。
+- 原 V1–V4.1 网站源码仍未找到，网站接入尚未完成。
+- 尚未执行真实飞书验证；没有读取私人课件，也没有新增飞书授权。
+- 不包含 AI 文章生成、自动发布或公开网站部署。
 
 ## 一条命令运行离线闭环
 
@@ -20,25 +25,60 @@ python scripts/v43_demo.py
 - 索引读取、`read_document()` 和 V4.2 HTML 渲染成功
 - 临时 PPTX 全部清理
 
-## 真实飞书手动模式（默认单文件）
+## 真实飞书手动模式（默认单文件，Windows PowerShell）
 
-仅在用户明确批准本次私人内容处理、且本机已有有效用户 OAuth 凭证时运行：
+仅在用户明确批准本次私人内容处理、且本机已有有效用户 OAuth 凭证时运行。以下命令适用于 Windows PowerShell 5.1 和 PowerShell 7，在仓库根目录执行。
 
-```bash
-FEISHU_USER_ACCESS_TOKEN=... FEISHU_FOLDER_TOKEN=... FEISHU_FILE_TOKEN=... \
+### 默认单文件
+
+不要把 Token 直接写在命令文本里。`Read-Host -AsSecureString` 会隐藏输入；命令历史只保存变量赋值语句，不包含 Token：
+
+```powershell
+$secure = Read-Host -AsSecureString "FEISHU_USER_ACCESS_TOKEN"
+$env:FEISHU_USER_ACCESS_TOKEN = [System.Net.NetworkCredential]::new("", $secure).Password
+
+$secure = Read-Host -AsSecureString "FEISHU_FOLDER_TOKEN"
+$env:FEISHU_FOLDER_TOKEN = [System.Net.NetworkCredential]::new("", $secure).Password
+
+$secure = Read-Host -AsSecureString "FEISHU_FILE_TOKEN"
+$env:FEISHU_FILE_TOKEN = [System.Net.NetworkCredential]::new("", $secure).Password
+
 python scripts/v43_pipeline.py --feishu --store .local/v43
+```
+
+- 这些变量只存在于当前 PowerShell 进程及其子进程，不会自动写入用户级或系统级环境变量。
+- 关闭当前 PowerShell 会结束该会话的环境；若 Python 或其他子进程仍在运行，它们可能保留启动时继承的环境副本，直到这些进程结束。
+- 运行后立即在当前会话清除：
+
+```powershell
+Remove-Item Env:FEISHU_USER_ACCESS_TOKEN, Env:FEISHU_FOLDER_TOKEN, Env:FEISHU_FILE_TOKEN -ErrorAction SilentlyContinue
 ```
 
 - 默认只处理 `FEISHU_FILE_TOKEN` 指定的一个文件，且必须先确认该 Token
   属于给定文件夹；不在文件夹内会拒绝执行，不会触发下载。
 - 缺少 `FEISHU_FILE_TOKEN` 时会在调用飞书列表 API 前拒绝执行。
-- 文件 Token 通过环境变量提供，不进入命令历史；日志不输出原始 Token、文件名或正文。
-- 整文件夹批量处理必须显式使用 `--all`：
+- 日志不输出原始 Token、文件名或正文。
+- 不要在命令行参数、脚本文件或聊天中写入真实 Token。
 
-```bash
-FEISHU_USER_ACCESS_TOKEN=... FEISHU_FOLDER_TOKEN=... \
+### 显式整文件夹批量模式
+
+批量处理必须显式使用 `--all`。切换前先清除 `FEISHU_FILE_TOKEN`，否则 CLI 会以
+`SCOPE_CONFLICT` 拒绝执行：
+
+```powershell
+Remove-Item Env:FEISHU_FILE_TOKEN -ErrorAction SilentlyContinue
+
+# 如果当前会话尚未设置用户/文件夹 Token：
+$secure = Read-Host -AsSecureString "FEISHU_USER_ACCESS_TOKEN"
+$env:FEISHU_USER_ACCESS_TOKEN = [System.Net.NetworkCredential]::new("", $secure).Password
+$secure = Read-Host -AsSecureString "FEISHU_FOLDER_TOKEN"
+$env:FEISHU_FOLDER_TOKEN = [System.Net.NetworkCredential]::new("", $secure).Password
+
 python scripts/v43_pipeline.py --feishu --all --store .local/v43
 ```
+
+- 批量模式会处理文件夹中的全部 PPTX；这是显式选择，不是默认行为。
+- 切回单文件模式前设置新的 `FEISHU_FILE_TOKEN`。
 
 本 PR 未执行真实飞书验证，也未读取真实课件；在线验证等待用户单独批准和本机凭证。
 

@@ -6,7 +6,12 @@ from pathlib import Path
 
 from scripts.synthetic_pptx import build_synthetic_bytes
 from scripts.v43_pipeline import DownloadedFile, SourceFile, run_incremental
-from scripts.v45_export_synthetic import ALLOWED_FIXTURES, ExportError, export_all
+from scripts.v45_export_synthetic import (
+    ALLOWED_FIXTURES,
+    ExportError,
+    FixtureSpec,
+    export_all,
+)
 
 
 def _tree_hashes(root: Path) -> dict[str, str]:
@@ -115,6 +120,24 @@ class V45ExportTests(unittest.TestCase):
                     "synthetic-integration-deck.pptx",
                 },
             )
+
+    def test_non_allowlisted_fixture_is_rejected_before_export(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            fake_path = Path(temporary) / "valid-but-not-allowlisted.pptx"
+            fake_path.write_bytes(build_synthetic_bytes(marker="PRIVATE_LOOKING_VALID_PPTX"))
+            fake = FixtureSpec(
+                path=fake_path,
+                token="v45:test:not-allowlisted",
+                title="Not allowlisted",
+            )
+            store = Path(temporary) / "store"
+            output = Path(temporary) / "output"
+
+            with self.assertRaises(ExportError) as caught:
+                export_all(store, output, specs=(fake,))
+            self.assertIn("NON_ALLOWLISTED_FIXTURE", str(caught.exception))
+            self.assertFalse((store / "state.json").exists())
+            self.assertFalse((output / "index.json").exists())
 
     def test_unexpected_store_document_aborts_export(self):
         with tempfile.TemporaryDirectory() as temporary:

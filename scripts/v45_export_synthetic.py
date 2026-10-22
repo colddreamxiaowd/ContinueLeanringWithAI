@@ -105,6 +105,11 @@ def _atomic_write_json(path: Path, payload: dict) -> None:
 
 
 def _check_fixtures(specs: tuple[FixtureSpec, ...]) -> None:
+    # The specs parameter exists only so tests can prove that a non-allowlisted
+    # deck is rejected. It must match ALLOWED_FIXTURES exactly before any file
+    # is read, parsed, or written.
+    if tuple(specs) != ALLOWED_FIXTURES:
+        raise ExportError("NON_ALLOWLISTED_FIXTURE")
     for spec in specs:
         if not spec.path.is_file():
             raise ExportError("SYNTHETIC_FIXTURE_MISSING")
@@ -119,9 +124,14 @@ def _documents_by_id(store: Path) -> dict[str, dict]:
 def export_all(
     store: Path | str = DEFAULT_STORE,
     output_dir: Path | str = DEFAULT_OUTPUT,
+    *,
     specs: tuple[FixtureSpec, ...] = ALLOWED_FIXTURES,
 ) -> dict:
-    """Run the V4.3 pipeline and write the deterministic V4.5 demo bundle."""
+    """Run the V4.3 pipeline and write the deterministic V4.5 demo bundle.
+
+    ``specs`` is keyword-only and must equal ``ALLOWED_FIXTURES``; it is kept
+    solely to test the allowlist rejection path.
+    """
     store = Path(store)
     output_dir = Path(output_dir)
     _check_fixtures(specs)

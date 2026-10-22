@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   AuthServiceError,
+  getCurrentUser,
   setSessionCookies,
   supabaseAuthCall,
   type SupabaseSession,
@@ -20,10 +21,25 @@ export async function POST(request: Request) {
   }
 
   try {
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      return NextResponse.json({ ok: true, alreadySignedIn: true });
+    }
     const payload = await supabaseAuthCall("signup", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
+    // With email confirmation enabled, Supabase can return a fake user rather
+    // than an error when an email already belongs to a confirmed account.
+    // When the API explicitly signals this with identities: [], show the
+    // requested "already registered" state instead of asking for an OTP.
+    const signupUser = payload.user as { identities?: unknown } | undefined;
+    if (Array.isArray(signupUser?.identities) && signupUser.identities.length === 0) {
+      return NextResponse.json(
+        { error: "该邮箱已注册，请直接登录。", alreadyRegistered: true },
+        { status: 409 },
+      );
+    }
     const session = (payload.session || payload) as unknown as SupabaseSession;
     if (session.access_token && session.refresh_token) {
       const response = NextResponse.json({ ok: true, signedIn: true }, { status: 201 });
@@ -36,6 +52,12 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     if (error instanceof AuthServiceError) {
+      if (/user already registered|already been registered|user_already_exists|email_exists/i.test(error.message)) {
+        return NextResponse.json(
+          { error: "该邮箱已注册，请直接登录。", alreadyRegistered: true },
+          { status: 409 },
+        );
+      }
       if (error.status >= 500) {
         return NextResponse.json(
           { error: "邮箱验证码发送服务出现故障，请检查 Supabase → Logs → Auth Logs 和 SMTP 设置。" },

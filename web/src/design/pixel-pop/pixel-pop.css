@@ -146,7 +146,7 @@
 .pp-today,.pp-library{min-height:280px}
 .pp-small-lab{grid-column:1/3;min-height:300px}
 .pp-small-quiz{grid-column:3;grid-row:1/3}
-.pp-task{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #e5e6f0;
+.pp-task{display:flex;align-items:center;gap:11px;padding:12px 0;width:100%;text-align:left;border:0;background:transparent;color:inherit;border-bottom:1px solid #e5e6f0;
   cursor:pointer}
 .pp-task>span:nth-child(2){flex:1;min-width:0}
 .pp-task strong,.pp-task small{display:block}

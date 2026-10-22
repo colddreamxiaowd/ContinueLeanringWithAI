@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState} from "react";
+import type {ReactNode} from "react";
 import {
   ArrowLeft,ArrowRight,BookOpen,BookOpenCheck,CheckCircle2,
   ChevronDown,Clock3,FileText,FlaskConical,FolderOpen,GraduationCap,
@@ -34,7 +35,7 @@ const DEMO_LESSONS=[
 const NAV_VIEWS:{id:View;label:string}[]=[
   {id:"home",label:"学习首页"},{id:"reader",label:"阅读"},{id:"lab",label:"实验"},{id:"quiz",label:"做题"}
 ];
-function MiniBadge({children}:{children:React.ReactNode}){return <span className="pp-badge">{children}</span>;}
+function MiniBadge({children}:{children:ReactNode}){return <span className="pp-badge">{children}</span>;}
 function StackPlayground(){
   const [stack,setStack]=useState<number[]>([1,2,3]);
   const [input,setInput]=useState("7");
@@ -134,12 +135,10 @@ function DashboardContent({go}:{go:(v:View)=>void}){
     <div className="pp-home-panels">
       <PopPanel title="今日学习" eyebrow="YOUR NEXT STEP" className="pp-today"
         actions={<Clock3 size={20}/>}>
-        <div className="pp-task" role="button" tabIndex={0} onClick={()=>go("reader")}
-          onKeyDown={e=>{if(e.key==="Enter")go("reader");}}>
+        <button type="button" className="pp-task" onClick={()=>go("reader")}>
           <span className="pp-task-play"><Play size={21} fill="currentColor"/></span><span><strong>栈的 Push / Pop</strong><small>8 分钟 · 继续上次演示</small></span><ArrowRight size={18}/>
-        </div>
-        <div className="pp-task" role="button" tabIndex={0} onClick={()=>go("quiz")}
-          onKeyDown={e=>{if(e.key==="Enter")go("quiz");}}>
+        </button>
+        <button type="button" className="pp-task" onClick={()=>go("quiz")}>
           <span className="pp-task-play pp-task-play--yellow"><ListChecks size={22}/></span><span>
           <strong>章节练习</strong><small>理解检测 · 随时开始</small></span><ArrowRight size={18}/>
         </div>

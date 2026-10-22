@@ -1,55 +1,14 @@
-name: Deploy web preview to GitHub Pages
+name: Legacy GitHub Pages preview (disabled for full-stack app)
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "web/**"
-      - ".github/workflows/v44-pages.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  deploy:
+  notice:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "npm"
-          cache-dependency-path: web/package-lock.json
-
-      - name: Install dependencies from lockfile
-        working-directory: web
-        run: npm ci
-
-      - name: Build static export for the project Pages path
-        working-directory: web
-        env:
-          NEXT_PUBLIC_BASE_PATH: /ContinueLeanringWithAI
-        run: npm run build
-
-      - name: Publish web/out to the gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./web/out
-          publish_branch: gh-pages
-          force_orphan: true
-          enable_jekyll: false
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
-          commit_message: "deploy: ${{ github.sha }}"
-
-      # Public static preview only: no backend, no Feishu calls, no secrets.
+      - name: Explain the hosting change
+        run: echo "The site now requires a full-stack Next.js runtime. Deploy it through Vercel; this legacy static Pages workflow intentionally does not publish."

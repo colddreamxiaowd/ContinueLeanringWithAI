@@ -24,7 +24,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 - `scripts/v43_pipeline.py`：增量处理、内容指纹与私有内容导入。
 - `scripts/v43_import.py`：私有内容导入接口。
 - `scripts/feishu_*` 与 `.github/workflows/feishu-*-manual.yml`：手动、只读或受控下载的飞书实验入口。
-- `tests/`：main 上 V4.1–V4.5 共 33 项离线测试（V4.1 5、V4.2 9、V4.3 16、V4.5 3）；V4.6-A 分支新增本地网关测试，等待 CI 验证。
+- `tests/`：V4.1–V4.5 共 33 项离线 Python 测试；公网资料库另有 3 项文件类型测试，CI 同时运行动态 Next.js 构建。
 - `scripts/v45_export_synthetic.py`：把白名单合成 Fixture 经 V4.3 流水线导出为网站 JSON，不重新实现解析。
 - `docs/V43_PRIVATE_PIPELINE.md`：私有内容存储与凭证边界。
 
@@ -32,12 +32,12 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 
 - 来源：用户指定的 `dev_网站` 会话中的 `ContinueLeanringWithAI_V4_1_review.zip`。
 - 归档 SHA-256：`cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`。
-- 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+，静态导出。
+- 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+；V4.6 采用动态服务端运行，不再静态导出。
 - 入口：`web/src/app/page.tsx`、`web/src/app/layout.tsx`、`web/src/app/globals.css`、`web/src/components/app-shell.tsx`。
 - 路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/sources/demo/[documentId]`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
 - V4.5 合成资料：`web/src/data/v45-demo/`（2 份资料、6 页），详情页由 `generateStaticParams()` 生成；已合并（PR #10）并随 Pages 预览上线。
 - 锁文件：`web/package-lock.json`；本轮验证环境 Node v24.12.0、npm 11.6.2。
-- 网站 CI：`.github/workflows/v44-web-tests.yml`，对 `web/**`、`scripts/**`、`tests/**`、`requirements-v42.txt` 及工作流自身变更执行 V4.5 导出复现、`npm ci`、三组测试、类型检查、默认/basePath 构建和静态页面检查。
+- 网站 CI：`.github/workflows/v44-web-tests.yml`，对相关代码变更执行 V4.5 合成数据复现、Python 回归测试、Web 测试、类型检查与动态 Next.js 构建。
 
 ### 2.3 隐私处理
 
@@ -49,13 +49,13 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 ## 3. 已验证与未验证
 
 已验证（本轮实际执行）：
-- `web`：`npm ci` 通过；`test:models` 5/5；`test:v3` 14/14；`test:v45` 5/5；`typecheck` 通过；默认静态构建生成 15 个页面；basePath 构建与静态链接检查通过。
+- V4.5 静态版本历史验证：`npm ci`、`test:models` 5/5、`test:v3` 14/14、`test:v45` 5/5、类型检查和静态构建均曾通过。V4.6 当前分支另运行 `test:library` 与动态 Next.js 构建。
 - 根目录：33/33 Python 测试通过。
 - 网站静态预览可显示“知序 Learning Hub”首页；GitHub Pages 公开预览已上线。
 
 未验证/未启用：
-- 尚未配置后端、数据库、账号或生产域名。
-- V4.6-A 本地私有网关正在独立分支开发，自动化测试仅使用合成存储；尚未合并、部署或读取真实私有存储。
+- main 尚未配置公网后端、数据库、账号或生产域名。
+- V4.6 公网资料库的代码位于 feat/v46-public-feishu-library 分支；需要 Vercel/Supabase 配置后进行真实飞书 OAuth、目录递归和多格式文件验收。
 - 真实飞书 OAuth、文件夹读取、下载和写入尚未在本轮验证。
 - 真实课程内容处理、模型生成、数据库、账号、学习记录和每日调度未启用。
 - 原归档的 Chromium 交互检查记录沿用归档说明，本轮未重新执行该套件。
@@ -86,8 +86,8 @@ npm run dev
 
 ## 6. 当前边界
 
-完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成测试和构建；V4.5 离线合成资料的列表与逐页详情已合并并上线（PR #10，merge `3694a02`）。
+完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成 V4.5 合成资料展示。V4.6 正在把网站改为公网多用户运行架构。
 
-未完成：V4.6 本地私有网关（当前独立分支开发中、尚未合并）、生产域名与后端、真实飞书联机验证、真实课程内容导入。
+未完成：V4.6 公网资料库（开发分支中）、Vercel/Supabase 生产配置、真实飞书 OAuth/递归目录与多格式文件验收。
 
 本文是当前状态索引，不是新版本实现授权或线上产品完成声明。

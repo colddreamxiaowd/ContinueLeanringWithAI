@@ -14,6 +14,7 @@ export default function Sources() {
       <span className="section-kicker">SOURCE LIBRARY</span>
       <h1>原始资料库</h1>
       <p>所有文章、题目和实验都将与真实原始文件建立可追溯关联。</p>
+      <div className="hero-actions"><Link className="button button-primary" href="/library">打开我的飞书资料 <ArrowRight size={16}/></Link></div>
     </div>
 
     <div className="inline-info">

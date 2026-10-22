@@ -70,21 +70,14 @@ jobs:
       - name: V4.5 data tests
         run: npm run test:v45
 
+      - name: Library file-type tests
+        run: npm run test:library
+
       - name: Typecheck
         run: npm run typecheck
 
       - name: Production build
         run: npm run build
 
-      - name: Check V4.5 static pages
-        run: npm run check:v45:static
-
-      - name: GitHub Pages basePath build
-        env:
-          NEXT_PUBLIC_BASE_PATH: /ContinueLeanringWithAI
-        run: npm run build
-
-      - name: Check V4.5 basePath links
-        run: npm run check:v45:static -- --base-path /ContinueLeanringWithAI
-
-      # No deployment, publishing, Feishu call, or secret usage in this workflow.
+      # Full-stack runtime build; production deployment is handled by Vercel.
+      # This test workflow never receives production secrets and never calls Feishu.

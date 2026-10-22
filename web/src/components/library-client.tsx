@@ -41,6 +41,10 @@ type LibraryItem = {
 };
 type Crumb = { token: string | null; name: string };
 type SyncProgress = { status: string; items_seen: number; folders_seen: number; pages_processed: number };
+type OfficeReading = { format: string; totalSections: number; sections: Array<{ label: string; title: string; paragraphs: string[] }> };
+function isOfficeDocument(item: LibraryItem | null): boolean {
+  return Boolean(item?.item_type === "file" && /\.(pptx|docx|xlsx)$/i.test(item.name));
+}
 
 function humanSize(value: number | null | undefined): string {
   if (value == null || !Number.isFinite(value) || value < 0) return "";
@@ -64,6 +68,11 @@ function errorText(code: string): string {
     FEISHU_API_FAILED: "读取飞书目录失败，请稍后重试。",
     FEISHU_DOWNLOAD_FAILED: "文件读取失败，可能是文件类型或下载权限不支持。",
     LIBRARY_UNAVAILABLE: "资料索引暂时不可用，请检查数据库配置。",
+    FOLDER_URL_INVALID: "请输入有效的飞书文件夹链接或文件夹 token。",
+    OFFICE_SIZE_UNSUPPORTED: "当前网页阅读支持 15MB 以内的 Office 文件，请下载原件阅读。",
+    OFFICE_FILE_INVALID: "该文档暂时无法解析，请下载原件查看。",
+    OFFICE_NO_READABLE_CONTENT: "文档中没有可提取的文字，可能包含扫描图片，请下载原件。",
+    OFFICE_READ_FAILED: "文档读取失败，请下载原件或稍后重试.",
   };
   return messages[code] || code.replaceAll("_", " ");
 }
@@ -88,6 +97,11 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
   const [selectedItem, setSelectedItem] = useState<LibraryItem | null>(null);
   const [textPreview, setTextPreview] = useState("");
   const [textLoading, setTextLoading] = useState(false);
+  const [folderLink, setFolderLink] = useState("");
+  const [folderLabel, setFolderLabel] = useState("");
+  const [officeReading, setOfficeReading] = useState<OfficeReading | null>(null);
+  const [officeLoading, setOfficeLoading] = useState(false);
+  const [officeError, setOfficeError] = useState("");
 
   const currentFolder = browsePath[browsePath.length - 1];
 
@@ -190,6 +204,31 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     return () => { cancelled = true; };
   }, [selectedItem]);
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadOfficeReading() {
+      setOfficeReading(null);
+      setOfficeError("");
+      if (!isOfficeDocument(selectedItem)) {
+        setOfficeLoading(false);
+        return;
+      }
+      setOfficeLoading(true);
+      try {
+        const response = await fetch("/api/library/items/" + selectedItem!.id + "/reader", { cache: "no-store" });
+        const result = (await response.json()) as OfficeReading & { error?: string };
+        if (!response.ok) throw new Error(result.error || "OFFICE_READ_FAILED");
+        if (!cancelled) setOfficeReading(result);
+      } catch (error) {
+        if (!cancelled) setOfficeError(errorText(error instanceof Error ? error.message : "OFFICE_READ_FAILED"));
+      } finally {
+        if (!cancelled) setOfficeLoading(false);
+      }
+    }
+    void loadOfficeReading();
+    return () => { cancelled = true; };
+  }, [selectedItem]);
+
   async function logout() {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -205,8 +244,8 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     await loadDriveFolder(item.token);
   }
 
-  async function syncCurrentFolder() {
-    if (!currentFolder.token) {
+  async function syncCurrentFolder(sourceLink?: string) {
+    if (!sourceLink && !currentFolder.token) {
       setMessage("请先打开你要同步的资料文件夹，再点击“同步当前文件夹”。", true);
       return;
     }
@@ -217,7 +256,9 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       const startResponse = await fetch("/api/library/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder_token: currentFolder.token, folder_name: currentFolder.name }),
+        body: JSON.stringify(sourceLink
+          ? { folder_url: sourceLink, folder_name: folderLabel.trim() }
+          : { folder_token: currentFolder.token, folder_name: currentFolder.name }),
       });
       const start = (await startResponse.json()) as { job_id?: string; error?: string };
       if (!startResponse.ok || !start.job_id) throw new Error(start.error || "SYNC_START_FAILED");
@@ -248,6 +289,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       setActiveTab("synced");
       setSyncedFolderPath(null);
       setSelectedItem(null);
+      if (sourceLink) setFolderLink("");
       setMessage("同步完成。已索引 " + (finalProgress?.items_seen ?? 0) + " 项；打开“我的资料”即可预览支持的文件。");
     } catch (error) {
       const code = error instanceof Error ? error.message : "SYNC_FAILED";
@@ -282,6 +324,21 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
     const contentUrl = "/api/library/items/" + item.id + "/content";
     if (item.item_type !== "file") {
       return <div className="library-empty-preview"><ExternalLink size={24}/><strong>这是飞书在线文档或其他云端对象</strong><p>当前版本优先支持云盘文件的 TXT、图片、PDF 在线预览；在线文档可直接回到飞书打开。</p>{item.web_url && <a className="button button-primary" href={item.web_url} target="_blank" rel="noreferrer">在飞书打开 <ExternalLink size={15}/></a>}</div>;
+    }
+    if (isOfficeDocument(item)) {
+      return <div className="library-office-reader">
+        {officeLoading && <div className="library-loading"><LoaderCircle className="spin" size={16}/> 正在从飞书读取文档正文…</div>}
+        {officeError && <div className="library-notice library-notice--error">{officeError}</div>}
+        {officeReading && <>
+          <p className="library-muted">已提取 {officeReading.totalSections} 个内容段落组，按原件页码或工作表分组。此处是原文内容，不是 AI 生成摘要。</p>
+          {officeReading.sections.map((section, index) => <article key={index} className="library-office-section">
+            <span className="section-kicker">{section.label}</span>
+            <h3>{section.title}</h3>
+            {section.paragraphs.map((paragraph, j) => <p key={j}>{paragraph}</p>)}
+          </article>)}
+        </>}
+        <a className="button button-ghost" href={contentUrl + "?download=1"}>下载完整原文件 <Download size={15}/></a>
+      </div>;
     }
     if (kind === "image") {
       return <div className="library-image-preview"><img src={contentUrl} alt={item.name}/><a className="button button-ghost" href={contentUrl + "?download=1"}>下载原图 <Download size={15}/></a></div>;
@@ -326,6 +383,23 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
             <div><span className="section-kicker">FEISHU DRIVE</span><h2>选择要同步的文件夹</h2><p>同步会递归扫描当前文件夹中的子文件夹。你可以只同步放学习资料的目录，不必同步整个云盘。</p></div>
             <button className="button button-primary" onClick={syncCurrentFolder} disabled={busy || !currentFolder.token}>{busy ? <LoaderCircle className="spin" size={15}/> : <RefreshCw size={15}/>} 同步当前文件夹</button>
           </div>
+          <form className="library-folder-link-import" onSubmit={event => {
+            event.preventDefault();
+            if (!folderLink.trim() || busy) return;
+            void syncCurrentFolder(folderLink.trim());
+          }}>
+            <label htmlFor="feishu-folder-url">直接粘贴飞书文件夹链接（包含所有子文件夹）</label>
+            <div className="library-folder-link-fields">
+              <input id="feishu-folder-url" type="text" value={folderLink} onChange={event => setFolderLink(event.target.value)}
+                placeholder="https://你的企业.feishu.cn/drive/folder/..." required disabled={busy}/>
+              <input type="text" value={folderLabel} onChange={event => setFolderLabel(event.target.value)}
+                placeholder="显示名称（可选）" disabled={busy} aria-label="资料文件夹显示名称"/>
+              <button className="button button-primary" type="submit" disabled={busy || !folderLink.trim()}>
+                {busy ? <LoaderCircle className="spin" size={15}/> : <RefreshCw size={15}/>} 导入并同步
+              </button>
+            </div>
+            <p className="library-muted">不用先找到根目录；同步使用你已授权的飞书账号读取权限。</p>
+          </form>
           <div className="library-breadcrumbs">
             {browsePath.map((crumb, index) => <span key={(crumb.token || "root") + index}><button onClick={async () => { const next = browsePath.slice(0, index + 1); setBrowsePath(next); await loadDriveFolder(crumb.token); }}>{crumb.name}</button>{index < browsePath.length - 1 && <ChevronRight size={14}/>}</span>)}
           </div>
@@ -374,7 +448,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
             {selectedItem ? <>
               <div className="library-preview-head"><div><span className="section-kicker">FILE PREVIEW</span><h2>{selectedItem.name}</h2><p>{selectedItem.relative_path}</p></div><a className="icon-button" aria-label="下载文件" href={"/api/library/items/" + selectedItem.id + "/content?download=1"}><Download size={17}/></a></div>
               {renderPreview(selectedItem)}
-            </> : <div className="library-empty-preview"><FileText size={28}/><strong>选择一份资料</strong><p>文本、图片和 PDF 可在线预览；其他文件可下载或回到飞书打开。</p></div>}
+            </> : <div className="library-empty-preview"><FileText size={28}/><strong>选择一份资料</strong><p>文本、图片、PDF、PPTX、DOCX、XLSX 可在线阅读；其他文件可下载或回到飞书打开。</p></div>}
           </div>
         </section>}
       </>}

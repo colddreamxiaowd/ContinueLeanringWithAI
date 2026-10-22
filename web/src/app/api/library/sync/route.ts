@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/public-auth";
 import { listFeishuFiles } from "@/lib/feishu";
 import { dbRequest, dbUpsert } from "@/lib/supabase-rest";
+import { parseFeishuFolderToken } from "@/lib/feishu-folder.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,13 +25,18 @@ export async function POST(request: Request) {
 
   const body = (await request.json().catch(() => null)) as {
     folder_token?: unknown;
+    folder_url?: unknown;
     folder_name?: unknown;
   } | null;
-  const folderToken = typeof body?.folder_token === "string" ? body.folder_token.trim() : "";
-  const folderName = typeof body?.folder_name === "string" ? safeSegment(body.folder_name) : "";
-  if (!folderToken || folderToken.length > 500 || !folderName) {
-    return NextResponse.json({ error: "FOLDER_REQUIRED" }, { status: 400 });
+  const folderInput = typeof body?.folder_url === "string" && body.folder_url.trim()
+    ? body.folder_url.trim()
+    : typeof body?.folder_token === "string" ? body.folder_token.trim() : "";
+  const folderToken = parseFeishuFolderToken(folderInput);
+  if (!folderToken) {
+    return NextResponse.json({ error: "FOLDER_URL_INVALID" }, { status: 400 });
   }
+  const chosenName = typeof body?.folder_name === "string" ? body.folder_name.trim() : "";
+  const folderName = safeSegment(chosenName || "导入文件夹 " + folderToken.slice(-6));
 
   try {
     // Verify the selected folder is readable before creating a persistent job.

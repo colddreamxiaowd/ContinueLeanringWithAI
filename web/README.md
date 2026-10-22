@@ -46,6 +46,13 @@ npm run typecheck
 npm run build        # 静态导出到 out/
 ```
 
+生产构建是静态导出，输出位于 `out/`；预览时不要使用 `next start`，可用任意静态文件服务器：
+
+```bash
+python -m http.server 8000 -d out
+# 打开 http://localhost:8000
+```
+
 本轮实际验证结果：
 
 - `npm ci`：通过。

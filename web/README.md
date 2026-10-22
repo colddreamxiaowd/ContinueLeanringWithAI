@@ -70,6 +70,19 @@ python -m http.server 8000 -d out
 - 真实飞书授权、真实课件下载、数据库、账号、自动发布、部署和每日调度均未启用。
 - 本目录不包含 `.env`、Token、认证信息或私人课件。
 
+## 公开审查部署
+
+- 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)
+- 托管：GitHub Pages 项目站点；Next.js 静态导出，构建时使用 `NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI`。
+- 工作流：`.github/workflows/v44-pages.yml`，仅在 `main` 的 `web/**` 变更后构建并部署。
+- 这是静态只读审查预览，不是生产环境；没有后端、账号、数据库、飞书调用或自动发布。
+- 本地 basePath 构建：
+
+```bash
+cd web
+NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI npm run build
+```
+
 ## 与根目录流水线的关系
 
 根目录保留已有的 V4.1–V4.3 Python 内容流水线（PPTX 解析、SHA-256 指纹、增量处理、私有内容存储与导入接口）。`web/` 只负责前端网站，不覆盖或重复实现根目录流水线；两者的后续接入需要在单独任务中验证。

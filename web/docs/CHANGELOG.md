@@ -1,12 +1,12 @@
 # CHANGELOG
 
-## V4.4 · 2026-10-22 · 原 V4.1 网站恢复
+## V4.4 · 2026-10-22 · 原 V4.1 网站恢复 + GitHub Pages 预览
 
 - 从用户指定的 `dev_网站` 会话恢复 `ContinueLeanringWithAI_V4_1_review.zip`（SHA-256 `cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`）。
 - 将原 Next.js 网站放入 `web/`，保留首页、课程、阅读、资料、实验和两个审查页。
 - 移除真实课程来源元数据；V3 改用 `content/v3-sample/source.json` 合成样例。
 - 生成并提交 `web/package-lock.json`；`npm ci`、5 项模型测试、14 项 V3 测试、类型检查和生产构建通过。
-- 新增仅针对 `web/` 的 CI；未部署、未调用真实飞书、未自动发布。
+- 新增仅针对 `web/` 的 CI；新增 GitHub Pages 静态审查预览工作流（`NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI`），未调用真实飞书、未启用后端或生产发布。
 
 > **恢复快照说明（V4.4）：** V2/V4 的 Python 原型与 `review-preview/` 未包含在 `web/` 恢复源码中；以下保留历史记录。当前可运行的是 Next.js 页面、合成数据与 V3 WebAssembly 实验。
 

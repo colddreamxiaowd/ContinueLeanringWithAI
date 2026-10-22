@@ -1,9 +1,13 @@
 import type { NextConfig } from "next";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 const config: NextConfig = {
-  // V1 has only static, demonstrative material. Protected APIs arrive in later versions.
+  // Static review build; protected APIs arrive in later versions.
   output: "export",
   trailingSlash: true,
+  // GitHub Pages project sites are served from /<repo>/; keep local builds at root.
+  ...(basePath ? { basePath } : {}),
 };
 
 export default config;

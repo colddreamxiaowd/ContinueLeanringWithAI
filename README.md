@@ -6,7 +6,7 @@ AI 驱动的个人学习网站：长期整理学习资料、Blog、题库、交�
 
 - 根目录保留 V4.1–V4.3 的 Python 内容流水线：PPTX 解析、SHA-256 指纹、增量处理、私有内容存储和导入接口；完整测试 30/30 通过。
 - 原 V1–V4.1 Next.js / React / TypeScript 网站源码已经找回，放在 [`web/`](web/)；不再处于“网站源码缺失”状态。
-- 网站已在本地完成依赖安装、类型检查、测试和生产构建，生成 13 个静态页面；**尚未部署上线**。
+- 网站已在本地完成依赖安装、类型检查、测试和生产构建，生成 13 个静态页面；已部署 GitHub Pages 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)（静态只读，不是生产环境）。
 - 真实飞书 API 验证仍未执行；真实课程文件、来源元数据和私人课件未进入公开仓库。
 
 来源归档：`ContinueLeanringWithAI_V4_1_review.zip`，SHA-256 `cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`。恢复记录见 [`docs/PROJECT_INITIALIZATION.md`](docs/PROJECT_INITIALIZATION.md)。
@@ -61,11 +61,11 @@ npm run typecheck
 npm run build
 ```
 
-网站 CI 见 `.github/workflows/v44-web-tests.yml`，只针对 `web/` 变更执行安装、测试、类型检查和构建，不包含部署或飞书调用。
+网站 CI 见 `.github/workflows/v44-web-tests.yml`，只针对 `web/` 变更执行安装、测试、类型检查和构建。公开审查预览由 `.github/workflows/v44-pages.yml` 在 `main` 的 `web/` 变更后部署到 GitHub Pages；不包含后端、飞书调用或 secrets。
 
 ## 边界
 
-- 不自动合并 PR，不部署或发布网站。
+- 合并与发布已由用户明确授权；当前仅部署静态审查预览，未启用后端、数据库或真实飞书。
 - 不把真实课件、解析文本、凭证或用户令牌提交到公开仓库。
 - 真实飞书内容处理需要明确授权和本地凭证；当前使用合成/离线数据。
 - 重要版本由 DEV 审查，用户保留最终合并与发布决定。

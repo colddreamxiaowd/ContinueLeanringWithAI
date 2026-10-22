@@ -11,6 +11,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [resending, setResending] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,6 +44,32 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
     }
   }
 
+  async function resendConfirmation() {
+    if (!email.trim() || busy || resending) {
+      setIsError(true);
+      setMessage("请先填写注册使用的邮箱。");
+      return;
+    }
+    setResending(true);
+    setIsError(false);
+    setMessage("");
+    try {
+      const response = await fetch("/api/auth/resend-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string };
+      if (!response.ok) throw new Error(result.error || "邮件发送失败，请稍后重试。");
+      setMessage("请求已提交。如果这个邮箱尚未完成注册验证，请查看最新收到的邮件，并且只打开最新的验证链接。");
+    } catch (error) {
+      setIsError(true);
+      setMessage(error instanceof Error ? error.message : "无法重新发送验证邮件。");
+    } finally {
+      setResending(false);
+    }
+  }
+
   return (
     <main className="auth-page">
       <div className="auth-brand"><span className="auth-brand-mark"><BookOpen size={23}/></span><div><strong>知序 Learning Hub</strong><span>你的私人学习资料空间</span></div></div>
@@ -61,6 +88,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             {busy ? <LoaderCircle className="spin" size={17}/> : null}
             {busy ? "正在处理…" : isSignup ? "创建账号" : "登录"}
             {!busy && <ArrowRight size={16}/>}
+          </button>
+          <button
+            className="button button-ghost"
+            type="button"
+            disabled={busy || resending}
+            onClick={() => void resendConfirmation()}
+          >
+            {resending ? "正在重新发送…" : "验证链接过期？重新发送验证邮件"}
           </button>
         </form>
         <div className="auth-switch">{isSignup ? "已经有账号？" : "还没有账号？"} <Link href={isSignup ? "/login" : "/signup"}>{isSignup ? "直接登录" : "创建账号"}</Link></div>

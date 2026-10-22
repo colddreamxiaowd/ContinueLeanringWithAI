@@ -83,7 +83,7 @@ python -m http.server 8000 -d out
 - 页面：列表显示 2 份合成资料（共 6 页）、版本和详情入口；详情页按页展示标题、正文层级、表格、页码和 `shape_index`，图片等 unsupported 块有明确提示。
 - 安全：只处理白名单合成 Fixture；store 出现未知文档时导出直接失败；不读取真实飞书或私人课件。
 - 详细说明与验证记录见 [`docs/V45_SYNTHETIC_INTEGRATION.md`](docs/V45_SYNTHETIC_INTEGRATION.md)。
-- 当前在 Draft PR #10；合并前需用户确认 main 上的 Pages 工作流会刷新公开预览。
+- PR #10 已合并（merge `3694a02`）；main 上的 Pages 工作流已更新公开预览，V4.5 合成资料可在线上查看。
 
 ## 公开审查部署
 

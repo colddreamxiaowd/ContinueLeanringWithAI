@@ -6,7 +6,7 @@ AI 驱动的个人学习网站：长期整理学习资料、Blog、题库、交�
 
 - 根目录保留 V4.1–V4.3 的 Python 内容流水线：PPTX 解析、SHA-256 指纹、增量处理、私有内容存储和导入接口；完整测试 32/32 通过（含 V4.5 导出测试）。
 - 原 V1–V4.1 Next.js / React / TypeScript 网站源码已经找回，放在 [`web/`](web/)；不再处于“网站源码缺失”状态。
-- V4.5 已把现有 Python 流水线处理的两份合成 PPTX 接入网站：`/sources` 列出 2 份资料，`/sources/demo/[documentId]` 逐页展示标题、正文、表格和来源位置；当前在 Draft PR #10，未合并。
+- V4.5 已把现有 Python 流水线处理的两份合成 PPTX 接入网站：`/sources` 列出 2 份资料，`/sources/demo/[documentId]` 逐页展示标题、正文、表格和来源位置；PR #10 已合并（merge `3694a02`）并上线。
 - 网站已在本地完成依赖安装、类型检查、测试和生产构建，生成 15 个静态页面；已部署 GitHub Pages 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)（静态只读，不是生产环境）。
 - 真实飞书 API 验证仍未执行；真实课程文件、来源元数据和私人课件未进入公开仓库。
 

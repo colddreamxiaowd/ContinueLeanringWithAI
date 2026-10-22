@@ -63,7 +63,11 @@ export async function proxy(request: NextRequest) {
         });
         const session = (await response.json().catch(() => ({}))) as Record<string, unknown>;
         if (response.ok && typeof session.access_token === "string" && typeof session.refresh_token === "string") {
-          const next = NextResponse.next();
+          // Forward refreshed cookies to the route in this same request as well
+          // as persisting them in the browser response.
+          request.cookies.set(ACCESS_COOKIE, session.access_token);
+          request.cookies.set(REFRESH_COOKIE, session.refresh_token);
+          const next = NextResponse.next({ request });
           setAuthCookies(next, session);
           return next;
         }

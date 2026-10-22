@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     }
 
     if (records.length) {
-      await dbUpsert("library_items", records, "user_id,source_token");
+      await dbUpsert("library_items", records, "user_id,source_token,root_folder_token");
     }
 
     if (page.has_more) {

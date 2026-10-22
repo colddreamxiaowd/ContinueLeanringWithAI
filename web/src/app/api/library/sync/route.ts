@@ -70,7 +70,7 @@ export async function POST(request: Request) {
         last_seen_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },
-      "user_id,source_token",
+      "user_id,source_token,root_folder_token",
     );
     return NextResponse.json({ job_id: job.id, status: job.status }, { status: 201 });
   } catch (error) {

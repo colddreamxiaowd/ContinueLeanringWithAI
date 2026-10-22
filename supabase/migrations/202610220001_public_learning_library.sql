@@ -50,7 +50,7 @@ create table if not exists public.library_items (
   last_seen_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
-  unique (user_id, source_token)
+  unique (user_id, source_token, root_folder_token)
 );
 
 create index if not exists library_items_user_path_idx

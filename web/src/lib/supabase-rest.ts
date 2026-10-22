@@ -7,7 +7,9 @@ function baseUrl(): string {
 }
 
 function serviceKey(): string {
-  const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // New Supabase projects use sb_secret_... API keys instead of legacy JWT keys.
+  const value =
+    process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!value) throw new Error("SUPABASE_NOT_CONFIGURED");
   return value;
 }
@@ -17,8 +19,15 @@ export async function dbRequest<T = unknown>(
   init: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(init.headers);
-  headers.set("apikey", serviceKey());
-  headers.set("Authorization", "Bearer " + serviceKey());
+  const key = serviceKey();
+  headers.set("apikey", key);
+  // New sb_secret_* keys are opaque API keys, not JWTs. They belong only in
+  // the apikey header; legacy service_role JWTs still use Bearer authorization.
+  if (key.startsWith("sb_secret_")) {
+    headers.delete("Authorization");
+  } else {
+    headers.set("Authorization", "Bearer " + key);
+  }
   headers.set("Accept", "application/json");
   if (init.body !== undefined && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");

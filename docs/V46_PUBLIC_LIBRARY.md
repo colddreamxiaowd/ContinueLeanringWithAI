@@ -21,7 +21,7 @@ Configure Authentication:
 - Add the Vercel origin and local http://localhost:3000 to allowed redirect URLs.
 - Email confirmation may remain enabled; new users then verify their email before password login.
 
-Copy the project URL, publishable/anon key, and service-role key from project settings. The service-role key is server-only.
+Copy the project URL and Publishable key from the project's Connect dialog. Open **Project Settings → API Keys → Publishable and secret API keys**, then copy a server-only **Secret key** (`sb_secret_...`). New Supabase projects may not have the legacy `service_role` key. Never paste a secret key in GitHub, chat, or client-side environment variables.
 
 ### 2. Deploy the Next.js app on Vercel
 
@@ -30,7 +30,7 @@ Import the GitHub repository colddreamxiaowd/ContinueLeanringWithAI into Vercel 
 Set these environment variables for Preview and Production:
 - NEXT_PUBLIC_SUPABASE_URL
 - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)
-- SUPABASE_SERVICE_ROLE_KEY
+- SUPABASE_SECRET_KEY (recommended, `sb_secret_...`; legacy `SUPABASE_SERVICE_ROLE_KEY` remains supported)
 - NEXT_PUBLIC_SITE_URL
 - FEISHU_REDIRECT_URI
 - FEISHU_APP_ID

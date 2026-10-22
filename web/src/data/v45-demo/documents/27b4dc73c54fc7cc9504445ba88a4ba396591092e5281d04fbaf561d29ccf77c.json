@@ -1,0 +1,108 @@
+{
+  "current_version": "3e99834581092a826f291d02bfd3410596af53e4743eaea57675109726828b2e",
+  "demo": true,
+  "document_id": "27b4dc73c54fc7cc9504445ba88a4ba396591092e5281d04fbaf561d29ccf77c",
+  "notice": "仅包含项目内明确标记的合成 PPTX，由现有 V4.3 流水线实际处理；不代表真实课程、真实同步或正式发布内容。",
+  "schema_version": "v45-demo-v1",
+  "slide_count": 2,
+  "slides": [
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "合成集成样例：表格与正文"
+            }
+          ],
+          "role": "title",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "这是明确标记的合成课件，用于验证 V4.5 网站展示。"
+            },
+            {
+              "index": 1,
+              "level": 1,
+              "text": "第二段展示段落层级和来源页码。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        },
+        {
+          "rows": [
+            [
+              "知识点",
+              "操作",
+              "复杂度"
+            ],
+            [
+              "栈顶",
+              "push/pop",
+              "O(1)"
+            ],
+            [
+              "顺序存储",
+              "按索引访问",
+              "O(1)"
+            ]
+          ],
+          "shape_index": 2,
+          "type": "table"
+        }
+      ],
+      "slide_index": 0,
+      "slide_number": 1,
+      "title": "合成集成样例：表格与正文"
+    },
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "合成集成样例：未支持对象"
+            }
+          ],
+          "role": "title",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "本页包含一个图片对象；V4.2 只标记其存在，不解析图片内容。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        },
+        {
+          "note": "Picture content is not parsed in v1.",
+          "shape_index": 2,
+          "shape_type": "PICTURE",
+          "type": "unsupported"
+        }
+      ],
+      "slide_index": 1,
+      "slide_number": 2,
+      "title": "合成集成样例：未支持对象"
+    }
+  ],
+  "source_kind": "synthetic_fixture",
+  "source_sha256": "3e99834581092a826f291d02bfd3410596af53e4743eaea57675109726828b2e",
+  "synthetic": true,
+  "title": "合成集成样例（表格与未支持对象）"
+}

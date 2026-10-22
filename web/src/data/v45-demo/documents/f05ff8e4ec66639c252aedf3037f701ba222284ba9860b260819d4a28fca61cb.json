@@ -1,0 +1,178 @@
+{
+  "current_version": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+  "demo": true,
+  "document_id": "f05ff8e4ec66639c252aedf3037f701ba222284ba9860b260819d4a28fca61cb",
+  "notice": "仅包含项目内明确标记的合成 PPTX，由现有 V4.3 流水线实际处理；不代表真实课程、真实同步或正式发布内容。",
+  "schema_version": "v45-demo-v1",
+  "slide_count": 4,
+  "slides": [
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "数据结构：栈（合成测试课件）"
+            }
+          ],
+          "role": "body",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "仅用于 V2 工程验收，非用户课程原始资料。"
+            },
+            {
+              "index": 1,
+              "level": 0,
+              "text": "课程：数据结构与算法；章节：栈与队列。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        }
+      ],
+      "slide_index": 0,
+      "slide_number": 1,
+      "title": ""
+    },
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "栈的定义和 LIFO"
+            }
+          ],
+          "role": "body",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "栈（Stack）只允许在同一端插入与删除。"
+            },
+            {
+              "index": 1,
+              "level": 0,
+              "text": "该端叫栈顶 top；另一端叫栈底 bottom。"
+            },
+            {
+              "index": 2,
+              "level": 0,
+              "text": "栈遵循后进先出（LIFO）。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        }
+      ],
+      "slide_index": 1,
+      "slide_number": 2,
+      "title": ""
+    },
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "栈的基本操作"
+            }
+          ],
+          "role": "body",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "push(x)：将元素 x 压入栈顶。"
+            },
+            {
+              "index": 1,
+              "level": 0,
+              "text": "pop()：移除栈顶元素。"
+            },
+            {
+              "index": 2,
+              "level": 0,
+              "text": "top()：读取栈顶但不移除。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        }
+      ],
+      "slide_index": 2,
+      "slide_number": 3,
+      "title": ""
+    },
+    {
+      "blocks": [
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "空栈、边界与验证"
+            }
+          ],
+          "role": "body",
+          "shape_index": 0,
+          "type": "text"
+        },
+        {
+          "paragraphs": [
+            {
+              "index": 0,
+              "level": 0,
+              "text": "对空栈调用 pop() 必须返回明确的下溢错误或失败状态。"
+            },
+            {
+              "index": 1,
+              "level": 0,
+              "text": "顺序栈若容量固定，入栈时应检测栈满。"
+            },
+            {
+              "index": 2,
+              "level": 0,
+              "text": "例：依次 push(4)、push(9)、pop()、push(2)，最终 top 为 2。"
+            },
+            {
+              "index": 3,
+              "level": 0,
+              "text": "掌握标准：不借助动画独立跟踪栈内容。"
+            }
+          ],
+          "role": "body",
+          "shape_index": 1,
+          "type": "text"
+        }
+      ],
+      "slide_index": 3,
+      "slide_number": 4,
+      "title": ""
+    }
+  ],
+  "source_kind": "synthetic_fixture",
+  "source_sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+  "synthetic": true,
+  "title": "合成栈课件（V2 Fixture）"
+}

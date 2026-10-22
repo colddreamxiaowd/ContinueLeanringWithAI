@@ -10,14 +10,14 @@
 <section class="stats" aria-label="实验运行统计"><div class="stat"><label>当前执行步骤</label><strong id="stepCount">0</strong><span id="stepDetail">尚未开始</span></div><div class="stat"><label>非零元素</label><strong id="nonzeroCount">8</strong><span>来源：合成样例</span></div><div class="stat"><label>阶段</label><strong id="phaseName">等待执行</strong><span>计数 → 前缀位置 → 转置写入</span></div><div class="stat"><label>核验状态</label><strong id="verificationStat">等待执行</strong><span>独立朴素算法交叉检查</span></div></section>
 <div class="workspace">
 <div class="stack">
- <section class="card"><div class="card-title"><h2>01 · 修改矩阵输入</h2><span class="tag">0-based 下标</span></div><p class="desc">每行填写「行 列 非零整数」，输入不会上传服务器。支持 1–10 行和列，重复位置、越界输入会被拒绝。</p><div class="field-line"><label class="field">行数 rows<input id="rows" type="number" min="1" max="10" value="6" data-testid="rows"></label><label class="field">列数 cols<input id="cols" type="number" min="1" max="10" value="7" data-testid="cols"></label><label class="field expand">三元组输入（可更改）<textarea id="triples" spellcheck="false" data-testid="triples">0 1 12
-0 2 9
-2 0 -3
-2 5 14
-3 2 24
-4 1 18
-5 0 15
-5 3 -7</textarea></label></div><div class="button-row"><button class="button primary" id="load" data-testid="load">载入并重置算法</button><button class="button soft" id="sample">恢复合成样例</button><button class="button" id="empty">空矩阵试验</button></div><div class="error" id="error" role="alert" aria-live="polite"></div></section>
+ <section class="card"><div class="card-title"><h2>01 · 修改矩阵输入</h2><span class="tag">0-based 下标</span></div><p class="desc">每行填写「行 列 非零整数」，输入不会上传服务器。支持 1–10 行和列，重复位置、越界输入会被拒绝。</p><div class="field-line"><label class="field">行数 rows<input id="rows" type="number" min="1" max="10" value="6" data-testid="rows"></label><label class="field">列数 cols<input id="cols" type="number" min="1" max="10" value="7" data-testid="cols"></label><label class="field expand">三元组输入（可更改）<textarea id="triples" spellcheck="false" data-testid="triples">0 0 5
+0 3 -2
+1 2 7
+2 4 3
+3 1 9
+4 5 -4
+5 0 6
+5 3 8</textarea></label></div><div class="button-row"><button class="button primary" id="load" data-testid="load">载入并重置算法</button><button class="button soft" id="sample">恢复合成样例</button><button class="button" id="empty">空矩阵试验</button></div><div class="error" id="error" role="alert" aria-live="polite"></div></section>
  <section class="card"><div class="card-title"><h2>02 · 矩阵可视化</h2><span class="tag">运行状态同步</span></div><p class="desc">A 是原矩阵；B 会随真实 C++ 转置放置步骤逐格写入，当前写入位置高亮。</p><div class="matrix-pair"><div class="matrix-card"><div class="matrix-label">矩阵 A <span class="meta" id="shapeA">6×7</span></div><div class="matrix-scroll"><div id="matrixA" class="matrix-grid" aria-label="原矩阵 A"></div></div><div class="matrix-legend">蓝色为非零；黄色为当前读取项</div></div><div class="matrix-card"><div class="matrix-label">转置 B <span class="meta" id="shapeB">7×6</span></div><div class="matrix-scroll"><div id="matrixB" class="matrix-grid" aria-label="转置矩阵 B"></div></div><div class="matrix-legend">「·」代表尚未放置完成的区域</div></div></div></section>
  <section class="card"><div class="card-title"><h2>03 · 辅助数组状态</h2><span class="tag">合成样例 · 算法步骤</span></div><p class="desc"><strong>cnum</strong> 统计 A 各列的非零个数；<strong>cpot 初值</strong> 是 B 各行的起始槽；<strong>cpot 当前</strong> 在写入后递增。</p><div class="array-scroll"><table class="array-table"><tbody id="arrayBody"></tbody></table></div><div class="explainer" id="explanation">载入完成。下一步首先统计 A 的第一个三元组所在列。</div></section>
  <section class="card"><div class="card-title"><h2>04 · 分步执行</h2><span class="tag" id="phaseTag">未开始</span></div><div class="controller"><button class="button" id="back" data-testid="back">← 上一步</button><button class="button primary" id="next" data-testid="next">单步执行 →</button><button class="button success" id="run" data-testid="run">▶ 运行到底</button><button class="button soft" id="reset">↺ 重置</button></div><input aria-label="选择执行步数" class="scrub" type="range" min="0" max="24" value="0" id="scrub" data-testid="scrub"><div class="small">可拖动进度条，任意回看每一个真实算法状态。快捷键：Alt + → 单步、Alt + ← 回退。</div><div class="timeline" id="timeline" aria-live="polite"></div></section>
@@ -133,7 +133,7 @@ function parseTriples(text, rows, cols) {
     let line=lines[n].trim();if(!line||line.startsWith('#')||line.startsWith('//')) continue;
     line=line.replace(/[()（）\[\]]/g,'');
     const fields=line.split(/[\s,，;；]+/).filter(Boolean);
-    if(fields.length!==3||fields.some(x=>!/^[-+]?\d+$/.test(x)))throw new Error(`第 ${n+1} 行须为：行 列 非零整数，例如 0 1 12。`);
+    if(fields.length!==3||fields.some(x=>!/^[-+]?\d+$/.test(x)))throw new Error(`第 ${n+1} 行须为：行 列 非零整数，例如 0 0 5。`);
     const t=fields.map(Number); const [r,c,value]=t;
     if(t.some(x=>!Number.isSafeInteger(x))||Math.abs(value)>1000000||value===0)
       throw new Error(`第 ${n+1} 行数值无效：元素必须为绝对值不超过 1000000 的非零整数。`);

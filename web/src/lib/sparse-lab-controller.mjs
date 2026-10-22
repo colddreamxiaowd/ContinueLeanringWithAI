@@ -17,7 +17,7 @@ export function parseTriples(text, rows, cols) {
     let line=lines[n].trim();if(!line||line.startsWith('#')||line.startsWith('//')) continue;
     line=line.replace(/[()（）\[\]]/g,'');
     const fields=line.split(/[\s,，;；]+/).filter(Boolean);
-    if(fields.length!==3||fields.some(x=>!/^[-+]?\d+$/.test(x)))throw new Error(`第 ${n+1} 行须为：行 列 非零整数，例如 0 1 12。`);
+    if(fields.length!==3||fields.some(x=>!/^[-+]?\d+$/.test(x)))throw new Error(`第 ${n+1} 行须为：行 列 非零整数，例如 0 0 5。`);
     const t=fields.map(Number); const [r,c,value]=t;
     if(t.some(x=>!Number.isSafeInteger(x))||Math.abs(value)>1000000||value===0)
       throw new Error(`第 ${n+1} 行数值无效：元素必须为绝对值不超过 1000000 的非零整数。`);

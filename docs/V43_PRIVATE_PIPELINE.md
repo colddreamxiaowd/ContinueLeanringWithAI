@@ -153,7 +153,7 @@ for document in list_documents(".local/v43"):
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-当前共 30 项测试通过：V4.1 5 项、V4.2 9 项、V4.3 16 项。新增覆盖 state/index
+V4.3 完成时共 30 项测试通过：V4.1 5 项、V4.2 9 项、V4.3 16 项；V4.5 后总数为 33 项（新增 3 项导出测试）。新增覆盖 state/index
 写入失败、索引恢复、单文件选择、范围冲突和批量显式模式。
 
 ## 兼容性与边界

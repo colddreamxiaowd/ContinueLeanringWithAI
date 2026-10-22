@@ -24,7 +24,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 - `scripts/v43_pipeline.py`：增量处理、内容指纹与私有内容导入。
 - `scripts/v43_import.py`：私有内容导入接口。
 - `scripts/feishu_*` 与 `.github/workflows/feishu-*-manual.yml`：手动、只读或受控下载的飞书实验入口。
-- `tests/`：32 项离线测试（V4.1 5、V4.2 9、V4.3 16、V4.5 2）。
+- `tests/`：33 项离线测试（V4.1 5、V4.2 9、V4.3 16、V4.5 3）。
 - `scripts/v45_export_synthetic.py`：把白名单合成 Fixture 经 V4.3 流水线导出为网站 JSON，不重新实现解析。
 - `docs/V43_PRIVATE_PIPELINE.md`：私有内容存储与凭证边界。
 
@@ -37,7 +37,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 - 路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/sources/demo/[documentId]`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
 - V4.5 合成资料：`web/src/data/v45-demo/`（2 份资料、6 页），详情页由 `generateStaticParams()` 生成；已合并（PR #10）并随 Pages 预览上线。
 - 锁文件：`web/package-lock.json`；本轮验证环境 Node v24.12.0、npm 11.6.2。
-- 网站 CI：`.github/workflows/v44-web-tests.yml`，只对 `web/` 变更执行 `npm ci`、测试、类型检查和构建。
+- 网站 CI：`.github/workflows/v44-web-tests.yml`，对 `web/**`、`scripts/**`、`tests/**`、`requirements-v42.txt` 及工作流自身变更执行 V4.5 导出复现、`npm ci`、三组测试、类型检查、默认/basePath 构建和静态页面检查。
 
 ### 2.3 隐私处理
 
@@ -50,7 +50,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 
 已验证（本轮实际执行）：
 - `web`：`npm ci` 通过；`test:models` 5/5；`test:v3` 14/14；`test:v45` 5/5；`typecheck` 通过；默认静态构建生成 15 个页面；basePath 构建与静态链接检查通过。
-- 根目录：32/32 Python 测试通过。
+- 根目录：33/33 Python 测试通过。
 - 网站静态预览可显示“知序 Learning Hub”首页；GitHub Pages 公开预览已上线。
 
 未验证/未启用：

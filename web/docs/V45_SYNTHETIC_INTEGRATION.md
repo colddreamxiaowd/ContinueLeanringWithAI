@@ -71,7 +71,7 @@ npm run check:v45:static -- --base-path /ContinueLeanringWithAI
 
 ## 已验证
 
-- `python -m unittest discover -s tests -p 'test_*.py'`：32/32 通过（原 30 项 + V4.5 2 项）。
+- `python -m unittest discover -s tests -p 'test_*.py'`：33/33 通过（原 30 项 + V4.5 3 项）。
 - 两次导出的所有文件 SHA-256 完全一致。
 - 2 份合成资料、共 6 页；PPTX 的表格和 unsupported 图片块均进入 JSON。
 - `npm run test:v45`：5/5 通过。

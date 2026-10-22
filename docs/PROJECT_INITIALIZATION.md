@@ -4,7 +4,7 @@
 主仓库：[colddreamxiaowd/ContinueLeanringWithAI](https://github.com/colddreamxiaowd/ContinueLeanringWithAI)（公开；按公开仓库隐私边界处理）
 核对起点：`c651c455b5be6b70818ea97f0d9d255cae16fd4e`
 V4.4 恢复分支起点：`e5130a93b5bdff91fc98aa3cea7adf581029a9ea`
-V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，已合入新 main；Draft PR #10）
+V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，已合入新 main；PR #10 已合并为 `3694a02`）
 
 ## 1. 项目定位
 
@@ -35,7 +35,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 - 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+，静态导出。
 - 入口：`web/src/app/page.tsx`、`web/src/app/layout.tsx`、`web/src/app/globals.css`、`web/src/components/app-shell.tsx`。
 - 路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/sources/demo/[documentId]`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
-- V4.5 合成资料：`web/src/data/v45-demo/`（2 份资料、6 页），详情页由 `generateStaticParams()` 生成；当前为 Draft PR #10。
+- V4.5 合成资料：`web/src/data/v45-demo/`（2 份资料、6 页），详情页由 `generateStaticParams()` 生成；已合并（PR #10）并随 Pages 预览上线。
 - 锁文件：`web/package-lock.json`；本轮验证环境 Node v24.12.0、npm 11.6.2。
 - 网站 CI：`.github/workflows/v44-web-tests.yml`，只对 `web/` 变更执行 `npm ci`、测试、类型检查和构建。
 
@@ -85,8 +85,8 @@ npm run dev
 
 ## 6. 当前边界
 
-完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成测试和构建；V4.5 离线合成资料的列表与逐页详情已接入，Draft PR #10 待审查。
+完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成测试和构建；V4.5 离线合成资料的列表与逐页详情已合并并上线（PR #10，merge `3694a02`）。
 
-未完成：PR #10 合并、生产域名与后端、真实飞书联机验证、真实课程内容导入、V4.6 真实私有内容访问控制。
+未完成：V4.6 真实私有内容访问控制（尚未授权启动）、生产域名与后端、真实飞书联机验证、真实课程内容导入。
 
 本文是当前状态索引，不是新版本实现授权或线上产品完成声明。

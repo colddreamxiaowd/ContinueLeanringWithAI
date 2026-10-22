@@ -1,6 +1,6 @@
 # V4.5 合成资料网站接入
 
-状态：已完成网页端到端演示，位于 Draft PR #10；仅使用合成 Fixture，不连接真实飞书或私人课件。
+状态：已完成并合并（PR #10，merge `3694a02`），公开预览已上线；仅使用合成 Fixture，不连接真实飞书或私人课件。
 
 ## 数据来源
 
@@ -80,6 +80,9 @@ npm run check:v45:static -- --base-path /ContinueLeanringWithAI
 - Pages basePath 构建：通过，列表链接与详情页均带 `/ContinueLeanringWithAI` 前缀。
 - `npm run check:v45:static` 与带 basePath 的检查均通过。
 
-## 合并影响
+## 合并与部署
 
-main 上的 `.github/workflows/v44-pages.yml` 会在 `web/**` 合并后更新公开静态预览。合并 PR #10 前需要用户确认这一影响；本任务不自动合并、不手动触发 Pages 工作流。
+PR #10 已由用户合并（merge `3694a02`）；main 上的 `.github/workflows/v44-pages.yml` 随后成功更新公开静态预览。Qoder 未合并 PR、未手动触发 Pages 工作流。线上入口：
+
+- <https://colddreamxiaowd.github.io/ContinueLeanringWithAI/sources/>
+- 合成集成样例详情页可从列表进入；basePath 链接、表格、unsupported 提示已在线上核对。

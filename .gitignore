@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+build/
+.tmp/
+.local/
+.feishu-state/
+.pytest_cache/
+*.pptx

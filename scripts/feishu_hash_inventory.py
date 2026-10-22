@@ -23,6 +23,11 @@ class InventoryError(Exception):
     pass
 
 
+def file_identity(file_token):
+    """Stable, token-safe identity used by the V4.1 fingerprint strategy."""
+    return hashlib.sha256(file_token.encode("utf-8")).hexdigest()
+
+
 def _request(url, token):
     return urllib.request.Request(url, headers={"Authorization": "Bearer " + token})
 
@@ -60,10 +65,15 @@ def list_pptx(token, folder):
     raise InventoryError("LIST PAGINATION_LIMIT")
 
 
-def download_digest(token, file_token):
-    """Stream to a temporary private file; validate archive and return its digest."""
+def download_to_temp(token, file_token):
+    """Stream to a private temp file, validate it, and return (path, sha256, size).
+
+    The caller owns cleanup of the returned path. On any failure the temporary
+    file is removed before the InventoryError is raised.
+    """
     url = API + "/files/" + urllib.parse.quote(file_token, safe="") + "/download"
     temp_name = None
+    success = False
     try:
         with urllib.request.urlopen(_request(url, token), timeout=60) as res:
             if res.status != 200:
@@ -86,7 +96,8 @@ def download_digest(token, file_token):
         with zipfile.ZipFile(temp_name) as archive:
             if "[Content_Types].xml" not in archive.namelist() or "ppt/presentation.xml" not in archive.namelist():
                 raise InventoryError("DOWNLOAD INVALID_PPTX_STRUCTURE")
-        return digest.hexdigest(), count
+        success = True
+        return Path(temp_name), digest.hexdigest(), count
     except urllib.error.HTTPError as ex:
         raise InventoryError("DOWNLOAD HTTP_" + str(ex.code)) from None
     except (urllib.error.URLError, TimeoutError, OSError):
@@ -94,8 +105,17 @@ def download_digest(token, file_token):
     except zipfile.BadZipFile:
         raise InventoryError("DOWNLOAD BAD_ARCHIVE") from None
     finally:
-        if temp_name:
+        if not success and temp_name:
             Path(temp_name).unlink(missing_ok=True)
+
+
+def download_digest(token, file_token):
+    """Preserve the V4.1 contract: return (sha256, size) and delete the temp file."""
+    temp_path, digest, count = download_to_temp(token, file_token)
+    try:
+        return digest, count
+    finally:
+        temp_path.unlink(missing_ok=True)
 
 
 def load_manifest(path):
@@ -126,7 +146,7 @@ def main():
         counts = {"NEW": 0, "CHANGED": 0, "UNCHANGED": 0}
         for entry in list_pptx(token, folder):
             # Names and raw file tokens never enter the persisted state or the log.
-            identity = hashlib.sha256(entry["token"].encode("utf-8")).hexdigest()
+            identity = file_identity(entry["token"])
             if identity in current:
                 continue
             digest, size = download_digest(token, entry["token"])

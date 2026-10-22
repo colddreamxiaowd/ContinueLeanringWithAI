@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://continueleanringwithai.local/schemas/pptx-content-v1.schema.json",
+  "title": "PPTX Content v1",
+  "description": "Deterministic, traceable content extracted from a local PPTX. No input filename or path is part of this contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_sha256", "slides"],
+  "properties": {
+    "schema_version": {
+      "const": "pptx-content-v1"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Full SHA-256 of the source PPTX bytes."
+    },
+    "slides": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/slide"
+      }
+    }
+  },
+  "$defs": {
+    "paragraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "level", "text"],
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based paragraph index inside the shape's text frame."
+        },
+        "level": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "textBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "role", "shape_index", "paragraphs"],
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "role": {
+          "enum": ["title", "body"]
+        },
+        "shape_index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based shape index on the slide."
+        },
+        "paragraphs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/paragraph"
+          }
+        }
+      }
+    },
+    "tableBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "shape_index", "rows"],
+      "properties": {
+        "type": {
+          "const": "table"
+        },
+        "shape_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "unsupportedBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "shape_index", "shape_type", "note"],
+      "properties": {
+        "type": {
+          "const": "unsupported"
+        },
+        "shape_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "shape_type": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "block": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/textBlock"
+        },
+        {
+          "$ref": "#/$defs/tableBlock"
+        },
+        {
+          "$ref": "#/$defs/unsupportedBlock"
+        }
+      ]
+    },
+    "slide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slide_index", "slide_number", "title", "blocks"],
+      "properties": {
+        "slide_index": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Zero-based slide index."
+        },
+        "slide_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "One-based page number for user traceability."
+        },
+        "title": {
+          "type": "string"
+        },
+        "blocks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/block"
+          }
+        }
+      }
+    }
+  }
+}

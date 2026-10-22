@@ -52,7 +52,7 @@ export function validateCoursePack(value) {
   if (!arr(value.chapters,60) || value.chapters.length === 0)
     errors.push("at least one chapter required");
   else {
-    const used = new Set(), refIds = new Set((value.sourceRefs||[]).map(r=>r?.id));
+    const used = new Set(), refIds = new Set((Array.isArray(value.sourceRefs)?value.sourceRefs:[]).map(r=>r?.id));
     let count = 0;
     for (const [c,chapter] of value.chapters.entries()) {
       if (!chapter || !id(chapter.id) || !text(chapter.title,180) ||

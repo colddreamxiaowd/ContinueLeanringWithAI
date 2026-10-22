@@ -1,0 +1,397 @@
+{
+  "kind": "synthetic_fixture",
+  "status": "draft_ready_for_human_review",
+  "title": "栈：从后进先出到可检验的 push / pop",
+  "report": {
+    "schemaVersion": 2,
+    "sourceId": "fixture-stack-001",
+    "sourceKind": "fixture",
+    "sourceFilename": "synthetic-stack-lesson.pptx",
+    "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+    "jobKey": "f3a22e7d4f1707ffe549c7109443ebad6073ea8f9ecaa4cb8cc93d20f70ccced",
+    "generationVersion": "v2.1-offline-verified",
+    "sourceSlideCount": 4,
+    "changedSlides": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "knowledgePoints": [
+      {
+        "id": "stack-lifo",
+        "courseId": "data-structures",
+        "chapterId": "stack-queue",
+        "name": "栈的定义与后进先出",
+        "sourceRefs": [
+          {
+            "sourceId": "fixture-stack-001",
+            "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+            "slide": 2
+          }
+        ]
+      },
+      {
+        "id": "stack-operations",
+        "courseId": "data-structures",
+        "chapterId": "stack-queue",
+        "name": "push / pop / top 操作",
+        "sourceRefs": [
+          {
+            "sourceId": "fixture-stack-001",
+            "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+            "slide": 3
+          },
+          {
+            "sourceId": "fixture-stack-001",
+            "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+            "slide": 4
+          }
+        ]
+      },
+      {
+        "id": "stack-boundaries",
+        "courseId": "data-structures",
+        "chapterId": "stack-queue",
+        "name": "栈空、下溢与容量边界",
+        "sourceRefs": [
+          {
+            "sourceId": "fixture-stack-001",
+            "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+            "slide": 4
+          }
+        ]
+      }
+    ],
+    "questions": 3,
+    "blockingIssues": [],
+    "warnings": [],
+    "status": "draft_ready_for_human_review",
+    "publishStatus": "not_published",
+    "reviewRequired": true,
+    "generatedFiles": [
+      "slides.json",
+      "knowledge-points.json",
+      "blog.md",
+      "questions.json"
+    ],
+    "action": "skip_same_source_and_version",
+    "note": "V2 默认只有人工审查稿；不会覆盖现有正式文章或执行远端发布。",
+    "reusedJobKey": "f3a22e7d4f1707ffe549c7109443ebad6073ea8f9ecaa4cb8cc93d20f70ccced"
+  },
+  "slides": [
+    {
+      "page": 1,
+      "lines": [
+        "数据结构:栈(合成测试课件)",
+        "仅用于 V2 工程验收,非用户课程原始资料。",
+        "课程:数据结构与算法;章节:栈与队列。"
+      ],
+      "text": "数据结构:栈(合成测试课件)\n仅用于 V2 工程验收,非用户课程原始资料。\n课程:数据结构与算法;章节:栈与队列。",
+      "sha256": "34184201b633ca21f573c0d76ff1b33fbf51765f6e4015781c8eea6159a294cb",
+      "has_visual": false,
+      "parse_warning": null
+    },
+    {
+      "page": 2,
+      "lines": [
+        "栈的定义和 LIFO",
+        "栈(Stack)只允许在同一端插入与删除。",
+        "该端叫栈顶 top;另一端叫栈底 bottom。",
+        "栈遵循后进先出(LIFO)。"
+      ],
+      "text": "栈的定义和 LIFO\n栈(Stack)只允许在同一端插入与删除。\n该端叫栈顶 top;另一端叫栈底 bottom。\n栈遵循后进先出(LIFO)。",
+      "sha256": "95ea13e252aae77411bb3079b2ae7af864948966b0959f38d3041f8656793254",
+      "has_visual": false,
+      "parse_warning": null
+    },
+    {
+      "page": 3,
+      "lines": [
+        "栈的基本操作",
+        "push(x):将元素 x 压入栈顶。",
+        "pop():移除栈顶元素。",
+        "top():读取栈顶但不移除。"
+      ],
+      "text": "栈的基本操作\npush(x):将元素 x 压入栈顶。\npop():移除栈顶元素。\ntop():读取栈顶但不移除。",
+      "sha256": "0ae894dace1b31fc6aeda50c7cd2b3bf909cfd2cdcd359a876e0139c7ab2fd5c",
+      "has_visual": false,
+      "parse_warning": null
+    },
+    {
+      "page": 4,
+      "lines": [
+        "空栈、边界与验证",
+        "对空栈调用 pop() 必须返回明确的下溢错误或失败状态。",
+        "顺序栈若容量固定,入栈时应检测栈满。",
+        "例:依次 push(4)、push(9)、pop()、push(2),最终 top 为 2。",
+        "掌握标准:不借助动画独立跟踪栈内容。"
+      ],
+      "text": "空栈、边界与验证\n对空栈调用 pop() 必须返回明确的下溢错误或失败状态。\n顺序栈若容量固定,入栈时应检测栈满。\n例:依次 push(4)、push(9)、pop()、push(2),最终 top 为 2。\n掌握标准:不借助动画独立跟踪栈内容。",
+      "sha256": "73c0e51c1265a5a669e432bd9dbb0ddc185194ab5581b5f4741d67c0633d78d6",
+      "has_visual": false,
+      "parse_warning": null
+    }
+  ],
+  "questions": [
+    {
+      "id": "stack-q-lifo",
+      "knowledgePointId": "stack-lifo",
+      "type": "single_choice",
+      "difficulty": "basic",
+      "prompt": "栈按哪一种顺序移除元素？",
+      "answer": "B",
+      "explanation": "最后入栈的元素先出栈；来源课件将其称为后进先出（LIFO）。",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 2
+        }
+      ],
+      "verificationStatus": "passed_offline_oracle",
+      "reviewStatus": "draft",
+      "options": [
+        {
+          "key": "A",
+          "text": "先进先出"
+        },
+        {
+          "key": "B",
+          "text": "后进先出"
+        },
+        {
+          "key": "C",
+          "text": "随机访问"
+        },
+        {
+          "key": "D",
+          "text": "按元素值排序"
+        }
+      ]
+    },
+    {
+      "id": "stack-q-trace",
+      "knowledgePointId": "stack-operations",
+      "type": "code_trace",
+      "difficulty": "intermediate",
+      "prompt": "初始为空栈，依次 push(4)、push(9)、pop()、push(2)，最终栈顶是多少？",
+      "answer": 2,
+      "explanation": "按顺序得到 [4] → [4, 9] → [4] → [4, 2]，栈顶为 2。",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 3
+        },
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 4
+        }
+      ],
+      "verificationStatus": "passed_offline_oracle",
+      "reviewStatus": "draft",
+      "verification": {
+        "method": "independent_python_stack_oracle",
+        "operations": [
+          {
+            "operation": "push(4)",
+            "stack": [
+              4
+            ],
+            "top": 4
+          },
+          {
+            "operation": "push(9)",
+            "stack": [
+              4,
+              9
+            ],
+            "top": 9
+          },
+          {
+            "operation": "pop()",
+            "stack": [
+              4
+            ],
+            "top": 4
+          },
+          {
+            "operation": "push(2)",
+            "stack": [
+              4,
+              2
+            ],
+            "top": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "stack-q-underflow",
+      "knowledgePointId": "stack-boundaries",
+      "type": "true_false",
+      "difficulty": "basic",
+      "prompt": "判断：空栈执行 pop() 应被视为正常删除一个元素。",
+      "answer": false,
+      "explanation": "空栈没有可删除的元素；需要返回失败状态或下溢错误。",
+      "sourceRefs": [
+        {
+          "sourceId": "fixture-stack-001",
+          "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+          "slide": 4
+        }
+      ],
+      "verificationStatus": "passed_offline_oracle",
+      "reviewStatus": "draft"
+    }
+  ],
+  "articleBlocks": [
+    {
+      "type": "h1",
+      "text": "栈：从后进先出到可检验的 push / pop"
+    },
+    {
+      "type": "quote",
+      "text": "**来源与状态**：V2 待审查稿；不得视作已正式发布或已完成学习掌握验证。"
+    },
+    {
+      "type": "quote",
+      "text": "来源 ID：`fixture-stack-001`；原始 PPTX SHA-256：`475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2`。"
+    },
+    {
+      "type": "quote",
+      "text": "生成器：`v2.1-offline-verified`。每个结论按幻灯片页码定位。"
+    },
+    {
+      "type": "h2",
+      "text": "1. 为什么需要栈？"
+    },
+    {
+      "type": "p",
+      "text": "当操作必须沿相反顺序撤销时，后发生的动作先被处理，是很自然的设计选择。"
+    },
+    {
+      "type": "p",
+      "text": "栈用受限的操作边界表达这一规则：只能从顶端增加、移除或读取元素。"
+    },
+    {
+      "type": "p",
+      "text": "这里的动机是解释性示例，而非声称来自课件原话。"
+    },
+    {
+      "type": "p",
+      "text": "**课件依据：** 第 2 页。"
+    },
+    {
+      "type": "quote",
+      "text": "栈的定义和 LIFO"
+    },
+    {
+      "type": "quote",
+      "text": "栈遵循后进先出(LIFO)。"
+    },
+    {
+      "type": "h2",
+      "text": "2. 把抽象结构变成具体操作"
+    },
+    {
+      "type": "p",
+      "text": "`push(x)` 将新元素放在栈顶，`pop()` 移除当前栈顶，`top()` 只读取而不删除。"
+    },
+    {
+      "type": "p",
+      "text": "下面的数组从左到右依次列出栈底到栈顶；最后一个元素就是栈顶。"
+    },
+    {
+      "type": "p",
+      "text": "**课件依据：** 第 3, 4 页。"
+    },
+    {
+      "type": "quote",
+      "text": "push(x):将元素 x 压入栈顶。"
+    },
+    {
+      "type": "quote",
+      "text": "pop():移除栈顶元素。"
+    },
+    {
+      "type": "quote",
+      "text": "对空栈调用 pop() 必须返回明确的下溢错误或失败状态。"
+    },
+    {
+      "type": "quote",
+      "text": "例:依次 push(4)、push(9)、pop()、push(2),最终 top 为 2。"
+    },
+    {
+      "type": "code",
+      "text": "初始      []\npush(4)   [4]\npush(9)   [4, 9]\npop()     [4]\npush(2)   [4, 2]    ← top 为 2"
+    },
+    {
+      "type": "p",
+      "text": "本例的每一步由独立的 Python 栈状态程序重新计算，与题库答案比对。"
+    },
+    {
+      "type": "h2",
+      "text": "3. 边界、失败场景和排错"
+    },
+    {
+      "type": "p",
+      "text": "如果栈为空，`pop()` 没有合法的待删除元素，应显式报错或返回失败。"
+    },
+    {
+      "type": "p",
+      "text": "如果采用固定容量的数组实现，入栈前还必须检查是否有剩余空间。"
+    },
+    {
+      "type": "p",
+      "text": "**课件依据：** 第 4 页。"
+    },
+    {
+      "type": "quote",
+      "text": "空栈、边界与验证"
+    },
+    {
+      "type": "quote",
+      "text": "对空栈调用 pop() 必须返回明确的下溢错误或失败状态。"
+    },
+    {
+      "type": "quote",
+      "text": "顺序栈若容量固定,入栈时应检测栈满。"
+    },
+    {
+      "type": "p",
+      "text": "错误示例：空栈执行 `pop()` 后仍然访问所谓栈顶。排错先检查是否为空，"
+    },
+    {
+      "type": "p",
+      "text": "再检查每次 `push` 和 `pop` 后用于表示栈顶的状态是否同步。"
+    },
+    {
+      "type": "h2",
+      "text": "4. 自己先做，再看解析"
+    },
+    {
+      "type": "p",
+      "text": "初始为空栈，执行 `push(4); push(9); pop(); push(2);`，请不要回看示意图，"
+    },
+    {
+      "type": "p",
+      "text": "先独立写出每一步的栈内容和最终栈顶，然后到关联题库提交答案。"
+    },
+    {
+      "type": "h2",
+      "text": "5. 怎样确认学会了"
+    },
+    {
+      "type": "p",
+      "text": "本篇通过页码映射与离线答案校验，只说明内容有可追溯依据。真正掌握仍需要独立推演、"
+    },
+    {
+      "type": "p",
+      "text": "变式题和延迟复习。当前尚未运行正式学习者测评，也没有真实课程课件确认。"
+    }
+  ],
+  "warning": "这是为检验处理引擎而自行生成的合成课件。没有读入用户真实 PPT；内容未发布、未进行课程级事实审查。"
+}

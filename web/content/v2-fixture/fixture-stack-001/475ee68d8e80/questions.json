@@ -1,0 +1,114 @@
+[
+  {
+    "id": "stack-q-lifo",
+    "knowledgePointId": "stack-lifo",
+    "type": "single_choice",
+    "difficulty": "basic",
+    "prompt": "栈按哪一种顺序移除元素？",
+    "answer": "B",
+    "explanation": "最后入栈的元素先出栈；来源课件将其称为后进先出（LIFO）。",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 2
+      }
+    ],
+    "verificationStatus": "passed_offline_oracle",
+    "reviewStatus": "draft",
+    "options": [
+      {
+        "key": "A",
+        "text": "先进先出"
+      },
+      {
+        "key": "B",
+        "text": "后进先出"
+      },
+      {
+        "key": "C",
+        "text": "随机访问"
+      },
+      {
+        "key": "D",
+        "text": "按元素值排序"
+      }
+    ]
+  },
+  {
+    "id": "stack-q-trace",
+    "knowledgePointId": "stack-operations",
+    "type": "code_trace",
+    "difficulty": "intermediate",
+    "prompt": "初始为空栈，依次 push(4)、push(9)、pop()、push(2)，最终栈顶是多少？",
+    "answer": 2,
+    "explanation": "按顺序得到 [4] → [4, 9] → [4] → [4, 2]，栈顶为 2。",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 3
+      },
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 4
+      }
+    ],
+    "verificationStatus": "passed_offline_oracle",
+    "reviewStatus": "draft",
+    "verification": {
+      "method": "independent_python_stack_oracle",
+      "operations": [
+        {
+          "operation": "push(4)",
+          "stack": [
+            4
+          ],
+          "top": 4
+        },
+        {
+          "operation": "push(9)",
+          "stack": [
+            4,
+            9
+          ],
+          "top": 9
+        },
+        {
+          "operation": "pop()",
+          "stack": [
+            4
+          ],
+          "top": 4
+        },
+        {
+          "operation": "push(2)",
+          "stack": [
+            4,
+            2
+          ],
+          "top": 2
+        }
+      ]
+    }
+  },
+  {
+    "id": "stack-q-underflow",
+    "knowledgePointId": "stack-boundaries",
+    "type": "true_false",
+    "difficulty": "basic",
+    "prompt": "判断：空栈执行 pop() 应被视为正常删除一个元素。",
+    "answer": false,
+    "explanation": "空栈没有可删除的元素；需要返回失败状态或下溢错误。",
+    "sourceRefs": [
+      {
+        "sourceId": "fixture-stack-001",
+        "sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+        "slide": 4
+      }
+    ],
+    "verificationStatus": "passed_offline_oracle",
+    "reviewStatus": "draft"
+  }
+]

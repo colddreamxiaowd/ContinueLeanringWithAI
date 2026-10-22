@@ -1,0 +1,286 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>知序 · 稀疏矩阵快速转置实验室 V3</title>
+<style>
+:root{color-scheme:light;--page:#f5f7fc;--surface:#fff;--surface2:#f8faff;--border:#e3e9f3;--ink:#182740;--muted:#70829a;--primary:#4b63e9;--pale:#edf1ff;--success:#0b946e;--successBg:#e5f8ef;--warn:#b77519;--warnBg:#fff5e4;--console:#101b2d;--shadow:0 10px 36px rgba(31,52,96,.05)}
+[data-theme=dark]{color-scheme:dark;--page:#0e1625;--surface:#142035;--surface2:#19283e;--border:#2b3d55;--ink:#e6edff;--muted:#9baec9;--primary:#a1aaff;--pale:#24335e;--success:#70ddb1;--successBg:#193f36;--warn:#efbd71;--warnBg:#463921;--console:#0a1120;--shadow:0 10px 36px rgba(0,0,0,.15)}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:14px/1.55 Inter,'Noto Sans SC','PingFang SC',system-ui,sans-serif}button,input,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.45}button:focus-visible, input:focus-visible, textarea:focus-visible,a:focus-visible{outline:3px solid var(--primary);outline-offset:3px}a{color:var(--primary)}.shell{max-width:1550px;margin:0 auto;padding:22px 28px 44px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:0 0 24px}.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.3px}.mark{border-radius:11px;background:#536cf0;color:#fff;padding:8px 11px;font-size:20px}.subtitle,.small,.meta{color:var(--muted);font-size:12px}.header-actions{display:flex;gap:8px;align-items:center}.button,.icon-btn{padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--ink);font-weight:700;white-space:nowrap}.button:hover,.icon-btn:hover{border-color:var(--primary)}.button.primary{background:#4b63e9;color:#fff;border-color:transparent}.button.soft{background:var(--pale);color:var(--primary)}.button.success{background:#0b946e;color:#fff;border-color:transparent}.button.mini{padding:7px 11px;font-size:12px}.heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin:8px 0 22px}.overline{text-transform:uppercase;letter-spacing:1.5px;color:var(--primary);font-size:11px;font-weight:800}.heading h1{font-size:clamp(25px,3vw,34px);margin:5px 0 5px;letter-spacing:-.8px}.heading p{color:var(--muted);margin:0;max-width:810px}.status{background:var(--successBg);border-radius:9px;color:var(--success);padding:8px 12px;font-weight:750;font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}.stat{background:var(--surface);border:1px solid var(--border);padding:16px 18px;border-radius:13px}.stat label{color:var(--muted);display:block;font-size:11px}.stat strong{font-size:22px;display:block;line-height:1.4;margin:3px 0}.stat span{font-size:11px;color:var(--muted)}.workspace{display:grid;grid-template-columns:minmax(310px,1fr) minmax(310px,1fr);gap:16px;align-items:start}.stack{display:grid;gap:16px;min-width:0}.card{background:var(--surface);border:1px solid var(--border);border-radius:15px;box-shadow:var(--shadow);padding:20px;min-width:0}.card h2{font-size:17px;margin:0 0 6px}.card h3{font-size:13px;margin:0 0 9px}.card .desc{margin:0 0 15px;font-size:12px;color:var(--muted)}.card-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:0 0 12px}.tag{font-size:10px;padding:4px 8px;border-radius:6px;background:var(--pale);color:var(--primary);font-weight:750}.tag.warn{background:var(--warnBg);color:var(--warn)}.field-line{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:5px;color:var(--muted);font-weight:650;font-size:12px}.field input{width:94px;padding:10px;background:var(--surface2);color:var(--ink);border:1px solid var(--border);border-radius:9px}.field.expand{flex:1;min-width:210px}.field textarea{min-height:102px;width:100%;resize:vertical;padding:11px;background:var(--surface2);color:var(--ink);border:1px solid var(--border);border-radius:9px;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}.button-row{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0 0}.error{min-height:20px;color:#db5555;font-size:12px;font-weight:650;margin-top:6px}.matrix-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}.matrix-card{min-width:0}.matrix-label{display:flex;justify-content:space-between;gap:7px;align-items:center;margin-bottom:9px;font-weight:750}.matrix-scroll{overflow:auto;padding-bottom:6px;max-width:100%}.matrix-grid{display:grid;gap:3px;width:max-content}.matrix-cell{width:34px;height:34px;border:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:11px;font-weight:650;font-variant-numeric:tabular-nums}.matrix-cell.filled{background:var(--pale);color:var(--primary);border-color:#8696e966}.matrix-cell.focus{background:#fbedc5;color:#72500a;border:2px solid #d3a242}.matrix-cell.dim{color:var(--muted);opacity:.55}.matrix-legend{font-size:11px;color:var(--muted);margin-top:6px}.array-table{width:100%;border-collapse:collapse;font:12px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;text-align:center}.array-table th,.array-table td{padding:8px 5px;border:1px solid var(--border);min-width:28px}.array-table th:first-child{background:var(--surface2);text-align:left;font-family:system-ui;font-weight:650;min-width:92px}.array-table td.hit{background:var(--pale);color:var(--primary);font-weight:800}.array-scroll{max-width:100%;overflow:auto}.explainer{border-left:3px solid var(--primary);padding:11px 13px;background:var(--surface2);border-radius:0 9px 9px 0;font-size:12px;margin:14px 0}.controller{display:flex;flex-wrap:wrap;gap:8px}.scrub{width:100%;accent-color:#536cf0;margin:12px 0 0}.timeline{display:grid;gap:6px;max-height:175px;overflow:auto;margin-top:12px}.timeline div{padding:8px 10px;background:var(--surface2);border-radius:7px;font:11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.timeline div:last-child{border-left:3px solid var(--primary)}.code-toolbar{display:flex;gap:8px;justify-content:space-between;align-items:center;margin:12px 0 0}.code{font:11.5px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--console);color:#c9d9fa;border-radius:9px;padding:16px;white-space:pre;max-height:280px;overflow:auto;tab-size:2}.verification{padding:12px 14px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);font-weight:650;font-size:12px}.verification.pass{color:var(--success);background:var(--successBg)}.verification.wait{color:var(--muted)}.quiz{background:var(--surface2);padding:16px;border-radius:10px}.quiz .field-line{margin:10px 0}.quiz input{width:100px;padding:9px;background:var(--surface);color:var(--ink);border:1px solid var(--border);border-radius:8px}.quiz-out{font-size:12px;font-weight:700;min-height:26px;margin:8px 0}.source-note{background:var(--warnBg);border:1px solid #d6ac5433;padding:13px 14px;border-radius:10px;font-size:12px;color:var(--ink)}.source-note strong{color:var(--warn)}.source-note p{margin:6px 0 0}.footer{font-size:11px;color:var(--muted);border-top:1px solid var(--border);margin-top:28px;padding-top:17px}.question-heading{display:flex;justify-content:space-between;align-items:center}details{margin:10px 0}details summary{color:var(--primary);cursor:pointer;font-weight:700}.live{font-weight:650;color:var(--success)}
+@media(max-width:1080px){.workspace{grid-template-columns:1fr}.shell{padding:17px}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.shell{padding:12px}.stats{gap:8px}.stat{padding:11px}.stat strong{font-size:17px}.matrix-pair{grid-template-columns:1fr}.heading{display:block}.header-actions .subtitle{display:none}.top .brand{font-size:12px}.button{padding:9px 11px}.card{padding:14px}.matrix-cell{height:35px;width:35px}}
+</style></head><body><div class="shell">
+<header class="top"><div class="brand"><div class="mark">▤</div><div>知序 <span class="subtitle">Learning Hub</span><div class="subtitle">ContinueLeanringWithAI · V3 实验审查</div></div></div><div class="header-actions"><span class="tag">合成样例</span><button class="icon-btn" id="themeBtn" aria-label="切换深浅色主题">☾ 深色</button></div></header>
+<section class="heading"><div><div class="overline">LEARN BY DOING / ALGORITHM LAB</div><h1>稀疏矩阵 · 快速转置</h1><p>从三元组输入开始，真实执行编译后的 C++ WebAssembly 算法，逐步观察 <code>cnum</code>、<code>cpot</code> 与 B 的写入位置。</p></div><span class="status" id="engineStatus">正在初始化 C++ WebAssembly…</span></section>
+<section class="stats" aria-label="实验运行统计"><div class="stat"><label>当前执行步骤</label><strong id="stepCount">0</strong><span id="stepDetail">尚未开始</span></div><div class="stat"><label>非零元素</label><strong id="nonzeroCount">8</strong><span>来源：合成样例</span></div><div class="stat"><label>阶段</label><strong id="phaseName">等待执行</strong><span>计数 → 前缀位置 → 转置写入</span></div><div class="stat"><label>核验状态</label><strong id="verificationStat">等待执行</strong><span>独立朴素算法交叉检查</span></div></section>
+<div class="workspace">
+<div class="stack">
+ <section class="card"><div class="card-title"><h2>01 · 修改矩阵输入</h2><span class="tag">0-based 下标</span></div><p class="desc">每行填写「行 列 非零整数」，输入不会上传服务器。支持 1–10 行和列，重复位置、越界输入会被拒绝。</p><div class="field-line"><label class="field">行数 rows<input id="rows" type="number" min="1" max="10" value="6" data-testid="rows"></label><label class="field">列数 cols<input id="cols" type="number" min="1" max="10" value="7" data-testid="cols"></label><label class="field expand">三元组输入（可更改）<textarea id="triples" spellcheck="false" data-testid="triples">0 1 12
+0 2 9
+2 0 -3
+2 5 14
+3 2 24
+4 1 18
+5 0 15
+5 3 -7</textarea></label></div><div class="button-row"><button class="button primary" id="load" data-testid="load">载入并重置算法</button><button class="button soft" id="sample">恢复合成样例</button><button class="button" id="empty">空矩阵试验</button></div><div class="error" id="error" role="alert" aria-live="polite"></div></section>
+ <section class="card"><div class="card-title"><h2>02 · 矩阵可视化</h2><span class="tag">运行状态同步</span></div><p class="desc">A 是原矩阵；B 会随真实 C++ 转置放置步骤逐格写入，当前写入位置高亮。</p><div class="matrix-pair"><div class="matrix-card"><div class="matrix-label">矩阵 A <span class="meta" id="shapeA">6×7</span></div><div class="matrix-scroll"><div id="matrixA" class="matrix-grid" aria-label="原矩阵 A"></div></div><div class="matrix-legend">蓝色为非零；黄色为当前读取项</div></div><div class="matrix-card"><div class="matrix-label">转置 B <span class="meta" id="shapeB">7×6</span></div><div class="matrix-scroll"><div id="matrixB" class="matrix-grid" aria-label="转置矩阵 B"></div></div><div class="matrix-legend">「·」代表尚未放置完成的区域</div></div></div></section>
+ <section class="card"><div class="card-title"><h2>03 · 辅助数组状态</h2><span class="tag">合成样例 · 算法步骤</span></div><p class="desc"><strong>cnum</strong> 统计 A 各列的非零个数；<strong>cpot 初值</strong> 是 B 各行的起始槽；<strong>cpot 当前</strong> 在写入后递增。</p><div class="array-scroll"><table class="array-table"><tbody id="arrayBody"></tbody></table></div><div class="explainer" id="explanation">载入完成。下一步首先统计 A 的第一个三元组所在列。</div></section>
+ <section class="card"><div class="card-title"><h2>04 · 分步执行</h2><span class="tag" id="phaseTag">未开始</span></div><div class="controller"><button class="button" id="back" data-testid="back">← 上一步</button><button class="button primary" id="next" data-testid="next">单步执行 →</button><button class="button success" id="run" data-testid="run">▶ 运行到底</button><button class="button soft" id="reset">↺ 重置</button></div><input aria-label="选择执行步数" class="scrub" type="range" min="0" max="24" value="0" id="scrub" data-testid="scrub"><div class="small">可拖动进度条，任意回看每一个真实算法状态。快捷键：Alt + → 单步、Alt + ← 回退。</div><div class="timeline" id="timeline" aria-live="polite"></div></section>
+</div>
+<div class="stack">
+ <section class="card"><div class="card-title"><h2>执行结果与独立验证</h2><span id="resultBadge" class="tag warn">尚未运行</span></div><div class="verification wait" role="status" id="verify">执行完成后，将本次 WebAssembly C++ 结果与独立的朴素转置结果逐项比较。</div><div class="code-toolbar"><h3>三元组表 B（当前位置序）</h3><span class="meta" id="outputCount">0 / 8</span></div><pre class="code" id="resultTriples" data-testid="resultTriples">尚未写入</pre><p class="small">以上是 WebAssembly 函数返回的真实结果，不是 C++ 标准输出流。</p></section>
+ <section class="card"><div class="card-title"><h2>C++ 实际算法核心</h2><span class="tag">已编译为浏览器 WebAssembly</span></div><p class="desc">下方为本实验编译使用的 C++ 原始源码，可查看并复制。此版本运行固定的可信程序；不接受任意编辑后在线编译。</p><div class="code-toolbar"><span class="small">engine.cpp · C++17 · 原生编译 / WASM 双验证</span><button id="copyCode" class="button mini">复制源码</button></div><pre class="code" style="max-height:315px" id="cppCode" tabindex="0">// 稀疏矩阵快速转置 V3: 依据合成样例页，固定上限，仅编译受信源代码。
+// 0-based 下标。以 C++ 原生程序和浏览器 WebAssembly 运行同一核心算法。
+// 说明：输入元素会按 A 的行、列升序整理；不接受重复位置及零值三元组。
+struct Triple { int r; int c; int value; };
+static Triple a[100];
+static Triple b[100];
+static int used[100];
+static int cnum[10];
+static int cpot[10];
+static int cpotStart[10];
+static int rows=0, cols=0, n=0, cursor=0, phase=0;
+static int event=0, eventIndex=-1, eventColumn=-1, eventSlot=-1, eventValue=0;
+static int steps=0;
+
+extern &quot;C&quot; {
+// extern C functions are accessible in the browser WASM runtime and native test executable.
+int lab_reset(int r, int c) {
+  if(r&lt;1 || r&gt;10 || c&lt;1 || c&gt;10) return -1;
+  rows=r; cols=c; n=0; cursor=0; phase=0; event=0; steps=0;
+  eventIndex=-1; eventColumn=-1; eventSlot=-1; eventValue=0;
+  for(int i=0;i&lt;100;++i) {a[i]={0,0,0};b[i]={0,0,0};used[i]=0;}
+  for(int i=0;i&lt;10;++i){cnum[i]=0;cpot[i]=0;cpotStart[i]=0;}
+  return 0;
+}
+int lab_add(int r,int c,int value) {
+  if(rows==0||cols==0 || phase!=0 || steps!=0) return -4;
+  if(r&lt;0||r&gt;=rows || c&lt;0||c&gt;=cols || value==0) return -1;
+  if(n&gt;=100) return -2;
+  for(int i=0;i&lt;n;++i) if(a[i].r==r&amp;&amp;a[i].c==c) return -3;
+  a[n++] = {r,c,value};
+  return n;
+}
+int lab_prepare(){
+  if(rows==0||cols==0 || steps!=0) return -1;
+  // Stable insertion sort by original row and column to match PPT&#x27;s ordered triList.
+  for(int i=1;i&lt;n;++i){ Triple v=a[i];int j=i-1;
+    while(j&gt;=0 &amp;&amp; (a[j].r&gt;v.r||(a[j].r==v.r &amp;&amp; a[j].c&gt;v.c))){a[j+1]=a[j];--j;}
+    a[j+1]=v;
+  }
+  phase=0;cursor=0;return n;
+}
+// Each call executes exactly one algorithmic event: count / prefix / place / done.
+int lab_step(){
+  while(true){
+    if(phase==0){
+      if(cursor&lt;n){int idx=cursor++;int column=a[idx].c;
+        ++cnum[column]; event=1;eventIndex=idx;eventColumn=column;
+        eventSlot=-1;eventValue=a[idx].value; ++steps;return event;}
+      phase=1;cursor=0;
+    }
+    if(phase==1){
+      if(cursor&lt;cols){int column=cursor++;
+        cpot[column] = column==0 ? 0 : cpot[column-1] + cnum[column-1];
+        cpotStart[column]=cpot[column];
+        event=2;eventIndex=column;eventColumn=column;eventSlot=cpot[column];eventValue=0;
+        ++steps;return event;}
+      phase=2;cursor=0;
+    }
+    if(phase==2){
+      if(cursor&lt;n){int idx=cursor++;int column=a[idx].c;
+        int slot=cpot[column]++;
+        if(slot&lt;0||slot&gt;=n) {phase=3;event=-1;return event;}
+        b[slot]={column,a[idx].r,a[idx].value};used[slot]=1;
+        event=3;eventIndex=idx;eventColumn=column;eventSlot=slot;eventValue=a[idx].value;
+        ++steps;return event;}
+      phase=3;
+    }
+    if(phase==3){event=4;eventIndex=-1;eventColumn=-1;eventSlot=-1;eventValue=0;
+      phase=4;++steps;return event;}
+    return 0;
+  }
+}
+int lab_rows(){return rows;} int lab_cols(){return cols;} int lab_count(){return n;}
+int lab_cursor(){return cursor;} int lab_phase(){return phase;}
+int lab_event(){return event;} int lab_event_index(){return eventIndex;}
+int lab_event_column(){return eventColumn;} int lab_event_slot(){return eventSlot;}
+int lab_event_value(){return eventValue;} int lab_steps(){return steps;}
+int lab_a(int index,int field){if(index&lt;0||index&gt;=n||field&lt;0||field&gt;2)return -999999;
+ return field==0?a[index].r:field==1?a[index].c:a[index].value;}
+int lab_b(int index,int field){if(index&lt;0||index&gt;=n||field&lt;0||field&gt;2)return -999999;
+ return field==0?b[index].r:field==1?b[index].c:b[index].value;}
+int lab_used(int index){return index&gt;=0&amp;&amp;index&lt;n?used[index]:-1;}
+int lab_cnum(int index){return index&gt;=0&amp;&amp;index&lt;cols?cnum[index]:-999999;}
+int lab_cpot(int index){return index&gt;=0&amp;&amp;index&lt;cols?cpot[index]:-999999;}
+int lab_cpot_start(int index){return index&gt;=0&amp;&amp;index&lt;cols?cpotStart[index]:-999999;}
+}
+</pre><p class="small">为安全起见，用户提交的 C++ 暂不在服务器上执行；未来独立隔离运行器需单独部署及验收。</p></section>
+ <section class="card"><div class="card-title"><h2>先预测，再验证</h2><span class="tag">主动回忆 · 局部记录</span></div><p class="desc" id="quizQuestion">预测第一个三元组在 B.triList 中的插入位置 <code>q</code> 是多少？请先回答，再看提示。</p><div class="quiz"><label class="field">q = <input type="number" id="quizInput" data-testid="quizInput" placeholder="填写整数"></label><div class="button-row"><button class="button primary" id="checkQuiz" data-testid="checkQuiz">检查答案</button><button class="button" id="hintQuiz">查看提示</button><button class="button" id="showQuiz">显示解析</button></div><div class="quiz-out" role="status" id="quizOutput"></div><div class="small" id="attemptCount">本地答题记录：0 次</div></div><p class="small">此记录仅保存在当前浏览器 localStorage，不代表账户掌握度，也不会上传飞书/GitHub。</p></section>
+ <section class="card"><div class="card-title"><h2>合成样例说明</h2><span class="tag">合成数据</span></div><p class="desc">合成稀疏矩阵样例 · 8 个三元组 · 非真实课程文件</p><div class="source-note"><strong>合成样例说明</strong><p>本页使用 <b>8 个合成三元组</b>演示稀疏矩阵快速转置，不对应任何真实课程文件。</p><p>算法会实时计算 <code>cnum / cpot</code>，并用独立朴素转置交叉核验结果。</p><p>为了避免越界，运行核心为目的数组分配足够空间；真实课程中的写法仍需按容器语义调整。</p></div></section>
+</div></div><footer class="footer">知序 Learning Hub · V3 审查候选 · 合成样例 · 浏览器本地 C++ WebAssembly 执行 · 未正式部署 · 学习成果尚未连接后端</footer>
+</div><script>/** Shared browser/Node wrapper over actual C++ engine compiled into WebAssembly.
+ * Inputs are data only. User code compilation is intentionally unsupported.
+ */
+const SYNTHETIC_SAMPLE = Object.freeze({
+  rows:6,cols:7,triples:[
+    [0,0,5],[0,3,-2],[1,2,7],[2,4,3],
+    [3,1,9],[4,5,-4],[5,0,6],[5,3,8]
+  ]
+});
+
+function parseTriples(text, rows, cols) {
+  if (!Number.isInteger(rows)||!Number.isInteger(cols)||rows<1||cols<1||rows>10||cols>10)
+    throw new Error('矩阵的行、列数必须为 1–10 的整数。');
+  const triples=[]; const seen=new Set();
+  const lines=String(text).split(/\r?\n/);
+  for(let n=0;n<lines.length;n++) {
+    let line=lines[n].trim();if(!line||line.startsWith('#')||line.startsWith('//')) continue;
+    line=line.replace(/[()（）\[\]]/g,'');
+    const fields=line.split(/[\s,，;；]+/).filter(Boolean);
+    if(fields.length!==3||fields.some(x=>!/^[-+]?\d+$/.test(x)))throw new Error(`第 ${n+1} 行须为：行 列 非零整数，例如 0 1 12。`);
+    const t=fields.map(Number); const [r,c,value]=t;
+    if(t.some(x=>!Number.isSafeInteger(x))||Math.abs(value)>1000000||value===0)
+      throw new Error(`第 ${n+1} 行数值无效：元素必须为绝对值不超过 1000000 的非零整数。`);
+    if(r<0||r>=rows||c<0||c>=cols)
+      throw new Error(`第 ${n+1} 行下标 (${r},${c}) 超出 ${rows}×${cols} 的 0-based 范围。`);
+    const key=`${r},${c}`;
+    if(seen.has(key))throw new Error(`第 ${n+1} 行：位置 (${r},${c}) 重复。`);
+    seen.add(key);triples.push([r,c,value]);
+  }
+  return triples.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+}
+
+function referenceTranspose({rows,cols,triples}){
+  // Independent column-oriented naive implementation matching PPT algorithm 5-1.
+  const b=[];
+  for(let col=0;col<cols;col++)
+    for(const [r,c,value] of [...triples].sort((a,b)=>a[0]-b[0]||a[1]-b[1]))
+      if(c===col)b.push([c,r,value]);
+  return {rows:cols,cols:rows,triples:b};
+}
+
+function formatTriples(triples){return triples.map(t=>t.join('  ')).join('\n');}
+
+async function loadWasm(bytes){
+  const {instance}=await WebAssembly.instantiate(bytes);
+  return new SparseLab(instance.exports);
+}
+
+class SparseLab {
+  constructor(wasm){this.wasm=wasm;this.input=null;this.history=[];this.recording=[];}
+  load(rows,cols,triples){
+    const data=parseTriples(formatTriples(triples),rows,cols);
+    if(this.wasm.lab_reset(rows,cols)!==0)throw new Error('初始化失败');
+    for(const [r,c,v] of data){const rc=this.wasm.lab_add(r,c,v);if(rc<0)throw new Error(`输入失败，错误码 ${rc}`);}
+    if(this.wasm.lab_prepare()<0)throw new Error('输入排序失败');
+    this.input={rows,cols,triples:data};this.history=[];
+    const initial=this.snapshot();this.history.push(initial);return initial;
+  }
+  snapshot(){
+    const w=this.wasm;if(!this.input)throw new Error('请先载入矩阵');
+    const count=w.lab_count(),cols=w.lab_cols();
+    const a=Array.from({length:count},(_,i)=>[w.lab_a(i,0),w.lab_a(i,1),w.lab_a(i,2)]);
+    const b=Array.from({length:count},(_,i)=>w.lab_used(i)?[w.lab_b(i,0),w.lab_b(i,1),w.lab_b(i,2)]:null);
+    const cnum=Array.from({length:cols},(_,i)=>w.lab_cnum(i));
+    const cpot=Array.from({length:cols},(_,i)=>w.lab_cpot(i));
+    const cpotStart=Array.from({length:cols},(_,i)=>w.lab_cpot_start(i));
+    const event={kind:w.lab_event(),index:w.lab_event_index(),column:w.lab_event_column(),slot:w.lab_event_slot(),value:w.lab_event_value()};
+    const done=w.lab_phase()===4;
+    const result=done?this.verify(b,cnum,cpotStart,cpot):null;
+    return {rows:w.lab_rows(),cols, count, a,b,cnum,cpot,cpotStart,event,done,result,step:w.lab_steps(),phase:w.lab_phase()};
+  }
+  verify(b,cnum,cpotStart,cpot){
+    const expected=referenceTranspose(this.input).triples;
+    const pass=JSON.stringify(b)===JSON.stringify(expected)
+       && cnum.reduce((a,x)=>a+x,0)===this.input.triples.length
+       && cpot.every((value,i)=>value===cpotStart[i]+cnum[i]);
+    return {pass, expected, message:pass?'转置三元组、元素数量及 cpot 终态全部与独立核验一致。':'检测到输出或计数不一致，请检查算法。'};
+  }
+  step(){const k=this.wasm.lab_step();if(k<0)throw new Error('WebAssembly 核心报告越界');
+    const snap=this.snapshot();if(k) this.history.push(snap);return snap;
+  }
+  run(){let s=this.snapshot(),limit=1000;while(!s.done&&limit-->0)s=this.step();
+    if(!s.done)throw new Error('运行超过最大安全步数');return s;
+  }
+  seek(index){if(!Number.isInteger(index)||index<0)throw new Error('步数无效');
+    const {rows,cols,triples}=this.input;this.load(rows,cols,triples);
+    for(let i=0;i<index;i++){if(this.snapshot().done)break;this.step();}
+    return this.snapshot();
+  }
+}
+
+const _wasmB64='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';
+(async function startLab(){
+ const $=id=>document.getElementById(id);const store={getItem(k){try{return localStorage.getItem(k)}catch(e){return null}},setItem(k,v){try{localStorage.setItem(k,v)}catch(e){}}};let lab,snap;let quizAttempts=Number(store.getItem('v3quizAttempts')||'0');
+ const phaseLabels=['计数 cnum','求前缀 cpot','转置写入 B','完成确认','已完成'];
+ const eventText=s=>{const ev=s.event;if(!ev.kind)return '准备完成。点击「单步执行」开始 cnum 统计。';
+  if(ev.kind===1)return `读取 A[${s.a[ev.index][0]},${ev.column}]=${ev.value}，因此 cnum[${ev.column}] 加 1 → ${s.cnum[ev.column]}`;
+  if(ev.kind===2)return ev.column===0?'初始化 cpot[0] = 0。':`cpot[${ev.column}] = cpot[${ev.column-1}] + cnum[${ev.column-1}] = ${s.cpot[ev.column]}`;
+  if(ev.kind===3)return `转置 A 的三元组 (${s.a[ev.index].join(', ')})，B.triList[${ev.slot}] = (${ev.column}, ${s.a[ev.index][0]}, ${ev.value})；cpot[${ev.column}] → ${s.cpot[ev.column]}`;
+  return '算法执行结束；现在与独立的朴素转置进行逐项核验。';};
+ const writeMatrix=(element,r,c,lookup,focus)=>{
+   element.style.gridTemplateColumns=`repeat(${c},34px)`;element.innerHTML='';
+   for(let i=0;i<r;i++)for(let j=0;j<c;j++){
+     const k=i+','+j;const v=lookup.get(k);const cell=document.createElement('div');
+     cell.className='matrix-cell '+(v===undefined?'dim':v!==0?'filled':'')+(k===focus?' focus':'');
+     cell.textContent=v===undefined?'·':String(v);cell.title=`(${i},${j})`;element.append(cell);
+   }
+ };
+ function render(){if(!snap)return; const s=snap;
+  $('stepCount').textContent=s.step;$('nonzeroCount').textContent=s.count;
+  $('phaseName').textContent=s.done?'已完成':s.step===0?'等待执行':phaseLabels[Math.min(s.phase,3)];
+  $('stepDetail').textContent=`完整运行 ${2*s.count+s.cols+1} 步`;
+  $('phaseTag').textContent=s.event.kind===0?'准备':s.event.kind===1?'统计':s.event.kind===2?'前缀':'写入';
+  $('shapeA').textContent=`${s.rows}×${s.cols}`;$('shapeB').textContent=`${s.cols}×${s.rows}`;
+  const aMap=new Map();for(const [r,c,v] of s.a)aMap.set(r+','+c,v);
+  const bMap=new Map();if(s.done){for(let i=0;i<s.cols;i++)for(let j=0;j<s.rows;j++)bMap.set(i+','+j,0);}
+  for(const t of s.b)if(t)bMap.set(t[0]+','+t[1],t[2]);
+  const ev=s.event,afocus=(ev.kind===1||ev.kind===3)?s.a[ev.index][0]+','+s.a[ev.index][1]:null;
+  const bfocus=ev.kind===3?s.a[ev.index][1]+','+s.a[ev.index][0]:null;
+  writeMatrix($('matrixA'),s.rows,s.cols,aMap,afocus);writeMatrix($('matrixB'),s.cols,s.rows,bMap,bfocus);
+  const rows=[['列索引',Array.from({length:s.cols},(_,i)=>i)],['cnum 当前',s.cnum],['cpot 初值',s.cpotStart],['cpot 当前',s.cpot]];
+  $('arrayBody').innerHTML=rows.map(([name,values])=>`<tr><th>${name}</th>${values.map((v,i)=>`<td class="${ev.column===i?'hit':''}">${v}</td>`).join('')}</tr>`).join('');
+  $('explanation').textContent=eventText(s);
+  $('resultTriples').textContent=s.b.filter(Boolean).map((t,i)=>`(${t.join(', ')})`).join('\n')||'尚未写入';
+  $('outputCount').textContent=`${s.b.filter(Boolean).length} / ${s.count}`;
+  $('verify').textContent=s.result?s.result.message:'运行完成后将与独立朴素算法核对输出。';
+  $('verify').className='verification '+(s.result?(s.result.pass?'pass':''): 'wait');
+  $('resultBadge').textContent=s.result?(s.result.pass?'核验通过':'核验失败'):'待核验';
+  $('verificationStat').textContent=s.result?(s.result.pass?'通过':'失败'):'待完成';
+  $('scrub').max=2*s.count+s.cols+1;$('scrub').value=s.step;
+  $('back').disabled=s.step===0;$('next').disabled=s.done;$('run').disabled=s.done;
+  const shown=lab.history.slice(-7);
+  $('timeline').innerHTML=shown.map(s=>`<div>步骤 ${s.step}: ${eventText(s)}</div>`).join('');
+  $('quizQuestion').textContent=s.count?`预测 A 中第一个三元组 (${s.a[0].join(', ')}) 在 B 中写入的起始槽位 q 是多少？`:'空矩阵没有三元组，请先载入有非零元素的样例，再进行预测练习。';
+  $('checkQuiz').disabled=s.count===0;$('hintQuiz').disabled=s.count===0;$('showQuiz').disabled=s.count===0;
+ }
+ function load(values){try{
+   const r=Number($('rows').value),c=Number($('cols').value);const triples=parseTriples($('triples').value,r,c);
+   const s=lab.load(r,c,triples);snap=s;$('error').textContent='';$('quizOutput').textContent='';render();return true;
+ }catch(e){$('error').textContent=e.message;return false;}}
+ function readonlyInput(){for(const id of ['rows','cols','triples'])$(id).disabled=false;}
+ try{
+ const chars=atob(_wasmB64),wasm=new Uint8Array(chars.length);for(let i=0;i<chars.length;i++)wasm[i]=chars.charCodeAt(i);
+ lab=await loadWasm(wasm);$('engineStatus').textContent='● C++ WebAssembly 已载入';$('engineStatus').classList.add('live');
+ load();
+ }catch(e){$('engineStatus').textContent='初始化失败';$('error').textContent='WebAssembly 加载失败：'+e.message;return;}
+ $('load').addEventListener('click',()=>load());
+ $('sample').addEventListener('click',()=>{$('rows').value=6;$('cols').value=7;$('triples').value=formatTriples(SYNTHETIC_SAMPLE.triples);load();});
+ $('empty').addEventListener('click',()=>{$('rows').value=3;$('cols').value=4;$('triples').value='';load();});
+ $('next').addEventListener('click',()=>{snap=lab.step();render();});
+ $('back').addEventListener('click',()=>{snap=lab.seek(Math.max(0,snap.step-1));render();});
+ $('run').addEventListener('click',()=>{snap=lab.run();render();});
+ $('reset').addEventListener('click',()=>{snap=lab.seek(0);render();});
+ $('scrub').addEventListener('input',e=>{snap=lab.seek(Math.floor(Number(e.target.value)));render();});
+ document.addEventListener('keydown',e=>{if(!e.altKey||e.target.closest('input,textarea'))return;if(e.key==='ArrowRight'&&!snap.done){e.preventDefault();snap=lab.step();render();}if(e.key==='ArrowLeft'&&snap.step>0){e.preventDefault();snap=lab.seek(snap.step-1);render();}});
+ $('themeBtn').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('themeBtn').textContent=dark?'☀ 浅色':'☾ 深色';store.setItem('v3theme',dark?'dark':'light');});
+ if(store.getItem('v3theme')==='dark'){document.documentElement.dataset.theme='dark';$('themeBtn').textContent='☀ 浅色';}
+ $('copyCode').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('cppCode').textContent);$('copyCode').textContent='已复制';}catch(e){$('copyCode').textContent='复制受浏览器限制';}});
+ $('attemptCount').textContent=`本地答题记录：${quizAttempts} 次`;
+ $('checkQuiz').addEventListener('click',()=>{
+  const first=snap.a[0],q=snap.a.filter(t=>t[1]<first[1]).length;
+  const answer=$('quizInput').value.trim();const ok=/^\d+$/.test(answer)&&Number(answer)===q;
+  quizAttempts++;try{store.setItem('v3quizAttempts',String(quizAttempts));}catch(e){}
+  $('attemptCount').textContent=`本地答题记录：${quizAttempts} 次`;
+  $('quizOutput').textContent=ok?`✓ 正确！q = ${q}，这是原矩阵中所有位于第 ${first[1]} 列之前的非零元素数量。`:'尚不正确。先统计所有列号小于该元素列号的三元组个数。';
+  $('quizOutput').style.color=ok?'var(--success)':'var(--warn)';
+ });
+ $('hintQuiz').addEventListener('click',()=>{$('quizOutput').textContent='提示：第一个元素的列号为 c。q = cpot[c] 的初始值；等于在 c 列之前所有列的 cnum 之和。';});
+ $('showQuiz').addEventListener('click',()=>{const first=snap.a[0],q=snap.a.filter(t=>t[1]<first[1]).length;$('quizOutput').textContent=`解析：cpot[${first[1]}] 初值 = ${q}。按列扫描 A，较小列号的非零元素共 ${q} 个，因此该位置从 B 的槽 ${q} 开始。`;});
+})();</script></body></html>

@@ -1,0 +1,6 @@
+import { FolderOpen, Info, Link2, FileUp, Fingerprint, ClipboardCheck } from 'lucide-react';
+import Link from 'next/link';
+import { AppShell } from '@/components/app-shell';
+import { Breadcrumbs } from '@/components/breadcrumbs';
+
+export default function Sources(){return <AppShell><Breadcrumbs items={[{label:'资料管理'}]}/><div className="page-heading"><span className="section-kicker">SOURCE LIBRARY</span><h1>原始资料库</h1><p>所有文章、题目和实验都将与真实原始文件建立可追溯关联。</p></div><div className="empty-state"><div className="empty-state-icon"><FolderOpen size={34}/></div><h2>还没有连接真实资料</h2><p>飞书授权与 PPT/PDF 同步将在后续阶段验证。当前页面不会假装已经扫描你的云端文件。</p><div className="tag tag-demo">网站实时飞书同步：尚未配置</div></div><div className="inline-info"><Info size={18}/><p>V2 新增：合成 PPTX 已完成解析、去重、页码和题库验证；合成矩阵样例已在 V4 审查页中展示，并明确标注非真实课程数据。<Link href="/review/v2">查看 V2 可审查内容和交互题库 →</Link>　<Link href="/review/v4">查看 V4 资料审查记录 →</Link></p></div><div className="workflow-steps"><div><FileUp size={21}/><h3>1. 资料登记</h3><p>获取原件与文件版本</p></div><div><Fingerprint size={21}/><h3>2. 指纹与去重</h3><p>判断内容变化和知识点覆盖</p></div><div><ClipboardCheck size={21}/><h3>3. 来源映射</h3><p>将文章、习题关联到页码</p></div><div><Link2 size={21}/><h3>4. 受控发布</h3><p>记录审核与发布状态</p></div></div><div className="inline-info"><Info size={18}/><p>V4 审查界面已恢复；本地扫描编排未包含在本次网站快照中，飞书授权与正式发布仍未配置。</p></div></AppShell>}

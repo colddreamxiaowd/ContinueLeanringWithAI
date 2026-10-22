@@ -10,6 +10,7 @@ import time
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.synthetic_pptx import build_synthetic_bytes
 from scripts.v43_import import read_document
@@ -189,10 +190,20 @@ class V46PrivateGatewayTests(unittest.TestCase):
         self.assertNotIn("content_path", listing[0])
         self.assertNotIn("preview_path", listing[0])
 
-        status, _headers, body = self.request(
-            "GET", "/api/private/documents/" + self.document_id, cookie=cookie
-        )
-        self.assertEqual(status, 200)
+        read_errors: list[str] = []
+
+        def observed_read(document_id: str, store: Path):
+            try:
+                return read_document(document_id, store)
+            except Exception as exc:
+                read_errors.append(type(exc).__name__ + ":" + str(exc))
+                raise
+
+        with patch("scripts.v46_private_server.read_document", side_effect=observed_read):
+            status, _headers, body = self.request(
+                "GET", "/api/private/documents/" + self.document_id, cookie=cookie
+            )
+        self.assertEqual(status, 200, "private read diagnostics=" + repr(read_errors))
         content = json.loads(body)["content"]
         self.assertEqual(content["source_sha256"], listing[0]["current_version"])
         self.assertIn(self.marker, json.dumps(content, ensure_ascii=False))

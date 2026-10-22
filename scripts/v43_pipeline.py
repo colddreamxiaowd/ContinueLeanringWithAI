@@ -46,6 +46,10 @@ class PipelineError(Exception):
     """Sanitized pipeline error code."""
 
 
+class IndexWriteError(PipelineError):
+    """State is committed but the website index could not be written."""
+
+
 @dataclass(frozen=True)
 class SourceFile:
     file_token: str
@@ -99,8 +103,11 @@ def _documents_dir(store: Path) -> Path:
 def _atomic_write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(text, encoding="utf-8")
-    temporary.replace(path)
+    try:
+        temporary.write_text(text, encoding="utf-8")
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _safe_join(store: Path, relative: str) -> Path:
@@ -175,6 +182,17 @@ def _write_index(store: Path, state: dict) -> None:
         _index_path(store),
         json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
     )
+
+
+def _write_index_with_retries(store: Path, state: dict, attempts: int = 3) -> None:
+    last_error = None
+    for _ in range(attempts):
+        try:
+            _write_index(store, state)
+            return
+        except OSError as exc:
+            last_error = exc
+    raise IndexWriteError("INDEX_WRITE_FAILED") from last_error
 
 
 def _valid_artifacts(store: Path, content_path: str, preview_path: str, sha256: str) -> bool:
@@ -314,8 +332,16 @@ def run_incremental(
                     slide_count = len(content["slides"])
                     parsed = True
 
-                state["sources"][document_id] = _entry(store, downloaded_sha, slide_count)
-                _write_state(store, state)
+                candidate = {
+                    "version": STORE_VERSION,
+                    "sources": dict(state["sources"]),
+                }
+                candidate["sources"][document_id] = _entry(
+                    store, downloaded_sha, slide_count
+                )
+                _write_state(store, candidate)
+                state = candidate
+                _write_index_with_retries(store, state)
 
             result = ProcessResult(
                 document_id=document_id,
@@ -327,6 +353,8 @@ def run_incremental(
             results.append(result)
             if verbose:
                 _log_result(result)
+        except IndexWriteError:
+            raise
         except (InventoryError, PptxContentError, PipelineError) as exc:
             result = ProcessResult(
                 document_id=document_id,
@@ -361,13 +389,46 @@ def run_incremental(
             if temp_path is not None:
                 temp_path.unlink(missing_ok=True)
 
-    try:
-        _write_index(store, state)
-    except OSError:
-        print("INDEX_WRITE_FAILED")
+    # Always rebuild the derived index from the persisted state. This repairs a
+    # missing/stale index on a no-change run, and never returns success if the
+    # index cannot be made consistent.
+    _write_index_with_retries(store, state)
     if verbose:
         _print_summary(results)
     return results
+
+
+def select_feishu_sources(
+    entries: Iterable[dict],
+    *,
+    file_token: str | None = None,
+    all_files: bool = False,
+) -> list[SourceFile]:
+    """Select exactly one authorized file by default; bulk requires all_files."""
+    if all_files and file_token:
+        raise PipelineError("SCOPE_CONFLICT")
+    if not all_files and not file_token:
+        raise PipelineError("CONFIG_MISSING_FILE_TOKEN")
+
+    selected: list[SourceFile] = []
+    seen: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        token = entry.get("token")
+        if not token:
+            continue
+        if all_files:
+            source = SourceFile(file_token=token)
+            if source.document_id not in seen:
+                selected.append(source)
+                seen.add(source.document_id)
+        elif token == file_token:
+            return [SourceFile(file_token=token)]
+
+    if all_files:
+        return selected
+    raise PipelineError("FILE_NOT_IN_FOLDER")
 
 
 def run_feishu_pipeline(
@@ -375,18 +436,27 @@ def run_feishu_pipeline(
     *,
     token: str | None = None,
     folder: str | None = None,
+    file_token: str | None = None,
+    all_files: bool = False,
     verbose: bool = True,
 ) -> list[ProcessResult]:
     token = (token if token is not None else os.environ.get("FEISHU_USER_ACCESS_TOKEN", "")).strip()
     folder = (folder if folder is not None else os.environ.get("FEISHU_FOLDER_TOKEN", "")).strip()
     if not token or not folder:
         raise PipelineError("CONFIG_MISSING_SECRET")
+    if all_files and file_token:
+        raise PipelineError("SCOPE_CONFLICT")
+    if not all_files and not file_token:
+        raise PipelineError("CONFIG_MISSING_FILE_TOKEN")
 
-    def downloader(file_token: str) -> DownloadedFile:
-        path, digest, size = download_to_temp(token, file_token)
+    def downloader(selected_token: str) -> DownloadedFile:
+        path, digest, size = download_to_temp(token, selected_token)
         return DownloadedFile(path=path, sha256=digest, size=size)
 
-    sources = [SourceFile(file_token=entry["token"]) for entry in list_pptx(token, folder)]
+    entries = list(list_pptx(token, folder))
+    sources = select_feishu_sources(
+        entries, file_token=file_token, all_files=all_files
+    )
     return run_incremental(sources, downloader, store, verbose=verbose)
 
 
@@ -398,7 +468,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--feishu",
         action="store_true",
-        help="process the authorized Feishu folder using FEISHU_USER_ACCESS_TOKEN and FEISHU_FOLDER_TOKEN",
+        help="process one authorized file using FEISHU_USER_ACCESS_TOKEN, FEISHU_FOLDER_TOKEN and FEISHU_FILE_TOKEN",
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="explicitly process the whole authorized folder (bulk mode)",
     )
     args = parser.parse_args(argv)
 
@@ -406,11 +481,24 @@ def main(argv: list[str] | None = None) -> int:
         print("OFFLINE_ONLY: run python scripts/v43_demo.py for the simulated end-to-end pipeline")
         return 2
 
-    try:
-        results = run_feishu_pipeline(args.store)
-    except PipelineError as exc:
-        print(f"ERROR {exc}")
+    file_token = os.environ.get("FEISHU_FILE_TOKEN", "").strip()
+    if args.all and file_token:
+        print("ERROR CONFIG SCOPE_CONFLICT")
         return 2
+    if not args.all and not file_token:
+        print("ERROR CONFIG MISSING_FILE_TOKEN")
+        return 2
+
+    try:
+        results = run_feishu_pipeline(
+            args.store,
+            file_token=file_token or None,
+            all_files=args.all,
+        )
+    except PipelineError as exc:
+        code = str(exc)
+        print(f"ERROR {code}")
+        return 2 if code.startswith("CONFIG_") or code == "SCOPE_CONFLICT" else 1
     except InventoryError as exc:
         print(f"ERROR {exc}")
         return 1

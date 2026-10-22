@@ -20,17 +20,27 @@ python scripts/v43_demo.py
 - 索引读取、`read_document()` 和 V4.2 HTML 渲染成功
 - 临时 PPTX 全部清理
 
-## 真实飞书手动模式
+## 真实飞书手动模式（默认单文件）
 
 仅在用户明确批准本次私人内容处理、且本机已有有效用户 OAuth 凭证时运行：
 
 ```bash
-FEISHU_USER_ACCESS_TOKEN=... FEISHU_FOLDER_TOKEN=... \
+FEISHU_USER_ACCESS_TOKEN=... FEISHU_FOLDER_TOKEN=... FEISHU_FILE_TOKEN=... \
 python scripts/v43_pipeline.py --feishu --store .local/v43
 ```
 
-本 PR 未执行真实飞书验证，也未读取真实课件。凭证、原始 Token、文件名和课件正文
-不会出现在日志中。
+- 默认只处理 `FEISHU_FILE_TOKEN` 指定的一个文件，且必须先确认该 Token
+  属于给定文件夹；不在文件夹内会拒绝执行，不会触发下载。
+- 缺少 `FEISHU_FILE_TOKEN` 时会在调用飞书列表 API 前拒绝执行。
+- 文件 Token 通过环境变量提供，不进入命令历史；日志不输出原始 Token、文件名或正文。
+- 整文件夹批量处理必须显式使用 `--all`：
+
+```bash
+FEISHU_USER_ACCESS_TOKEN=... FEISHU_FOLDER_TOKEN=... \
+python scripts/v43_pipeline.py --feishu --all --store .local/v43
+```
+
+本 PR 未执行真实飞书验证，也未读取真实课件；在线验证等待用户单独批准和本机凭证。
 
 ## 存储布局
 
@@ -70,8 +80,9 @@ for document in list_documents(".local/v43"):
     html = render_document(document["document_id"], ".local/v43")
 ```
 
-索引缺失时返回空列表；文档缺失、不可读或与索引不匹配时抛出清晰的
-`ContentImportError`。路径穿越会被拒绝。
+全新空库返回空列表。只要 `state.json` 已有已提交文档，索引缺失或与状态不一致都会
+抛出 `INDEX_STALE`，不会静默提供错误版本；下一次流水线运行会从 state 重建索引。
+文档缺失、不可读或与索引不匹配时抛出清晰的 `ContentImportError`。路径穿越会被拒绝。
 
 ## 状态规则
 
@@ -83,6 +94,27 @@ for document in list_documents(".local/v43"):
 
 每次运行对每个源只下载一次；`REBUILD` 不二次下载。内容相同的不同源共用
 `documents/<sha>/`，第二个源不重复解析。
+
+## 写入失败与恢复
+
+- `state.json` 是已提交处理状态的权威来源。新状态先写成功，才替换内存中的权威状态。
+- state 写入失败：本次结果为 `FAILED`，旧 state/index 和旧内容版本保持可用；不会把
+  未提交的版本写入 index。故障解除后重跑可继续处理。
+- state 写入成功但 index 写入失败：流水线重试后抛出 `INDEX_WRITE_FAILED`，**不会**
+  返回成功。此时 state 已是新版本、index 仍旧；`list_documents()` 抛出 `INDEX_STALE`。
+  下一次运行会从 state 重建 index。
+- 索引缺失但 state 有文档：导入读取器抛出 `INDEX_STALE`，不会返回空库或错误版本；
+  下一次运行会重建索引。
+- 旧版本目录不删除；失败不会覆盖此前完整可用的内容版本。
+
+## 测试
+
+```bash
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+当前共 30 项测试通过：V4.1 5 项、V4.2 9 项、V4.3 16 项。新增覆盖 state/index
+写入失败、索引恢复、单文件选择、范围冲突和批量显式模式。
 
 ## 兼容性与边界
 

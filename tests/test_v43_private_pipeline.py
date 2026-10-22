@@ -23,7 +23,9 @@ from scripts.v43_pipeline import (
     DownloadedFile,
     PipelineError,
     SourceFile,
+    run_feishu_pipeline,
     run_incremental,
+    select_feishu_sources,
 )
 
 
@@ -177,12 +179,17 @@ class V43PipelineTests(unittest.TestCase):
             read_document(self.source_a.document_id, self.store)
         self.assertIn("DOCUMENT_UNAVAILABLE", str(raised.exception))
 
+        with TemporaryDirectory() as empty_store:
+            self.assertEqual(list_documents(Path(empty_store)), [])
+
         index_path = self.store / "index.json"
         index_path.unlink()
-        self.assertEqual(list_documents(self.store), [])
+        with self.assertRaises(ContentImportError) as raised:
+            list_documents(self.store)
+        self.assertIn("INDEX_STALE", str(raised.exception))
         with self.assertRaises(ContentImportError) as raised:
             read_document(self.source_a.document_id, self.store)
-        self.assertIn("DOCUMENT_NOT_FOUND", str(raised.exception))
+        self.assertIn("INDEX_STALE", str(raised.exception))
 
         index_path.write_text("{bad json", encoding="utf-8")
         with self.assertRaises(ContentImportError) as raised:
@@ -217,6 +224,209 @@ class V43PipelineTests(unittest.TestCase):
         with self.assertRaises(PipelineError) as raised:
             _run(self.store, downloader, [self.source_a])
         self.assertIn("STATE_INVALID", str(raised.exception))
+
+
+    def test_state_write_failure_preserves_old_and_recovers(self):
+        downloader = FakeDownloader({"RAW_TOKEN_A": self.payload_v1})
+        _run(self.store, downloader, [self.source_a])
+        before = list_documents(self.store)
+        before_content = read_document(self.source_a.document_id, self.store)
+        old_content_path = self.store / before[0]["content_path"]
+        downloader.payloads["RAW_TOKEN_A"] = self.payload_v2
+
+        with patch(
+            "scripts.v43_pipeline._write_state",
+            side_effect=OSError("simulated state failure"),
+        ):
+            results, logs = _run(self.store, downloader, [self.source_a])
+        self.assertEqual([result.status for result in results], ["FAILED"])
+        self.assertIn("IO_ERROR", logs)
+        self.assertEqual(list_documents(self.store), before)
+        self.assertEqual(
+            read_document(self.source_a.document_id, self.store)["source_sha256"],
+            before_content["source_sha256"],
+        )
+        self.assertTrue(old_content_path.is_file())
+
+        results, _ = _run(self.store, downloader, [self.source_a])
+        self.assertEqual([result.status for result in results], ["CHANGED"])
+        self.assertFalse(results[0].parsed)
+        self.assertEqual(
+            read_document(self.source_a.document_id, self.store)["source_sha256"],
+            _sha(self.payload_v2),
+        )
+        self.assertTrue(old_content_path.is_file())
+
+    def test_index_write_failure_is_not_reported_as_success(self):
+        downloader = FakeDownloader({"RAW_TOKEN_A": self.payload_v1})
+        _run(self.store, downloader, [self.source_a])
+        old_docs = list_documents(self.store)
+        old_sha = read_document(self.source_a.document_id, self.store)["source_sha256"]
+        downloader.payloads["RAW_TOKEN_A"] = self.payload_v2
+
+        with patch(
+            "scripts.v43_pipeline._write_index",
+            side_effect=OSError("simulated index failure"),
+        ):
+            with self.assertRaises(PipelineError) as raised:
+                _run(self.store, downloader, [self.source_a])
+        self.assertIn("INDEX_WRITE_FAILED", str(raised.exception))
+        with self.assertRaises(ContentImportError) as raised:
+            list_documents(self.store)
+        self.assertIn("INDEX_STALE", str(raised.exception))
+        with self.assertRaises(ContentImportError):
+            read_document(self.source_a.document_id, self.store)
+
+        results, _ = _run(self.store, downloader, [self.source_a])
+        self.assertEqual([result.status for result in results], ["UNCHANGED"])
+        self.assertNotEqual(_sha(self.payload_v2), old_sha)
+        self.assertEqual(
+            read_document(self.source_a.document_id, self.store)["source_sha256"],
+            _sha(self.payload_v2),
+        )
+        self.assertEqual(len(list_documents(self.store)), 1)
+        self.assertTrue((self.store / old_docs[0]["content_path"]).is_file())
+
+    def test_missing_index_is_stale_and_repaired_by_next_run(self):
+        downloader = FakeDownloader({"RAW_TOKEN_A": self.payload_v1})
+        _run(self.store, downloader, [self.source_a])
+        (self.store / "index.json").unlink()
+        with self.assertRaises(ContentImportError) as raised:
+            list_documents(self.store)
+        self.assertIn("INDEX_STALE", str(raised.exception))
+
+        results, _ = _run(self.store, downloader, [self.source_a])
+        self.assertEqual([result.status for result in results], ["UNCHANGED"])
+        self.assertEqual(len(list_documents(self.store)), 1)
+
+
+class FeishuScopeTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = TemporaryDirectory()
+        self.store = Path(self._tmp.name) / "scope-store"
+        self.payload = build_synthetic_bytes(marker="SCOPE_TEST_MARKER")
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_selection_requires_explicit_single_file_or_all(self):
+        entries = [
+            {"token": "RAW_FILE_TOKEN_ABC"},
+            {"token": "RAW_FILE_TOKEN_XYZ"},
+        ]
+        with self.assertRaises(PipelineError) as raised:
+            select_feishu_sources(entries)
+        self.assertIn("CONFIG_MISSING_FILE_TOKEN", str(raised.exception))
+
+        with self.assertRaises(PipelineError) as raised:
+            select_feishu_sources(entries, file_token="RAW_FILE_TOKEN_MISSING")
+        self.assertIn("FILE_NOT_IN_FOLDER", str(raised.exception))
+
+        selected = select_feishu_sources(entries, file_token="RAW_FILE_TOKEN_ABC")
+        self.assertEqual([source.file_token for source in selected], ["RAW_FILE_TOKEN_ABC"])
+
+        all_selected = select_feishu_sources(entries, all_files=True)
+        self.assertEqual(
+            [source.file_token for source in all_selected],
+            ["RAW_FILE_TOKEN_ABC", "RAW_FILE_TOKEN_XYZ"],
+        )
+
+        with self.assertRaises(PipelineError) as raised:
+            select_feishu_sources(
+                entries, file_token="RAW_FILE_TOKEN_ABC", all_files=True
+            )
+        self.assertIn("SCOPE_CONFLICT", str(raised.exception))
+
+    def test_missing_file_token_refuses_before_listing(self):
+        with patch("scripts.v43_pipeline.list_pptx") as listing, patch(
+            "scripts.v43_pipeline.download_to_temp"
+        ) as download:
+            with self.assertRaises(PipelineError) as raised:
+                run_feishu_pipeline(self.store, token="user-token", folder="folder")
+        self.assertIn("CONFIG_MISSING_FILE_TOKEN", str(raised.exception))
+        listing.assert_not_called()
+        download.assert_not_called()
+
+    def test_file_must_belong_to_folder(self):
+        entries = [{"token": "RAW_FILE_TOKEN_ABC"}]
+        with patch(
+            "scripts.v43_pipeline.list_pptx", return_value=entries
+        ), patch("scripts.v43_pipeline.download_to_temp") as download:
+            with self.assertRaises(PipelineError) as raised:
+                run_feishu_pipeline(
+                    self.store,
+                    token="user-token",
+                    folder="folder",
+                    file_token="RAW_FILE_TOKEN_MISSING",
+                )
+        self.assertIn("FILE_NOT_IN_FOLDER", str(raised.exception))
+        download.assert_not_called()
+
+    def _fake_download(self, token, file_token, paths):
+        self.assertEqual(token, "user-token")
+        with tempfile.NamedTemporaryFile(
+            prefix="scope-test-", suffix=".pptx", delete=False
+        ) as handle:
+            handle.write(self.payload)
+            path = Path(handle.name)
+        paths.append(path)
+        return path, _sha(self.payload), len(self.payload)
+
+    def test_single_file_mode_downloads_only_selected(self):
+        entries = [
+            {"token": "RAW_FILE_TOKEN_ABC"},
+            {"token": "RAW_FILE_TOKEN_XYZ"},
+        ]
+        paths = []
+        output = io.StringIO()
+        with patch(
+            "scripts.v43_pipeline.list_pptx", return_value=entries
+        ), patch(
+            "scripts.v43_pipeline.download_to_temp",
+            side_effect=lambda token, file_token: self._fake_download(
+                token, file_token, paths
+            ),
+        ) as download, contextlib.redirect_stdout(output):
+            results = run_feishu_pipeline(
+                self.store,
+                token="user-token",
+                folder="folder",
+                file_token="RAW_FILE_TOKEN_ABC",
+            )
+        self.assertEqual([result.status for result in results], ["NEW"])
+        self.assertEqual(download.call_count, 1)
+        self.assertEqual(download.call_args.args[1], "RAW_FILE_TOKEN_ABC")
+        self.assertNotIn("RAW_FILE_TOKEN_ABC", output.getvalue())
+        self.assertNotIn("user-token", output.getvalue())
+        self.assertFalse(any(path.exists() for path in paths))
+        self.assertEqual(len(list_documents(self.store)), 1)
+
+    def test_bulk_mode_is_explicit_and_processes_all(self):
+        entries = [
+            {"token": "RAW_FILE_TOKEN_ABC"},
+            {"token": "RAW_FILE_TOKEN_XYZ"},
+        ]
+        paths = []
+        output = io.StringIO()
+        with patch(
+            "scripts.v43_pipeline.list_pptx", return_value=entries
+        ), patch(
+            "scripts.v43_pipeline.download_to_temp",
+            side_effect=lambda token, file_token: self._fake_download(
+                token, file_token, paths
+            ),
+        ) as download, contextlib.redirect_stdout(output):
+            results = run_feishu_pipeline(
+                self.store,
+                token="user-token",
+                folder="folder",
+                all_files=True,
+            )
+        self.assertEqual([result.status for result in results], ["NEW", "NEW"])
+        self.assertFalse(results[1].parsed)
+        self.assertEqual(download.call_count, 2)
+        self.assertEqual(len(list_documents(self.store)), 2)
+        self.assertFalse(any(path.exists() for path in paths))
 
 
 class FakeResponse:

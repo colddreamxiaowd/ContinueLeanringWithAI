@@ -35,14 +35,21 @@ export async function GET(
     if (!body) throw new Error("FEISHU_DOWNLOAD_FAILED");
     const chunks: Buffer[] = [];
     let total = 0;
-    for await (const chunk of body) {
-      const bytes = Buffer.from(chunk);
-      total += bytes.length;
-      if (total > MAX_BYTES) {
-        await body.cancel().catch(() => {});
-        return NextResponse.json({ error: "OFFICE_SIZE_UNSUPPORTED" }, { status: 413 });
+    const reader = body.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const bytes = Buffer.from(value);
+        total += bytes.length;
+        if (total > MAX_BYTES) {
+          await reader.cancel().catch(() => {});
+          return NextResponse.json({ error: "OFFICE_SIZE_UNSUPPORTED" }, { status: 413 });
+        }
+        chunks.push(bytes);
       }
-      chunks.push(bytes);
+    } finally {
+      reader.releaseLock();
     }
     const result = extractOfficeSections(Buffer.concat(chunks), item.name);
     return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });

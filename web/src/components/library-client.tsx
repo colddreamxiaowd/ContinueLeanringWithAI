@@ -381,7 +381,7 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
         {activeTab === "browse" && <section className="library-browser panel">
           <div className="library-browser-head">
             <div><span className="section-kicker">FEISHU DRIVE</span><h2>选择要同步的文件夹</h2><p>同步会递归扫描当前文件夹中的子文件夹。你可以只同步放学习资料的目录，不必同步整个云盘。</p></div>
-            <button className="button button-primary" onClick={syncCurrentFolder} disabled={busy || !currentFolder.token}>{busy ? <LoaderCircle className="spin" size={15}/> : <RefreshCw size={15}/>} 同步当前文件夹</button>
+            <button className="button button-primary" onClick={() => void syncCurrentFolder()} disabled={busy || !currentFolder.token}>{busy ? <LoaderCircle className="spin" size={15}/> : <RefreshCw size={15}/>} 同步当前文件夹</button>
           </div>
           <form className="library-folder-link-import" onSubmit={event => {
             event.preventDefault();

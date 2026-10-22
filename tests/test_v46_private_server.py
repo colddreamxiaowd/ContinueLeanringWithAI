@@ -13,7 +13,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.synthetic_pptx import build_synthetic_bytes
-from scripts.v43_import import read_document
+from scripts.v43_import import list_documents, read_document
 from scripts.v43_pipeline import DownloadedFile, SourceFile, run_incremental
 from scripts.v46_private_server import (
     PRIVATE_UI_ROOT,
@@ -179,10 +179,24 @@ class V46PrivateGatewayTests(unittest.TestCase):
         direct_content = read_document(self.document_id, self.store)
         self.assertTrue(direct_content.get("source_sha256"))
         cookie = self.login()
-        status, headers, body = self.request(
-            "GET", "/api/private/documents", cookie=cookie
+        self.assertEqual(list_documents(self.server.store)[0]["document_id"], self.document_id)
+        list_errors: list[str] = []
+
+        def observed_list(store: Path):
+            try:
+                return list_documents(store)
+            except Exception as exc:
+                list_errors.append(type(exc).__name__ + ":" + str(exc))
+                raise
+
+        with patch("scripts.v46_private_server.list_documents", side_effect=observed_list):
+            status, headers, body = self.request(
+                "GET", "/api/private/documents", cookie=cookie
+            )
+        self.assertEqual(
+            status, 200,
+            "list diagnostics=" + repr(list_errors) + " server_store=" + repr(self.server.store),
         )
-        self.assertEqual(status, 200)
         self.assertEqual(headers.get("cache-control"), "no-store")
         listing = json.loads(body)["documents"]
         self.assertEqual(len(listing), 1)

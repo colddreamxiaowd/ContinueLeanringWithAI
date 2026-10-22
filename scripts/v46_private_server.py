@@ -20,6 +20,11 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.v43_import import list_documents, read_document  # noqa: E402
+
 PRIVATE_UI_ROOT = REPO_ROOT / "private_ui"
 DEFAULT_STATIC_ROOT = REPO_ROOT / "web" / "out"
 SESSION_COOKIE = "clai_private_session"

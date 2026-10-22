@@ -10,10 +10,8 @@ import time
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from unittest.mock import patch
 
 from scripts.synthetic_pptx import build_synthetic_bytes
-from scripts.v43_import import list_documents, read_document
 from scripts.v43_pipeline import DownloadedFile, SourceFile, run_incremental
 from scripts.v46_private_server import (
     PRIVATE_UI_ROOT,
@@ -176,27 +174,11 @@ class V46PrivateGatewayTests(unittest.TestCase):
                 self.assertNotIn("set-cookie", headers)
 
     def test_valid_token_cookie_and_private_read(self) -> None:
-        direct_content = read_document(self.document_id, self.store)
-        self.assertTrue(direct_content.get("source_sha256"))
         cookie = self.login()
-        self.assertEqual(list_documents(self.server.store)[0]["document_id"], self.document_id)
-        list_errors: list[str] = []
-
-        def observed_list(store: Path):
-            try:
-                return list_documents(store)
-            except Exception as exc:
-                list_errors.append(type(exc).__name__ + ":" + str(exc))
-                raise
-
-        with patch("scripts.v46_private_server.list_documents", side_effect=observed_list):
-            status, headers, body = self.request(
-                "GET", "/api/private/documents", cookie=cookie
-            )
-        self.assertEqual(
-            status, 200,
-            "list diagnostics=" + repr(list_errors) + " server_store=" + repr(self.server.store),
+        status, headers, body = self.request(
+            "GET", "/api/private/documents", cookie=cookie
         )
+        self.assertEqual(status, 200)
         self.assertEqual(headers.get("cache-control"), "no-store")
         listing = json.loads(body)["documents"]
         self.assertEqual(len(listing), 1)
@@ -204,20 +186,10 @@ class V46PrivateGatewayTests(unittest.TestCase):
         self.assertNotIn("content_path", listing[0])
         self.assertNotIn("preview_path", listing[0])
 
-        read_errors: list[str] = []
-
-        def observed_read(document_id: str, store: Path):
-            try:
-                return read_document(document_id, store)
-            except Exception as exc:
-                read_errors.append(type(exc).__name__ + ":" + str(exc))
-                raise
-
-        with patch("scripts.v46_private_server.read_document", side_effect=observed_read):
-            status, _headers, body = self.request(
-                "GET", "/api/private/documents/" + self.document_id, cookie=cookie
-            )
-        self.assertEqual(status, 200, "private read diagnostics=" + repr(read_errors))
+        status, _headers, body = self.request(
+            "GET", "/api/private/documents/" + self.document_id, cookie=cookie
+        )
+        self.assertEqual(status, 200)
         content = json.loads(body)["content"]
         self.assertEqual(content["source_sha256"], listing[0]["current_version"])
         self.assertIn(self.marker, json.dumps(content, ensure_ascii=False))

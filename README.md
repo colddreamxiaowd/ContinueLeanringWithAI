@@ -23,8 +23,9 @@ npm run test:models  # 5/5
 npm run test:v3      # 14/14
 npm run test:v45     # 5/5
 npm run typecheck
-npm run build        # 静态导出到 web/out/（15 个页面）
-npm run check:v45:static
+npm run test:library # 文件类型与预览判定
+npm run typecheck
+npm run build        # 完整 Next.js 服务端构建
 ```
 
 主要路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/sources/demo/[documentId]`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
@@ -63,12 +64,12 @@ npm ci
 npm run test:models
 npm run test:v3
 npm run test:v45
+npm run test:library
 npm run typecheck
 npm run build
-npm run check:v45:static
 ```
 
-网站 CI 见 `.github/workflows/v44-web-tests.yml`，针对 `web/**`、`scripts/**`、`tests/**`、`requirements-v42.txt` 及工作流自身变更执行 V4.5 导出复现校验、`npm ci`、三组测试、类型检查、默认与 Pages basePath 构建及静态页面检查。公开审查预览由 `.github/workflows/v44-pages.yml` 在 `main` 的 `web/` 变更后构建并发布到 `gh-pages` 分支；不包含后端、飞书调用或 secrets。
+网站 CI 见 `.github/workflows/v44-web-tests.yml`，执行 Python 回归测试、合成数据复现、四组 Web 测试、类型检查和动态 Next.js 构建。`.github/workflows/v44-pages.yml` 已停止自动发布；完整网站需通过 Vercel 运行服务端路由。
 
 ## 边界
 

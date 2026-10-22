@@ -1,0 +1,81 @@
+# V4.6 — Public multi-user learning library
+
+## Product behavior
+
+- The website is a full-stack Next.js application hosted on Vercel, with Supabase Auth and Postgres.
+- Users register and log in with email + password. Supabase manages passwords and sessions; this app never stores raw passwords.
+- Each website account connects its own Feishu account through user OAuth. The website does not use one administrator's Feishu token for every user.
+- A user browses their Feishu Drive, selects a folder, and starts a resumable recursive metadata sync. The sync follows child folders and paginates large folders.
+- TXT/MD/CSV, common image formats, and PDF can be previewed through authenticated server-side file proxy routes. Other binary files, including PPTX/DOCX/XLSX, can be downloaded; Feishu-native online documents link back to Feishu.
+- The website stores a private index of file metadata, not a public copy of private courseware. File bytes are streamed from Feishu only after the owning website account is authenticated.
+
+## Deploy once
+
+### 1. Create a Supabase project
+
+Create a project at https://supabase.com/dashboard. In SQL Editor, run the migration at supabase/migrations/202610220001_public_learning_library.sql.
+
+Configure Authentication:
+- Enable the Email provider.
+- Set the Site URL to the deployed Vercel origin.
+- Add the Vercel origin and local http://localhost:3000 to allowed redirect URLs.
+- Email confirmation may remain enabled; new users then verify their email before password login.
+
+Copy the project URL, publishable/anon key, and service-role key from project settings. The service-role key is server-only.
+
+### 2. Deploy the Next.js app on Vercel
+
+Import the GitHub repository colddreamxiaowd/ContinueLeanringWithAI into Vercel and use web/ as the Root Directory. Vercel should detect Next.js automatically. Do not configure a static export.
+
+Set these environment variables for Preview and Production:
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY)
+- SUPABASE_SERVICE_ROLE_KEY
+- NEXT_PUBLIC_SITE_URL
+- FEISHU_REDIRECT_URI
+- FEISHU_APP_ID
+- FEISHU_APP_SECRET
+- FEISHU_TOKEN_ENCRYPTION_KEY
+
+Generate the encryption key locally with:
+~~~bash
+openssl rand -hex 32
+~~~
+Use the same key for all deployments that share the database. Never commit it or paste it into issues or chat.
+
+### 3. Configure the existing Feishu app
+
+Reuse the existing custom app; do not create a second app unless the current app cannot be published for the intended users.
+
+In Feishu Open Platform:
+1. Register the exact callback URL https://YOUR_VERCEL_DOMAIN/api/feishu/callback under Security Settings / Redirect URLs.
+2. Enable the read-only cloud-drive scope drive:drive:readonly and the offline_access scope for refresh tokens.
+3. Ensure file download permission is enabled where required, publish the app version, and confirm that users in the intended audience can authorize it.
+4. Add the same callback URL to FEISHU_REDIRECT_URI in Vercel.
+
+Each user authorizes their own Feishu account. The app requests read-only access; it does not request write permission.
+
+## First end-to-end acceptance
+
+1. Open the deployed site and create an account using an email and a password of at least 10 characters.
+2. Complete email confirmation if enabled, then log in.
+3. Open 我的资料 and click 连接我的飞书.
+4. Approve the Feishu authorization.
+5. Browse to the folder containing learning materials and click 同步当前文件夹.
+6. Wait for the paginated recursive sync to complete. The folder and nested files should appear under 我的资料.
+7. Verify that TXT/MD/CSV displays as text, images display inline, PDFs open in the embedded viewer, and other binary files download. Try a second website account and confirm it cannot see the first account's index or content.
+
+## Data and security model
+
+- Feishu access/refresh tokens are encrypted with AES-256-GCM before being written to feishu_connections. The encryption key exists only in the server environment.
+- Website session cookies are HttpOnly, SameSite=Lax, and Secure in production; the server refreshes Supabase sessions.
+- The database records user ownership and has Row Level Security. Every server-side database lookup is also filtered by the authenticated Supabase user ID.
+- The private library index is not embedded in the static website bundle. File bytes are proxied only after checking the current user owns the indexed item.
+- OAuth state is random, short-lived, stored in an HttpOnly cookie, and bound to the initiating website account.
+- The current version supports binary Drive files for in-browser previews. Feishu-native docs/sheets/base objects remain links to Feishu; PPTX/DOCX/XLSX can be downloaded but are not parsed into page-level reading views in this slice.
+
+## Operational boundaries
+
+- GitHub Pages is a legacy static preview and is no longer used for full-stack deployments. The public app requires Vercel (or another compatible Next.js server host) and Supabase.
+- GitHub Actions runs tests and builds only; it has no production secrets and never calls Feishu.
+- The current sync is user-triggered and resumable page by page; it is not a background scheduled sync.

@@ -32,7 +32,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 
 - 来源：用户指定的 `dev_网站` 会话中的 `ContinueLeanringWithAI_V4_1_review.zip`。
 - 归档 SHA-256：`cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`。
-- 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+，静态导出。
+- 技术栈：Next.js 16 App Router、React 19、TypeScript 5.8+；V4.6 采用动态服务端运行，不再静态导出。
 - 入口：`web/src/app/page.tsx`、`web/src/app/layout.tsx`、`web/src/app/globals.css`、`web/src/components/app-shell.tsx`。
 - 路由：`/`、`/courses`、`/courses/[slug]`、`/read/[slug]`、`/sources`、`/sources/demo/[documentId]`、`/experiments`、`/experiments/sparse-transpose`、`/review/v2`、`/review/v4`。
 - V4.5 合成资料：`web/src/data/v45-demo/`（2 份资料、6 页），详情页由 `generateStaticParams()` 生成；已合并（PR #10）并随 Pages 预览上线。
@@ -55,7 +55,7 @@ V4.5 开发分支：`feat/v45-synthetic-web-integration`（基于 `10fa1b9`，�
 
 未验证/未启用：
 - 尚未配置后端、数据库、账号或生产域名。
-- V4.6-A 本地私有网关正在独立分支开发，自动化测试仅使用合成存储；尚未合并、部署或读取真实私有存储。
+- V4.6-A 曾实现本地网关，但产品目标已转为公网多用户资料库；分支 feat/v46-public-feishu-library 正在实现账号、飞书用户 OAuth、递归目录同步与多格式文件预览。
 - 真实飞书 OAuth、文件夹读取、下载和写入尚未在本轮验证。
 - 真实课程内容处理、模型生成、数据库、账号、学习记录和每日调度未启用。
 - 原归档的 Chromium 交互检查记录沿用归档说明，本轮未重新执行该套件。
@@ -88,6 +88,6 @@ npm run dev
 
 完成：找回原始 V4.1 网站源码、恢复 `web/`、清除公开目录中的真实课程元数据、补齐锁文件与网站 CI、完成测试和构建；V4.5 离线合成资料的列表与逐页详情已合并并上线（PR #10，merge `3694a02`）。
 
-未完成：V4.6 本地私有网关（当前独立分支开发中、尚未合并）、生产域名与后端、真实飞书联机验证、真实课程内容导入。
+未完成：V4.6 公网资料库（开发分支中）、Vercel/Supabase 生产配置、真实飞书 OAuth/递归目录与多格式文件验收。
 
 本文是当前状态索引，不是新版本实现授权或线上产品完成声明。

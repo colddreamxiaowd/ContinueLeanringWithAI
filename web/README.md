@@ -12,7 +12,7 @@
 
 ## 技术栈
 
-- Next.js 16（App Router，`output: "export"`）
+- Next.js 16（App Router，V4.6 起使用动态服务端运行）
 - React 19
 - TypeScript 5.8+
 - 原生 CSS 设计 token（`src/app/globals.css`）
@@ -45,16 +45,11 @@ npm run test:models  # 5/5
 npm run test:v3      # 14/14
 npm run test:v45     # 5/5
 npm run typecheck
-npm run build        # 静态导出到 out/（15 个页面）
-npm run check:v45:static
+npm run test:library
+npm run build        # Next.js production build（动态路由与 API）
 ```
 
-生产构建是静态导出，输出位于 `out/`；预览时不要使用 `next start`，可用任意静态文件服务器：
-
-```bash
-python -m http.server 8000 -d out
-# 打开 http://localhost:8000
-```
+V4.6 需要支持 Next.js Route Handlers 与动态请求的服务端托管。生产部署目标为 Vercel；不要再把此版本作为纯静态文件上传到 GitHub Pages。
 
 本轮实际验证结果：
 
@@ -74,7 +69,7 @@ python -m http.server 8000 -d out
 - `content/v3-sample/source.json` 是明确标记的合成稀疏矩阵样例；不对应任何真实课程文件。
 - `fixtures/v2/synthetic-stack-lesson.pptx` 与 `fixtures/v45/synthetic-integration-deck.pptx` 都是合成 PPTX，不是用户上传的课件。
 - `src/data/v45-demo/` 由现有 V4.3 流水线处理上述两份合成 Fixture 生成，包含 2 份资料、6 页；全部带 `synthetic` / `demo` 标记。
-- 真实飞书授权、真实课件下载、数据库、账号和每日调度均未启用；GitHub Pages 静态审查预览已部署。
+- V4.6 分支正在加入 Supabase 邮箱/密码账号、每用户独立飞书 OAuth、递归文件夹同步与 TXT/图片/PDF 预览；线上验收需要 Vercel/Supabase/飞书应用配置。
 - 本目录不包含 `.env`、Token、认证信息或私人课件。
 
 ## V4.5 · 合成资料网站接入
@@ -87,10 +82,9 @@ python -m http.server 8000 -d out
 
 ## 公开审查部署
 
-- 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)
-- 托管：GitHub Pages 项目站点（`gh-pages` 分支）；Next.js 静态导出，构建时使用 `NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI`。
-- 工作流：`.github/workflows/v44-pages.yml`，仅在 `main` 的 `web/**` 变更后构建并发布到 `gh-pages` 分支。
-- 这是静态只读审查预览，不是生产环境；没有后端、账号、数据库、飞书调用或自动发布。
+- 旧的静态审查预览仍位于 [GitHub Pages](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)。
+- V4.6 动态版本目标托管于 Vercel；旧 Pages 工作流已禁用自动发布。
+- 部署配置步骤见根目录 docs/V46_PUBLIC_LIBRARY.md。
 - 本地 basePath 构建：
 
 ```bash

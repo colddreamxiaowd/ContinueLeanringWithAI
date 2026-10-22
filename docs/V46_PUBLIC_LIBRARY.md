@@ -19,7 +19,16 @@ Configure Authentication:
 - Enable the Email provider.
 - Set the Site URL to the deployed Vercel origin.
 - Add the Vercel origin and local http://localhost:3000 to allowed redirect URLs.
-- Email confirmation may remain enabled; new users then verify their email before password login.
+- Keep **Confirm Email** enabled for email + password accounts.
+- In Authentication → Email Templates → **Confirm sign up**, replace the confirmation-link body with an OTP code, e.g.:
+  ```html
+  <h2>知序邮箱验证</h2>
+  <p>你的注册验证码为：<strong>{{ .Token }}</strong></p>
+  <p>请回到知序网站输入这 6 位数字，不要转发给其他人。</p>
+  ```
+- Confirm the email OTP length is **6 digits** under Authentication email provider settings (default is 6). This project does not use a confirmation-link redirect.
+- After signup the site opens /verify-email, where users type the email and six-digit code; successful verification signs them in or lets them log in with their password.
+- The built-in Supabase SMTP server is for restricted testing only. Set up a custom SMTP provider before permitting general public signup.
 
 Copy the project URL and Publishable key from the project's Connect dialog. Open **Project Settings → API Keys → Publishable and secret API keys**, then copy a server-only **Secret key** (`sb_secret_...`). New Supabase projects may not have the legacy `service_role` key. Never paste a secret key in GitHub, chat, or client-side environment variables.
 
@@ -58,7 +67,7 @@ Each user authorizes their own Feishu account. The app requests read-only access
 ## First end-to-end acceptance
 
 1. Open the deployed site and create an account using an email and a password of at least 10 characters.
-2. Complete email confirmation if enabled, then log in.
+2. Open the latest registration email, enter the 6-digit code at /verify-email, and continue into /library (or log in if requested).
 3. Open 我的资料 and click 连接我的飞书.
 4. Approve the Feishu authorization.
 5. Browse to the folder containing learning materials and click 同步当前文件夹.

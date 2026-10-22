@@ -20,5 +20,6 @@ sources/private/
 
 # V4.4 privacy: never commit real-course metadata
 content/v3-real-source/
-# The only committed PPTX is the synthetic V2 fixture
+# Committed PPTX files are synthetic fixtures only
 !fixtures/v2/synthetic-stack-lesson.pptx
+!fixtures/v45/synthetic-integration-deck.pptx

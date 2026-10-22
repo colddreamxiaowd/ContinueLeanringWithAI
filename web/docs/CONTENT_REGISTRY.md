@@ -31,6 +31,13 @@ V2 仅针对可识别的栈概念实施模板草稿和独立核验。模型生�
 - 状态：本地运行、14 项自动测试通过、**待负责人审批**；不计入正式发布内容
 - 说明：合成样例的 `cnum=[2,1,1,2,1,1,0]`，`cpot` 初值 `[0,2,3,4,6,7,8]`；不是真实课件数据
 
+## V4.5 合成资料网站演示（Draft PR #10）
+
+- 数据来源：`fixtures/v2/synthetic-stack-lesson.pptx`（4 页）与 `fixtures/v45/synthetic-integration-deck.pptx`（2 页）。
+- 导出：`scripts/v45_export_synthetic.py` → `src/data/v45-demo/`（2 份资料、6 页）。
+- 页面：`/sources` 列表、`/sources/demo/[documentId]` 逐页详情；表格与 unsupported 图片块均实际展示。
+- 状态：Draft PR #10，未合并；不连接真实飞书，不计入真实资料或正式发布数量。
+
 ## V4 本地审查记录（公开版）
 
 - 公开恢复版只使用 V2 合成栈 PPTX 与 V3 合成矩阵样例演示资料审查流程。

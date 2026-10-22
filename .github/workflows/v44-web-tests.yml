@@ -4,10 +4,16 @@ on:
   push:
     paths:
       - "web/**"
+      - "scripts/**"
+      - "tests/**"
+      - "requirements-v42.txt"
       - ".github/workflows/v44-web-tests.yml"
   pull_request:
     paths:
       - "web/**"
+      - "scripts/**"
+      - "tests/**"
+      - "requirements-v42.txt"
       - ".github/workflows/v44-web-tests.yml"
   workflow_dispatch:
 
@@ -31,6 +37,23 @@ jobs:
           cache: "npm"
           cache-dependency-path: web/package-lock.json
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install V4.5 data dependencies
+        working-directory: .
+        run: python -m pip install --disable-pip-version-check -r requirements-v42.txt
+
+      - name: Verify V4.5 demo data is reproducible
+        working-directory: .
+        run: python scripts/v45_export_synthetic.py --store .local/v45-ci --output web/src/data/v45-demo
+
+      - name: Check generated V4.5 data diff
+        working-directory: .
+        run: git diff --exit-code -- web/src/data/v45-demo
+
       - name: Install dependencies from lockfile
         run: npm ci
 
@@ -40,10 +63,24 @@ jobs:
       - name: V3 algorithm tests
         run: npm run test:v3
 
+      - name: V4.5 data tests
+        run: npm run test:v45
+
       - name: Typecheck
         run: npm run typecheck
 
       - name: Production build
         run: npm run build
+
+      - name: Check V4.5 static pages
+        run: npm run check:v45:static
+
+      - name: GitHub Pages basePath build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /ContinueLeanringWithAI
+        run: npm run build
+
+      - name: Check V4.5 basePath links
+        run: npm run check:v45:static -- --base-path /ContinueLeanringWithAI
 
       # No deployment, publishing, Feishu call, or secret usage in this workflow.

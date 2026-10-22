@@ -26,7 +26,8 @@
 | `/courses` | 课程体系 |
 | `/courses/[slug]` | 课程章节 |
 | `/read/[slug]` | 技术文章阅读器 |
-| `/sources` | 资料管理状态 |
+| `/sources` | 资料管理状态与 V4.5 合成演示资料 |
+| `/sources/demo/[documentId]` | V4.5 合成资料逐页详情 |
 | `/experiments` | 交互实验索引 |
 | `/experiments/sparse-transpose` | 稀疏矩阵快速转置实验 |
 | `/review/v2` | V2 合成课件处理审查 |
@@ -42,8 +43,10 @@ npm ci
 npm run dev          # http://localhost:3000
 npm run test:models  # 5/5
 npm run test:v3      # 14/14
+npm run test:v45     # 5/5
 npm run typecheck
-npm run build        # 静态导出到 out/
+npm run build        # 静态导出到 out/（15 个页面）
+npm run check:v45:static
 ```
 
 生产构建是静态导出，输出位于 `out/`；预览时不要使用 `next start`，可用任意静态文件服务器：
@@ -58,17 +61,29 @@ python -m http.server 8000 -d out
 - `npm ci`：通过。
 - `npm run test:models`：5/5 通过。
 - `npm run test:v3`：14/14 通过。
+- `npm run test:v45`：5/5 通过。
 - `npm run typecheck`：通过。
-- `npm run build`：通过，Next.js 16.4.2 生成 13 个静态页面；课程页、阅读页、实验页和两个审查页均生成。
+- `npm run build`：通过，Next.js 16.4.2 生成 15 个静态页面；原有页面和两个合成资料详情页均生成。
+- `npm run check:v45:static`：列表标题、详情页、页码、表格和 unsupported 提示通过。
+- GitHub Pages basePath 构建与链接检查通过。
 - 本地静态预览：`out/` 经本地 HTTP 服务打开后显示“知序 Learning Hub”首页。
 
 ## 数据与隐私
 
 - `content/v2-fixture/` 是开发者生成的合成栈课件，用于流水线审查。
 - `content/v3-sample/source.json` 是明确标记的合成稀疏矩阵样例；不对应任何真实课程文件。
-- `fixtures/v2/synthetic-stack-lesson.pptx` 是合成 PPTX，不是用户上传的课件。
-- 真实飞书授权、真实课件下载、数据库、账号、自动发布、部署和每日调度均未启用。
+- `fixtures/v2/synthetic-stack-lesson.pptx` 与 `fixtures/v45/synthetic-integration-deck.pptx` 都是合成 PPTX，不是用户上传的课件。
+- `src/data/v45-demo/` 由现有 V4.3 流水线处理上述两份合成 Fixture 生成，包含 2 份资料、6 页；全部带 `synthetic` / `demo` 标记。
+- 真实飞书授权、真实课件下载、数据库、账号和每日调度均未启用；GitHub Pages 静态审查预览已部署。
 - 本目录不包含 `.env`、Token、认证信息或私人课件。
+
+## V4.5 · 合成资料网站接入
+
+- 数据链路：合成 PPTX → V4.3 `run_incremental()` → `read_document()` → `scripts/v45_export_synthetic.py` → `src/data/v45-demo/` → `/sources` → `/sources/demo/[documentId]`。
+- 页面：列表显示 2 份合成资料（共 6 页）、版本和详情入口；详情页按页展示标题、正文层级、表格、页码和 `shape_index`，图片等 unsupported 块有明确提示。
+- 安全：只处理白名单合成 Fixture；store 出现未知文档时导出直接失败；不读取真实飞书或私人课件。
+- 详细说明与验证记录见 [`docs/V45_SYNTHETIC_INTEGRATION.md`](docs/V45_SYNTHETIC_INTEGRATION.md)。
+- 当前在 Draft PR #10；合并前需用户确认 main 上的 Pages 工作流会刷新公开预览。
 
 ## 公开审查部署
 
@@ -81,6 +96,7 @@ python -m http.server 8000 -d out
 ```bash
 cd web
 NEXT_PUBLIC_BASE_PATH=/ContinueLeanringWithAI npm run build
+# Git Bash 下需在命令前加 MSYS_NO_PATHCONV=1，避免路径转换
 ```
 
 ## 与根目录流水线的关系

@@ -1,0 +1,32 @@
+{
+  "documents": [
+    {
+      "content_file": "documents/27b4dc73c54fc7cc9504445ba88a4ba396591092e5281d04fbaf561d29ccf77c.json",
+      "current_version": "3e99834581092a826f291d02bfd3410596af53e4743eaea57675109726828b2e",
+      "demo": true,
+      "document_id": "27b4dc73c54fc7cc9504445ba88a4ba396591092e5281d04fbaf561d29ccf77c",
+      "schema_version": "pptx-content-v1",
+      "slide_count": 2,
+      "source_kind": "synthetic_fixture",
+      "source_sha256": "3e99834581092a826f291d02bfd3410596af53e4743eaea57675109726828b2e",
+      "synthetic": true,
+      "title": "合成集成样例（表格与未支持对象）"
+    },
+    {
+      "content_file": "documents/f05ff8e4ec66639c252aedf3037f701ba222284ba9860b260819d4a28fca61cb.json",
+      "current_version": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+      "demo": true,
+      "document_id": "f05ff8e4ec66639c252aedf3037f701ba222284ba9860b260819d4a28fca61cb",
+      "schema_version": "pptx-content-v1",
+      "slide_count": 4,
+      "source_kind": "synthetic_fixture",
+      "source_sha256": "475ee68d8e806627de59ee8792528ff4190ab80101efe2d13f56509d2a5d37a2",
+      "synthetic": true,
+      "title": "合成栈课件（V2 Fixture）"
+    }
+  ],
+  "generated_by": "scripts/v45_export_synthetic.py",
+  "notice": "仅包含项目内明确标记的合成 PPTX，由现有 V4.3 流水线实际处理；不代表真实课程、真实同步或正式发布内容。",
+  "schema_version": "v45-demo-v1",
+  "synthetic": true
+}

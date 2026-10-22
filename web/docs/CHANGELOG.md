@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## V4.5 · 2026-10-22 · 合成资料网站接入（Draft PR #10）
+
+- 复用 V4.3 增量流水线处理两份合成 Fixture，新增 `scripts/v45_export_synthetic.py` 与 `web/src/data/v45-demo/`。
+- `/sources` 新增合成演示资料区域；`/sources/demo/[documentId]` 逐页展示标题、正文层级、表格、页码和 `shape_index`。
+- unsupported 图片块显示明确提示；无效 documentId 返回 404。
+- 默认构建 15 个页面；GitHub Pages basePath 构建与链接检查通过。
+- V4.5 数据/页面测试 5/5；根目录 Python 32/32；网站 CI 增加导出复现、页面测试和静态检查。
+- 未合并、未手动触发 Pages 工作流。合并后会刷新公开静态预览，需用户确认。
+
 ## V4.4 · 2026-10-22 · 原 V4.1 网站恢复 + GitHub Pages 预览
 
 - 从用户指定的 `dev_网站` 会话恢复 `ContinueLeanringWithAI_V4_1_review.zip`（SHA-256 `cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`）。

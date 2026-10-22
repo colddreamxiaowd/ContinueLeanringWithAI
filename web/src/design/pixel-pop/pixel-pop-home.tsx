@@ -141,7 +141,7 @@ function DashboardContent({go}:{go:(v:View)=>void}){
         <button type="button" className="pp-task" onClick={()=>go("quiz")}>
           <span className="pp-task-play pp-task-play--yellow"><ListChecks size={22}/></span><span>
           <strong>章节练习</strong><small>理解检测 · 随时开始</small></span><ArrowRight size={18}/>
-        </div>
+        </button>
         <div className="pp-home-cat pp-decoration"><PixelCat size={55} cheer/> <span>知识是一场冒险！</span></div>
       </PopPanel>
       <PopPanel title="我的学习资料" eyebrow="PRIVATE FEISHU LIBRARY" className="pp-library"

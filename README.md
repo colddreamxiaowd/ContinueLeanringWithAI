@@ -8,6 +8,7 @@ AI 驱动的个人学习网站：长期整理学习资料、Blog、题库、交�
 - 原 V1–V4.1 Next.js / React / TypeScript 网站源码已经找回，放在 [`web/`](web/)；不再处于“网站源码缺失”状态。
 - V4.5 已把现有 Python 流水线处理的两份合成 PPTX 接入网站：`/sources` 列出 2 份资料，`/sources/demo/[documentId]` 逐页展示标题、正文、表格和来源位置；PR #10 已合并（merge `3694a02`）并上线。
 - 网站已在本地完成依赖安装、类型检查、测试和生产构建，生成 15 个静态页面；已部署 GitHub Pages 公开审查预览：[https://colddreamxiaowd.github.io/ContinueLeanringWithAI/](https://colddreamxiaowd.github.io/ContinueLeanringWithAI/)（静态只读，不是生产环境）。
+- V4.6-A 本地私有访问网关正在独立分支开发：固定回环监听、限时签名会话、只读资料 API；首轮测试只使用合成数据，尚未合并或部署。
 - 真实飞书 API 验证仍未执行；真实课程文件、来源元数据和私人课件未进入公开仓库。
 
 来源归档：`ContinueLeanringWithAI_V4_1_review.zip`，SHA-256 `cf93040b36f9a1f5711fd8caff01304dd353e2ca8d905cd2d65920318981035a`。恢复记录见 [`docs/PROJECT_INITIALIZATION.md`](docs/PROJECT_INITIALIZATION.md)。
@@ -53,7 +54,7 @@ npm run check:v45:static
 ## 测试入口
 
 ```bash
-# 根目录 Python 流水线（V4.1–V4.3 + V4.5，33 项）
+# 根目录 Python 流水线（V4.1–V4.5 基线 33 项；V4.6-A 新测试在独立 PR 中验证）
 python -m unittest discover -s tests -p "test_*.py" -v
 
 # 网站
@@ -74,4 +75,5 @@ npm run check:v45:static
 - 合并与发布已由用户明确授权；当前仅部署静态审查预览，未启用后端、数据库或真实飞书。
 - 不把真实课件、解析文本、凭证或用户令牌提交到公开仓库。
 - 真实飞书内容处理需要明确授权和本地凭证；当前使用合成/离线数据。
+- V4.6-A 本地私有网关仅在独立分支开发；本地原型不等于生产认证服务，真实私有存储接入仍需单独核准。
 - 重要版本由 DEV 审查，用户保留最终合并与发布决定。

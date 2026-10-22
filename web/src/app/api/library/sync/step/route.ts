@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "JOB_ID_INVALID" }, { status: 400 });
   }
 
-  let job: SyncJob | null;
+  let job: SyncJob | null = null;
   try {
     job = await loadJob(user.id, jobId);
     if (!job) return NextResponse.json({ error: "JOB_NOT_FOUND" }, { status: 404 });

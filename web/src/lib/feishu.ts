@@ -107,7 +107,7 @@ export async function getFeishuConnectionSummary(userId: string) {
     open_id: row.feishu_open_id,
     connected_at: row.connected_at,
     last_synced_at: row.last_synced_at,
-    refresh_available: Boolean(row.refresh_token_ciphertext && row.refresh_token_expires_at),
+    refresh_available: Boolean(row.refresh_token_ciphertext),
   };
 }
 

@@ -67,7 +67,13 @@ export async function GET(request: NextRequest) {
     if (!response.ok || token.code !== 0 || !token.access_token) {
       return libraryRedirect("feishu_token");
     }
-    const profile = await getFeishuUserInfo(token.access_token);
+    let profile: { open_id?: string; name?: string } = {};
+    try {
+      profile = await getFeishuUserInfo(token.access_token);
+    } catch {
+      // Drive access is the core permission; profile display is optional.
+      profile = { open_id: typeof token.open_id === "string" ? token.open_id : undefined };
+    }
     await saveFeishuConnection(user.id, token, profile);
     return libraryRedirect();
   } catch {

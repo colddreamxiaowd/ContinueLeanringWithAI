@@ -142,6 +142,7 @@ class V46PrivateGatewayTests(unittest.TestCase):
         status, _headers, body = self.request("GET", "/private/app.js")
         self.assertEqual(status, 200)
         self.assertIn(b"textContent", body)
+        self.assertIn("文本 · shape_index".encode("utf-8"), body)
 
     def test_session_status_reports_unauthenticated(self) -> None:
         status, headers, body = self.request("GET", "/api/private/session")
@@ -193,6 +194,24 @@ class V46PrivateGatewayTests(unittest.TestCase):
         content = json.loads(body)["content"]
         self.assertEqual(content["source_sha256"], listing[0]["current_version"])
         self.assertIn(self.marker, json.dumps(content, ensure_ascii=False))
+
+    def test_logout_expires_cookie_and_requires_relogin(self) -> None:
+        cookie = self.login()
+        status, headers, body = self.request(
+            "DELETE", "/api/private/session", cookie=cookie, origin=self.origin
+        )
+        self.assertEqual(status, 200)
+        self.assertFalse(json.loads(body)["authenticated"])
+        cleared = headers["set-cookie"].lower()
+        self.assertIn("max-age=0", cleared)
+        self.assertIn("httponly", cleared)
+        self.assertIn("samesite=strict", cleared)
+
+        status, _headers, body = self.request("GET", "/api/private/session")
+        self.assertEqual(status, 200)
+        self.assertEqual(json.loads(body), {"authenticated": False})
+        status, _headers, body = self.request("GET", "/api/private/documents")
+        self.assertEqual(status, 401)
 
     def test_expired_and_forged_cookies_are_rejected(self) -> None:
         expired = _make_session_cookie(

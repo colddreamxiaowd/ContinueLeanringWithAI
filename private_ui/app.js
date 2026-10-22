@@ -100,6 +100,7 @@
         const shapeIndex = Number.isInteger(block.shape_index) ? block.shape_index : "—";
         if (block.type === "text") {
           const paragraphs = Array.isArray(block.paragraphs) ? block.paragraphs : [];
+          section.appendChild(element("p", "block-meta", "文本 · shape_index " + shapeIndex));
           paragraphs.forEach((paragraph) => {
             const p = element("p", "text-block", paragraph.text || "");
             const level = Math.max(0, Math.min(6, Number(paragraph.level) || 0));
@@ -186,9 +187,10 @@
   logoutButton.addEventListener("click", async () => {
     try {
       await api("/api/private/session", { method: "DELETE" });
-    } finally {
       showLogin();
       setMessage(globalNode, "已注销。");
+    } catch (_error) {
+      setMessage(statusNode, "注销请求失败；请确认本机服务仍在运行。", true);
     }
   });
 

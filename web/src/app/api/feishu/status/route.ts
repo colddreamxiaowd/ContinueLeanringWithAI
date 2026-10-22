@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/public-auth";
 import { getFeishuConnectionSummary } from "@/lib/feishu";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   const user = await getCurrentUser();

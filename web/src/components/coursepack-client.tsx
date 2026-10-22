@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useState} from "react";
 import style from "./coursepack.module.css";
+import {validateCoursePack} from "@/lib/coursepack.mjs";
 
 type SourceRef={id:string;fileName:string;locator:string};
 type Block={id:string;type:"explanation"|"quiz"|"code"|"stack-simulator";
@@ -50,8 +51,8 @@ export function CoursePackClient(){
   function previewDraft(){
     try{
       const parsed=JSON.parse(draft) as Pack;
-      if(!parsed||typeof parsed.title!=="string"||!Array.isArray(parsed.chapters))
-        throw new Error("不是 CoursePack JSON");
+      const verdict=validateCoursePack(parsed);
+      if(!verdict.ok) throw new Error(verdict.errors.join("；"));
       setPreview(parsed);setActive(null);setProgress(emptyProgress());
       setStatus("已在浏览器预览。点击保存后由服务器校验格式，并以私人课程存储。");
     }catch(err){setPreview(null);setStatus("JSON 解析失败："+String(err));}
@@ -86,10 +87,9 @@ export function CoursePackClient(){
   function markBlock(id:string){if(!progress.completedBlockIds.includes(id))
     void commit({...progress,completedBlockIds:[...progress.completedBlockIds,id]});}
   function answer(block:Block,index:number){
-    if(preview)return setStatus("预览中的练习不会保存；保存私人课程后可记录学习情况。");
     const next={...progress,answers:{...progress.answers,[block.id]:index},
       completedBlockIds:progress.completedBlockIds.includes(block.id)?progress.completedBlockIds:[...progress.completedBlockIds,block.id]};
-    void commit(next);
+    if(preview)setProgress(next);else void commit(next);
   }
   function doStack(block:Block,mode:"push"|"pop"|"reset"){
     const arr=[...(progress.simStacks[block.id]||block.initial||[])];

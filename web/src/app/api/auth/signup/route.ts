@@ -36,6 +36,12 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     if (error instanceof AuthServiceError) {
+      if (error.status >= 500) {
+        return NextResponse.json(
+          { error: "邮箱验证码发送服务出现故障，请检查 Supabase → Logs → Auth Logs 和 SMTP 设置。" },
+          { status: 503 },
+        );
+      }
       const status = error.status === 429 ? 429 : 400;
       return NextResponse.json(
         { error: status === 429 ? "注册请求过于频繁，请稍后再试。" : "注册未完成，请检查邮箱是否已注册及 Supabase 邮箱设置。" },

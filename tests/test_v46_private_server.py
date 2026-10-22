@@ -12,6 +12,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 from scripts.synthetic_pptx import build_synthetic_bytes
+from scripts.v43_import import read_document
 from scripts.v43_pipeline import DownloadedFile, SourceFile, run_incremental
 from scripts.v46_private_server import (
     PRIVATE_UI_ROOT,
@@ -174,6 +175,8 @@ class V46PrivateGatewayTests(unittest.TestCase):
                 self.assertNotIn("set-cookie", headers)
 
     def test_valid_token_cookie_and_private_read(self) -> None:
+        direct_content = read_document(self.document_id, self.store)
+        self.assertTrue(direct_content.get("source_sha256"))
         cookie = self.login()
         status, headers, body = self.request(
             "GET", "/api/private/documents", cookie=cookie

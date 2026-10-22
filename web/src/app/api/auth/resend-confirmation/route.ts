@@ -32,7 +32,15 @@ export async function POST(request: Request) {
           { status: 429 },
         );
       }
-      // Do not reveal whether the email exists or was already confirmed.
+      if (error.status >= 500) {
+        // An SMTP/provider fault is not an account-enumeration detail. Never
+        // silently claim that a failed email-send request succeeded.
+        return NextResponse.json(
+          { error: "验证码发送服务出现故障，请检查 Supabase → Logs → Auth Logs 和 SMTP 设置。" },
+          { status: 503, headers: { "Cache-Control": "no-store" } },
+        );
+      }
+      // Other 4xx errors may reveal whether an email exists or is confirmed.
       return NextResponse.json({ ok: true }, {
         headers: { "Cache-Control": "no-store" },
       });

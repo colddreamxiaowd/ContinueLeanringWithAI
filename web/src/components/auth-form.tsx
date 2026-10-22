@@ -11,7 +11,6 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
-  const [resending, setResending] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,8 +30,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       };
       if (!response.ok) throw new Error(result.error || "请求失败，请重试。");
       if (result.confirmationRequired) {
-        setMessage("注册信息已提交。请打开邮箱完成验证，再使用邮箱和密码登录。");
-        setPassword("");
+        window.sessionStorage.setItem("signupVerificationEmail", email.trim().toLowerCase());
+        window.location.href = "/verify-email";
         return;
       }
       window.location.href = "/library";
@@ -41,32 +40,6 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       setMessage(error instanceof Error ? error.message : "请求失败，请重试。");
     } finally {
       setBusy(false);
-    }
-  }
-
-  async function resendConfirmation() {
-    if (!email.trim() || busy || resending) {
-      setIsError(true);
-      setMessage("请先填写注册使用的邮箱。");
-      return;
-    }
-    setResending(true);
-    setIsError(false);
-    setMessage("");
-    try {
-      const response = await fetch("/api/auth/resend-confirmation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const result = (await response.json().catch(() => ({}))) as { error?: string };
-      if (!response.ok) throw new Error(result.error || "邮件发送失败，请稍后重试。");
-      setMessage("请求已提交。如果这个邮箱尚未完成注册验证，请查看最新收到的邮件，并且只打开最新的验证链接。");
-    } catch (error) {
-      setIsError(true);
-      setMessage(error instanceof Error ? error.message : "无法重新发送验证邮件。");
-    } finally {
-      setResending(false);
     }
   }
 
@@ -89,16 +62,9 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             {busy ? "正在处理…" : isSignup ? "创建账号" : "登录"}
             {!busy && <ArrowRight size={16}/>}
           </button>
-          <button
-            className="button button-ghost"
-            type="button"
-            disabled={busy || resending}
-            onClick={() => void resendConfirmation()}
-          >
-            {resending ? "正在重新发送…" : "验证链接过期？重新发送验证邮件"}
-          </button>
         </form>
         <div className="auth-switch">{isSignup ? "已经有账号？" : "还没有账号？"} <Link href={isSignup ? "/login" : "/signup"}>{isSignup ? "直接登录" : "创建账号"}</Link></div>
+        <div className="auth-switch">已经收到邮件验证码？ <Link href="/verify-email">输入验证码</Link></div>
         <Link className="auth-home-link" href="/">返回学习总览</Link>
       </section>
       <p className="auth-footnote">你的飞书访问授权仅用于读取你自己允许访问的资料，不会向其他用户公开。</p>

@@ -51,9 +51,13 @@ export function StackPlayground({
     setMessage("实验已重置，可重新进行 Push / Pop。");
     setLastKind(null);
   };
-  const recent=history.slice(0,3).reverse();
-  const stages=[{id:0,label:"初始状态",stack:start.current,kind:null as "push"|"pop"|null},
-    ...recent.map(a=>({id:a.id,label:a.kind==="push"?"Push("+a.value+")":"Pop() → "+a.value,stack:a.stack,kind:a.kind}))];
+  const recent=history.slice(0,4).reverse();
+  const changedWithoutHistory=history.length===0&&JSON.stringify(stack)!==JSON.stringify(start.current);
+  const stages=history.length>3
+    ? recent.map(a=>({id:a.id,label:a.kind==="push"?"Push("+a.value+")":"Pop() → "+a.value,stack:a.stack,kind:a.kind}))
+    : [{id:0,label:changedWithoutHistory?"当前状态":"初始状态",
+        stack:changedWithoutHistory?stack:start.current,kind:null as "push"|"pop"|null},
+      ...recent.map(a=>({id:a.id,label:a.kind==="push"?"Push("+a.value+")":"Pop() → "+a.value,stack:a.stack,kind:a.kind}))];
   const padded=[...stages,...Array.from({length:Math.max(0,4-stages.length)},(_,i)=>({
     id:-(i+1),label:"等待下一步",stack:[] as number[],kind:null
   }))];
@@ -91,10 +95,10 @@ export function StackPlayground({
               value={input} onChange={e=>setInput(e.target.value)}
               onKeyDown={e=>{if(e.key==="Enter")commit("push");}}
               placeholder="例如 7"/>
-            <PopButton variant="blue" onClick={()=>commit("push")} disabled={stack.length>=limit}>
+            <PopButton variant="blue" onClick={()=>commit("push")}>
               <ArrowDownToLine size={17}/> Push 入栈
             </PopButton>
-            <PopButton variant="coral" onClick={()=>commit("pop")} disabled={stack.length===0}>
+            <PopButton variant="coral" onClick={()=>commit("pop")}>
               <ArrowUpFromLine size={17}/> Pop 出栈
             </PopButton>
             <PopButton variant="outline" onClick={reset}><RotateCcw size={16}/> 重置</PopButton>

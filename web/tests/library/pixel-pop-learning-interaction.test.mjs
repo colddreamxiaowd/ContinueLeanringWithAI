@@ -154,3 +154,31 @@ test("pop exit overlay starts at the removed element slot, independent of stack 
   assert.equal(third,12+2*166/6);
   assert.ok(third>first);
 });
+
+
+test("mobile current stack and historic four-stage replay share real state",()=>{
+ const stack=source("StackPlayground.tsx");
+ const css=source("learning.module.css");
+ assert.match(stack,/mobileCurrent/);
+ assert.match(stack,/stack\.map|Array\.from\(\{length:limit\}/);
+ assert.match(stack,/stackTimeline\(start\.current,stack,history\)/);
+ assert.match(stack,/aria-expanded=\{detailsOpen\}/);
+ assert.match(stack,/setDetailsOpen/);
+ assert.match(css,/\.stageGrid\.timelineExpanded\{display:flex/);
+ assert.match(css,/\.playgroundBody>\.history\{display:none\}/);
+ assert.match(css,/\.playgroundBody>\.history\.historyExpanded\{display:block/);
+ assert.match(css,/\.mobileCurrent \.popGhost\{display:none!important\}/);
+});
+
+test("mobile component lab shows one selectable feedback state and expandable mastery details",()=>{
+ const demo=source("Demo.tsx");
+ const css=source("learning.module.css");
+ assert.match(demo,/feedbackPreview/);
+ assert.match(demo,/setFeedbackPreview/);
+ assert.match(demo,/feedbackStatePicker/);
+ assert.match(demo,/feedbackGalleryActive/);
+ assert.match(demo,/setShowGoals/);
+ assert.match(demo,/aria-expanded=\{showGoals\}/);
+ assert.match(css,/\.feedbackGalleryItem:not\(\.feedbackGalleryActive\)\{display:none\}/);
+ assert.match(css,/\.progressTasks:not\(\.goalsExpanded\),\.progressEncourage:not\(\.goalsExpanded\)\{display:none\}/);
+});

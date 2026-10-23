@@ -101,7 +101,7 @@ try{
       const live=document.querySelector('[aria-label="当前栈实时视图"]');
       const timeline=document.getElementById('learning-stack-timeline');
       const log=document.querySelector('[aria-label="栈操作历史"]');
-      const gallery=[...document.querySelectorAll('section[aria-label="重试引导"],section[aria-label="正确答案反馈"],section[aria-label="错误答案反馈"]')];
+      const gallery=[...document.querySelectorAll('section[aria-label="重试状态"],section[aria-label="正确答案"],section[aria-label="答案错误"]')];
       const picker=[...document.querySelectorAll('button')].filter(x=>x.textContent.includes('✓ 正确')||x.textContent.includes('× 错误')||x.textContent.includes('↻ 重试'));
       return {live:!!live&&getComputedStyle(live).display!=='none',
         timelineHidden:getComputedStyle(timeline).display==='none',

@@ -56,7 +56,8 @@ export function LearningDemo(){
         <Xiaozhi size={48} mood="happy" decorative/>
       </div>
     </header>
-    <section className={styles.demoSection} id="learning-demo-lab">
+    <div className={styles.demoBoard}>
+    <section className={styles.demoSection+" "+styles.demoLabPanel} id="learning-demo-lab">
       <div className={styles.demoSectionTitle}><b>1</b><div>
         <h2>StackPlayground · 栈操作实验组件</h2>
         <p>逐步 Push / Pop、即时栈顶、操作历史、动画与边界反馈</p>
@@ -64,8 +65,7 @@ export function LearningDemo(){
       <StackPlayground onOperation={a=>setNotice("实验操作成功："+(a.kind==="push"?"入栈 ":"弹出 ")+a.value)}/>
       <div className={styles.demoNote}>💡 实验引导：输入 7 并 Push → 输入 3 并 Push → Pop → 重置。历史记录只保存在当前预览状态中。</div>
     </section>
-    <div className={styles.demoLayout}>
-      <section className={styles.demoSection}>
+      <section className={styles.demoSection+" "+styles.demoQuizPanel}>
         <div className={styles.demoSectionTitle}><b>2</b><div><h2>QuizCard · 单选题组件</h2>
           <p>题干、选项、即时判题、解析与下一题</p></div></div>
         <QuizCard key={EXAMPLE_QUESTIONS[questionIndex].id} question={EXAMPLE_QUESTIONS[questionIndex]}
@@ -74,7 +74,7 @@ export function LearningDemo(){
           onNext={advance} onOpenLab={showLab} onReview={()=>setNotice("复习提示：栈遵循后进先出（LIFO）。")}/>
         <div className={styles.demoNote}>💡 本区域显示模拟练习题，不写入真实课程成绩。</div>
       </section>
-      <section className={styles.demoSection}>
+      <section className={styles.demoSection+" "+styles.demoProgressPanel}>
         <div className={styles.demoSectionTitle}><b>4</b><div><h2>ProgressRing · 掌握度总结</h2>
           <p>复用现有共享进度环，仅在预览组合中显示</p></div></div>
         <div className={styles.demoProgress}>
@@ -92,8 +92,7 @@ export function LearningDemo(){
         </div>
         <div className={styles.demoNote}>10 道示例题 · 7 道正确 · 3 道待巩固。演示数字，与 CoursePack 进度无关。</div>
       </section>
-    </div>
-    <section className={styles.demoSection}>
+    <section className={styles.demoSection+" "+styles.demoFeedbackPanel}>
       <div className={styles.demoSectionTitle}><b>3</b><div>
         <h2>AnswerFeedback · 答题反馈组件</h2>
         <p>三个独立可复用状态：正确、错误、重试；动作由调用方提供</p></div></div>
@@ -109,6 +108,7 @@ export function LearningDemo(){
       </div>
       <div className={styles.demoNote} role="status">{notice}</div>
     </section>
+    </div>
   </main>;
 }
 export default LearningDemo;

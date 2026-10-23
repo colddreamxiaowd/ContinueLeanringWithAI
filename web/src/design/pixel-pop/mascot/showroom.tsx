@@ -1,6 +1,8 @@
 "use client";
 import {useState} from "react";
 import {Xiaozhi,XIAOZHI_MOODS} from "./Xiaozhi";
+import {XIAOZHI_PARTS} from "./XiaozhiLayers";
+import type {XiaozhiPart} from "./XiaozhiLayers";
 import type {XiaozhiMood,XiaozhiMotion} from "./Xiaozhi";
 import styles from "./showroom.module.css";
 
@@ -22,6 +24,7 @@ export default function XiaozhiShowroom(){
  const [motion,setMotion]=useState<XiaozhiMotion>("idle");
  const [theme,setTheme]=useState<"light"|"dark">("light");
  const [art,setArt]=useState<"trace"|"reference"|"vector">("trace");
+ const [inspectPart,setInspectPart]=useState<XiaozhiPart|null>(null);
  return <div className={styles.page}>
   <header className={styles.header}>
     <div><span className={styles.overline}>PIXEL POP / CHARACTER SYSTEM / V1</span>
@@ -33,7 +36,7 @@ export default function XiaozhiShowroom(){
   <div className={styles.layout}>
     <section className={styles.spotlight+" "+(theme==="dark"?styles.spotlightDark:"")}>
       <div className={styles.sparkTop} aria-hidden="true">✦ <b>LEARN • PRACTICE • GROW</b> ✦</div>
-      <div className={styles.mascotMain}><Xiaozhi size={286} mood={mood} motion={motion} art={art}/></div>
+      <div className={styles.mascotMain}><Xiaozhi size={286} mood={mood} motion={motion} art={art} inspectPart={inspectPart}/></div>
       <div className={styles.spotlightCaption}>
        <strong>{names[mood]}</strong><span>{uses[mood]}</span>
       </div>
@@ -65,14 +68,21 @@ export default function XiaozhiShowroom(){
        <button type="button" onClick={()=>setArt("vector")} aria-pressed={art==="vector"}
          className={art==="vector"?styles.activeSegment:""}>以前的手工多边形版</button>
       </div>
-      <h2>04 / 对比场景</h2>
+      <h2>04 / 真实语义图层（静态）</h2>
+      <p className={styles.partHint}>选择眼睛、学士帽或尾巴，只高亮该部位。默认合成必须与原始 25 色母版完全一致。</p>
+      <div className={styles.partGrid}>
+        <button type="button" aria-pressed={inspectPart===null} onClick={()=>setInspectPart(null)}>完整角色</button>
+        {XIAOZHI_PARTS.map(part=><button type="button" key={part} disabled={art!=="trace"}
+          aria-pressed={inspectPart===part} onClick={()=>setInspectPart(part)}>{part}</button>)}
+      </div>
+      <h2>05 / 对比场景</h2>
       <div className={styles.segmented}>
         <button type="button" onClick={()=>setTheme("light")} aria-pressed={theme==="light"}
           className={theme==="light"?styles.activeSegment:""}>明亮背景</button>
         <button type="button" onClick={()=>setTheme("dark")} aria-pressed={theme==="dark"}
           className={theme==="dark"?styles.activeSegment:""}>深色背景</button>
       </div>
-      <p className={styles.footnote}>真实路径版由 25 色、1,579 个合并区域构成；可以编辑颜色与路径，但尚未按眼睛、嘴巴、帽子等部位建立语义动画图层。当前非默认情绪只是状态符号，并非真正的面部表情重绘。动画遵循“减少动态效果”设置。</p>
+      <p className={styles.footnote}>真实路径版已拆成 12 个静态语义组，重新合成与 25 色原始母版完全一致。它不是骨骼动画系统；额外的 mood 符号不等于五官真正换表情。24px / 32px 头像采用单独的光学校正 SVG。动画遵循“减少动态效果”设置。</p>
     </aside>
   </div>
   <section className={styles.specimens}>

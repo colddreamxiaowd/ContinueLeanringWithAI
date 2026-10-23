@@ -10,13 +10,16 @@
   vertical-align:middle;
   transform-origin:50% 75%;
 }
-.art{display:block;width:100%;height:100%;overflow:visible}
+.art{display:block;width:100%;height:100%;overflow:visible;outline:none;box-shadow:none;filter:none;background:transparent}
+.optical{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;outline:none;box-shadow:none;filter:none;background:transparent}
+.frame[data-pose="avatar"] .art{overflow:hidden}
+.frame svg [data-xz-rig]{stroke:none}
 .hat{transform-origin:50% 43%}
 .accent{pointer-events:none}
 .frame[data-motion="idle"]:hover{animation:xz-hello 650ms steps(4,end) 1}
 .frame[data-motion="wave"]{animation:xz-hello 950ms steps(5,end) infinite}
 .frame[data-motion="bounce"]{animation:xz-hop 1000ms steps(4,end) infinite}
-.frame[data-pose="avatar"]{border-radius:50%;overflow:hidden}
+.frame[data-pose="avatar"]{border-radius:0;overflow:visible}
 @keyframes xz-hello{
   0%,100%{transform:rotate(0deg)}
   30%,65%{transform:rotate(-7deg)}

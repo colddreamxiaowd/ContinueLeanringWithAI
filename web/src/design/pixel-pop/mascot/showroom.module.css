@@ -23,7 +23,11 @@
  color:#7440FF;font-size:21px;font-weight:900}
 .sparkTop b{color:#111119;font-size:11px;letter-spacing:2px}
 .spotlightDark .sparkTop b{color:white}
-.mascotMain{position:relative;z-index:2;filter:drop-shadow(7px 7px 0 rgba(14,14,23,.11))}
+.mascotMain{position:relative;z-index:2;filter:none;box-shadow:none;outline:none}
+.partGrid{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 18px}
+.partGrid button{font-size:11px;font-weight:750;padding:5px 8px;border:1px solid #BDC6DC;border-radius:4px;background:#F9FAFF;color:#111119}
+.partGrid button[aria-pressed="true"]{background:#FFE342;border:2px solid #12121D;box-shadow:2px 2px 0 #12121D}
+.partHint{font-size:11px;color:#626B87;line-height:1.6}
 .floor{position:absolute;width:70%;height:31px;bottom:68px;border-radius:50%;background:#131332;filter:blur(12px);opacity:.20}
 .spotlightCaption{position:absolute;z-index:2;bottom:24px;background:#fff;border:3px solid var(--ink);
  padding:8px 22px;box-shadow:4px 4px 0 var(--ink);display:flex;align-items:center;gap:14px;transform:rotate(-3deg)}

@@ -17,6 +17,6 @@ test("authentic vector master is made of editable color paths, not embedded PNG"
 test("true vector trace is default and legacy modes remain explicitly available",()=>{
   assert.match(component,/art="trace"/);
   assert.match(component,/traceArt=art==="trace"/);
-  assert.match(component,/xiaozhi-traced-master.svg/);
+  assert.match(component,/<XiaozhiLayers inspectPart=\{inspectPart\}\/>/);
   assert.match(component,/art==="reference"/);
 });

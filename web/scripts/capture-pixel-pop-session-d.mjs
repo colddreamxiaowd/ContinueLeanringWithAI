@@ -150,6 +150,28 @@ try{
   await delay(100);
   const reset=await assess(`document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length`);
   if(reset!==0)throw Error("Reset history failed");
+  if(name==="mobile"){
+    for(let k=0;k<6;k++){
+      await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Push 入栈'))).click()`);
+      await delay(60);
+    }
+    const full=await assess(`document.querySelectorAll('[aria-label="栈操作历史"] li').length`);
+    if(full!==6)throw Error("Capacity test setup failed: "+full);
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Push 入栈'))).click()`);
+    await delay(120);
+    const blocked=await assess(`({
+      text:document.querySelector('[aria-label="可交互的栈操作实验"] [role="status"]')?.textContent,
+      count:document.querySelectorAll('[aria-label="栈操作历史"] li').length
+    })`);
+    if(!blocked.text.includes("栈已满")||blocked.count!==6)throw Error("Full-stack boundary regression "+JSON.stringify(blocked));
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('查看四步回放与操作日志'))).click()`);
+    await delay(110);
+    const visualStages=await assess(`document.querySelectorAll('#learning-stack-timeline > div').length`);
+    if(visualStages!==4)throw Error("Expected four real operation stages, found "+visualStages);
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('重置'))).click()`);
+    await delay(100);
+  }
+
   await assess(`document.querySelector('section[aria-label=\"单选题\"] button[aria-label^=\"A，\"]').click()`);
   await delay(120);
   const wrong=await assess(`!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"答案错误\"]')`);
@@ -174,6 +196,31 @@ try{
   await delay(110);
   const next=await assess(`document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('Push(5)')`);
   if(!next)throw Error("Next question not changed");
+  if(name==="mobile"){
+    const panel=await assess(`(()=>{
+      const buttons=[...document.querySelectorAll('button')];
+      const gallery=()=>[...document.querySelectorAll('section[aria-label="正确答案"],section[aria-label="答案错误"],section[aria-label="重试状态"]')].filter(e=>e.getClientRects().length).length;
+      const button=(str)=>buttons.find(b=>b.textContent.includes(str));
+      button("✓ 正确").click();
+      return gallery();
+    })()`);
+    await delay(120);
+    const currentGood=await assess(`document.querySelector('.'+document.querySelector('[aria-label="正确答案"]')?.className.split(' ')[0])!==null && !!document.querySelector('[aria-label="正确答案"]')?.getClientRects().length`);
+    if(panel!==1||!currentGood)throw Error("Gallery should show exactly one correct feedback state");
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('× 错误'))).click()`);
+    await delay(110);
+    const wrongOnly=await assess(`!!document.querySelector('[aria-label="答案错误"]')?.getClientRects().length`);
+    if(!wrongOnly)throw Error("Error gallery state not visible after switch");
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('展开学习目标与建议'))).click()`);
+    await delay(100);
+    const goals=await assess(`!!document.querySelector('[id="session-d-mastery-goals"]')?.getClientRects().length`);
+    if(!goals)throw Error("Mastery detail expansion failed");
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('收起学习目标与建议'))).click()`);
+    await delay(100);
+    const goalsHidden=await assess(`!document.querySelector('[id="session-d-mastery-goals"]')?.getClientRects().length`);
+    if(!goalsHidden)throw Error("Mastery details did not collapse");
+  }
+
   outputs.at(-1).interaction={push:true,pop:true,empty:true,reset:true,wrong,retried,correct,next};
 
  }

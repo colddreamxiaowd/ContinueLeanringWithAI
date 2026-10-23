@@ -85,16 +85,18 @@ export default function DashboardCardsDemo() {
             onContinue={() => setLastAction("继续学习：" + (chapters.find(item => item.status === "current")?.title ?? "无当前章节"))}
             onViewAll={() => setLastAction("查看全部章节")}/>
           <div className={styles.compactExamples}>
+            <div className={styles.variantCase}><span className={styles.variantTag}>低进度状态（0–30%）</span>
             <CourseProgressCard compact progressPercent={20} chapters={[
               {id:"v1",title:"第一节",status:"completed"},
               {id:"v2",title:"第二节",status:"current"},
               {id:"v3",title:"第三节",status:"available"},
               {id:"v4",title:"第四节",status:"available"},
-              {id:"v5",title:"第五节",status:"available"}]} onContinue={() => setLastAction("继续学习低进度课程")}/>
+              {id:"v5",title:"第五节",status:"available"}]} onContinue={() => setLastAction("继续学习低进度课程")}/></div>
+            <div className={styles.variantCase}><span className={styles.variantTag}>已完成状态</span>
             <CourseProgressCard compact progressPercent={100} chapters={[
               {id:"a",title:"已完成第一节",status:"completed"},
               {id:"b",title:"已完成第二节",status:"completed"}]}
-              onCertificate={() => setLastAction("查看结课证书（演示动作）")}/>
+              onCertificate={() => setLastAction("查看结课证书（演示动作）")}/></div>
           </div>
         </div>
       </section>
@@ -104,10 +106,12 @@ export default function DashboardCardsDemo() {
           <SourceFileCard files={files.slice(0,4)} onOpenFile={id => setLastAction("打开资料：" + id)}
             onViewAll={() => setLastAction("查看全部资料")}/>
           <div className={styles.compactExamples}>
+            <div className={styles.variantCase}><span className={styles.variantTag}>同步中 / 失败状态</span>
             <SourceFileCard title="同步状态" compact files={files.slice(4)}
-              onOpenFile={id => setLastAction("选择资料：" + id)} onRetrySync={retryFile}/>
+              onOpenFile={id => setLastAction("选择资料：" + id)} onRetrySync={retryFile}/></div>
             <button type="button" className={styles.demoButton} onClick={advanceSync}>推进模拟同步 +20%</button>
-            <SourceFileCard title="空状态" compact files={[]}/>
+            <div className={styles.variantCase}><span className={styles.variantTag}>空状态</span>
+              <SourceFileCard title="空状态" compact files={[]}/></div>
           </div>
         </div>
       </section>

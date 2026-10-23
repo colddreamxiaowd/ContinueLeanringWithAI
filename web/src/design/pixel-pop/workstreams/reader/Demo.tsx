@@ -46,12 +46,12 @@ const lesson:LessonData={id:"demo-stack",title:"栈的 Push / Pop",breadcrumb:["
   {type:"heading",id:"demo-pop",number:"3",title:"Pop（出栈）操作"},
   {type:"paragraph",content:[{text:"Pop 取走当前栈顶并返回它。如果栈已经为空，出栈必须给出明确的失败反馈；否则调用方就无法判断返回值是否有效。执行连续操作时，不妨自己写下栈的变化：Push(2) → Push(5) → Pop()，先离开的是 5。"}]},
   {type:"keyPoints",id:"key-stack",title:"本节知识点总结",items:["Push 总是在栈顶插入元素，Pop 从栈顶移除元素。","后进先出（LIFO）决定了数据的实际访问顺序。","Python 列表的 append 通常是均摊 O(1)，并非每次必然恒定。","空栈、满栈等边界需要明确设计。"]},
-  {type:"heading",id:"s33",number:"3",title:"栈的应用场景"},
+  {type:"heading",id:"s33",number:"4",title:"栈的应用场景"},
   {type:"paragraph",content:[{text:"函数调用栈、表达式求值和撤销操作，都可以利用栈的后进先出性质。当你在编辑器里连续输入、删除和修改内容时，撤销通常要优先撤销最后一次操作，因此栈比队列更自然。"}]},
   {type:"paragraph",content:[{text:"括号匹配是另一个典型例子：读到左括号就入栈；遇到右括号时，检查最近一个未关闭的左括号。如果出现空栈或者类型不匹配，就说明表达式存在问题。"}]},
-  {type:"heading",id:"s34",number:"4",title:"综合练习"},
+  {type:"heading",id:"s34",number:"5",title:"综合练习"},
   {type:"paragraph",content:[{text:"尝试自己写出三次 Push 后执行 Pop 的结果，并解释元素顺序为什么改变。"}]},
-  {type:"heading",id:"s35",number:"5",title:"章节测验"},
+  {type:"heading",id:"s35",number:"6",title:"章节测验"},
   {type:"activity",id:"demo-quiz",kind:"quiz",label:"练习内容由 CoursePack 交互组件负责渲染。"},
   {type:"heading",id:"s41",number:"6",title:"单链表结构（跨章示意）"},
   {type:"paragraph",content:[{text:"链表通过节点之间的引用组织数据，与栈、队列所描述的访问规则是两个不同维度。一个栈可以使用数组实现，也可以使用链表实现。读者应该先区分数据结构的抽象行为与具体存储方式。"}]},
@@ -77,7 +77,7 @@ function editorialLesson(chapterId:string):LessonData{
   const start=chapterId==="ch4"?split("s41"):chapterId==="ch5"?split("s51"):0;
   const end=chapterId==="ch3"?split("s41"):chapterId==="ch4"?split("s51"):lesson.blocks.length;
   const title=chapterId==="ch4"?"链表与节点":chapterId==="ch5"?"树与层级结构":lesson.title;
-  return {...lesson,title,breadcrumb:["数据结构",chapters.find(x=>x.id===chapterId)?.label||"课程内容"],blocks:lesson.blocks.slice(start,end)};
+  return {...lesson,title,breadcrumb:chapterId==="ch3"?lesson.breadcrumb:["数据结构",chapters.find(x=>x.id===chapterId)?.label||"课程内容"],blocks:lesson.blocks.slice(start,end)};
 }
 export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const [density,setDensity]=useState<"minimal"|"balanced"|"normal">("balanced");
@@ -87,7 +87,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   function navigateTo(id:string){
     setActiveSectionId(id);setJumpId(id);
     const targetChapter=chapters.find(c=>c.sections.some(section=>section.id===id));
-    if(targetChapter&&sourceMode==="editorial")setSelectedChapterId(targetChapter.id);
+    if(targetChapter&&sourceMode==="editorial"){setSelectedChapterId(targetChapter.id);if(targetChapter.id!=="ch3")setSelectedCitationId(null);}
   }
   useEffect(()=>{
     if(!jumpId)return;
@@ -100,7 +100,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const mapped=adaptCoursePackV01(coursePackDemo,{mode:"demo",completedBlockIds:["concept"],activeBlockId:"more"});
   const currentLesson=sourceMode==="editorial"?editorialLesson(selectedChapterId):mapped.lesson as LessonData;
   const currentChapters=sourceMode==="editorial"?chapters:mapped.chapters as OutlineChapter[];
-  const currentCitations=sourceMode==="editorial"?references:mapped.citations as CitationRecord[];
+  const currentCitations=sourceMode==="editorial"?(selectedChapterId==="ch3"?references:[]):mapped.citations as CitationRecord[];
   const [activeSectionId,setActiveSectionId]=useState("s32");
   const [selectedCitationId,setSelectedCitationId]=useState<string|null>("cite-1");
   useEffect(()=>{if(sourceMode==="coursepack"){setActiveSectionId("more");setSelectedCitationId("mock-12");}

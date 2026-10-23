@@ -91,7 +91,7 @@ test("Session A integration frame owns route navigation and shared density, with
   const s=source("IntegrationFrame.tsx");
   const demo=source("capture-session-a.mjs");
   assert.match(s,/href,icon,subtitle/);
-  assert.match(s,/aria-label="知序真实组件拼装验收"/);
+  assert.match(s,/aria-label=\{presentation==="demo"\?"知序真实组件拼装验收":"知序学习工作台"\}/);
   assert.match(s,/sessionStorage\.setItem\("zhixu_shell_collapsed"/);
   assert.match(s,/localStorage\.setItem\("zhixu_pixel_pop_density"/);
   assert.match(s,/data-integration-surface=\{surface\}/);

@@ -1,0 +1,62 @@
+name: Zhixu Unified V1 — actual Next.js screenshots
+
+on:
+  pull_request:
+    paths:
+      - 'web/src/app/ui-lab/integrated/**'
+      - 'web/src/design/pixel-pop/**'
+      - 'web/scripts/capture-zhixu-unified.mjs'
+      - '.github/workflows/zhixu-unified-v1-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+      - name: Build real Next.js site
+        working-directory: web
+        run: npm run build
+      - name: Launch production server
+        working-directory: web
+        run: |
+          npx next start --hostname 127.0.0.1 --port 3001 > /tmp/zhixu-next.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS http://127.0.0.1:3001/ui-lab/integrated/home -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/zhixu-next.log
+          exit 1
+      - name: Ensure Chrome and CJK font
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+          fc-match 'WenQuanYi Micro Hei'
+          command -v google-chrome || command -v chromium
+      - name: Walk three real routes and capture three viewports
+        working-directory: web
+        env:
+          ZHIXU_PREVIEW_ORIGIN: http://127.0.0.1:3001
+          ZHIXU_PREVIEW_OUT: ../unified-preview
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-zhixu-unified.mjs
+      - name: Save real-browser screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhixu-unified-v1-actual-chromium
+          path: unified-preview/
+          retention-days: 14
+          if-no-files-found: warn

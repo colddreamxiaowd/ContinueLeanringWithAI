@@ -121,3 +121,8 @@
 .demoPage[data-session-c-live="true"] .lessonFlow{width:min(100%,760px)}
 @media(max-width:680px){.demoPage[data-session-c-live="true"] .demoTop{padding:12px}
   .demoPage[data-session-c-live="true"] .demoGrid{padding:10px}}
+
+/* Keep navigation and provenance available while a long lesson scrolls on desktop. */
+@media(min-width:1181px){
+  .demoPage[data-session-c-live="true"] .demoColumn:not(:first-child){position:sticky;top:14px;align-self:start}
+}

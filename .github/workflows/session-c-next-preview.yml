@@ -30,7 +30,7 @@ jobs:
       - name: Session C tests and TypeScript
         working-directory: web
         run: |
-          node --test tests/library/pixel-pop-reader-c*.test.mjs
+          node --test tests/library/pixel-pop-reader-c.test.mjs
           npm run typecheck
       - name: Build Next.js
         working-directory: web

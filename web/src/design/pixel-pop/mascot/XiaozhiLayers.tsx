@@ -3,7 +3,6 @@
  * Semantic layers are region-identified, NOT yet an articulated skeleton.
  * Regenerate only from the canonical source, never from a newly imagined cat.
  */
-import type {ReactNode} from "react";
 export const XIAOZHI_PARTS = ["hat","tassel","ear-left","ear-right","eye-left","eye-right","mouth","blush-left","blush-right","tail","torso","face"] as const;
 export type XiaozhiPart = typeof XIAOZHI_PARTS[number];
 export function XiaozhiLayers({inspectPart}: {inspectPart?:XiaozhiPart|null}){

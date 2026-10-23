@@ -2,6 +2,7 @@
 
 import {BarChart3, CalendarDays, Check, ChevronRight, ClipboardCheck, Play} from "lucide-react";
 import {PopPanel} from "../../primitives";
+import {taskStatusPresentation} from "./card-state.mjs";
 import styles from "./dashboard.module.css";
 
 export type StudyTaskKind = "video" | "practice" | "quiz";
@@ -23,11 +24,8 @@ export interface StudyTaskCardProps {
   compact?: boolean;
   className?: string;
 }
-const TYPE_LABEL: Record<StudyTaskKind, string> = {video: "视频学习", practice: "动手练习", quiz: "章节测验"};
-const STATE_LABEL: Record<StudyTaskStatus, string> = {
-  "not-started": "未开始", "in-progress": "进行中", completed: "已完成",
-};
 
+/** Three kinds and three states are independent; parent handles navigation/progress. */
 export function StudyTaskCard({
   title = "今日学习", dateLabel, tasks, onOpenTask, onViewAll,
   compact = false, className = "",
@@ -44,21 +42,26 @@ export function StudyTaskCard({
       <span>任务安排将在这里显示</span>
     </div> : <ul className={styles.taskList}>
       {tasks.map(task => {
-        const statusText = STATE_LABEL[task.status];
-        const kindText = TYPE_LABEL[task.kind];
-        const content = <><span className={[styles.taskIcon, styles["taskKind_" + task.kind]].join(" ")} aria-hidden="true">
-          {task.status === "completed" ? <Check size={21} strokeWidth={3}/> :
-            task.kind === "quiz" ? <ClipboardCheck size={20}/> : <Play size={19} fill="currentColor"/>}
-        </span>
-        <span className={styles.taskText}><strong>{task.title}</strong>
-          <small>{task.durationMinutes} 分钟 · <span className={styles["state_" + task.status]}>{statusText}</span>
-            {!compact && task.subtitle ? <span> · {task.subtitle}</span> : null}
-          </small></span>
-        {task.status === "completed" ? <span className={styles.taskCompleted} aria-label="已完成"><Check size={18}/></span> :
-          <span className={styles.taskBars} aria-hidden="true"><BarChart3 size={21}/></span>}</>;
+        const labels = taskStatusPresentation(task);
+        const duration = Number.isFinite(task.durationMinutes) ? Math.max(0, Math.round(task.durationMinutes)) : 0;
+        const content = <>
+          <span className={[styles.taskIcon, styles["taskKind_" + task.kind]].join(" ")} aria-hidden="true">
+            {task.kind === "quiz" ? <ClipboardCheck size={19}/> : <Play size={18} fill="currentColor"/>}
+          </span>
+          <span className={styles.taskText}><strong title={task.title}>{task.title}</strong>
+            <small>{duration} 分钟 · <span className={styles["state_" + task.status]}>{labels.status}</span>
+              {!compact && task.subtitle ? <span> · {task.subtitle}</span> : null}
+            </small>
+          </span>
+          {task.status === "completed" ?
+            <span className={styles.taskCompleted} aria-label="已完成"><Check size={18} strokeWidth={3}/></span> :
+            <span className={[styles.taskBars, task.status === "in-progress" ? styles.taskBarsActive : ""].join(" ")} aria-hidden="true">
+              <BarChart3 size={20} strokeWidth={3}/>
+            </span>}
+        </>;
         return <li key={task.id} className={[styles.taskRow, styles["taskState_" + task.status]].join(" ")}>
           {onOpenTask ? <button type="button" className={styles.taskAction} onClick={() => onOpenTask(task.id)}
-            aria-label={kindText + "：" + task.title + "，" + statusText}>{content}</button> :
+            aria-label={labels.type + "：" + task.title + "，" + labels.status}>{content}</button> :
             <div className={styles.taskAction}>{content}</div>}
         </li>;
       })}

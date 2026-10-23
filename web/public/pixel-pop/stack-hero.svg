@@ -26,10 +26,10 @@
 <path d="M257 245L434 196V264L257 311Z" fill="url(#dots)" opacity=".43"/>
 <path d="M258 322L447 268V337L258 390Z" fill="url(#dots)" opacity=".45"/>
 <g font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="900" fill="#fff" text-anchor="middle">
-<text x="205" y="173" transform="skewY(19)">Push</text>
-<text x="198" y="262" transform="skewY(19)">Pop</text>
+<text x="205" y="173" transform="matrix(1 0.28 0 1 0 -55)">Push</text>
+<text x="198" y="262" transform="matrix(1 0.28 0 1 0 -55)">Pop</text>
 </g>
-<text x="182" y="382" transform="skewY(19)" font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="900" fill="#101017" text-anchor="middle">Stack</text>
+<text x="182" y="352" transform="matrix(1 0.28 0 1 0 -51)" font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="900" fill="#101017" text-anchor="middle">Stack</text>
 <g fill="#101017"><path d="M453 69l8-57 14 4-7 58Z"/><path d="M476 86l40-44 10 12-44 42Z"/><path d="M468 103l62-2-1 13-61 2Z"/></g>
 <g stroke="#101017" stroke-width="5" stroke-linejoin="miter">
 <path d="M68 177C40 220 60 249 80 260" stroke="#7440ff" fill="none"/><path d="M58 251l22 12 5-26" fill="#7440ff"/>

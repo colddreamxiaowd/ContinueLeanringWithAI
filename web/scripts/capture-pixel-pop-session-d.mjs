@@ -75,6 +75,7 @@ try{
   if(check.width>check.viewport+3)throw Error("Horizontal overflow at "+name+": "+JSON.stringify(check));
   const dimensions=await send("Page.getLayoutMetrics");
   const contentHeight=Math.min(19000,Math.ceil(dimensions.cssContentSize.height));
+  if(name==="mobile"&&contentHeight>=3800)throw Error("Mobile presentation is still too long: "+contentHeight+"px (before: 4565px)");
   const screenshot=await send("Page.captureScreenshot",{
     format:"png",fromSurface:true,captureBeyondViewport:true,
     clip:{x:0,y:0,width,height:contentHeight,scale:1}
@@ -95,6 +96,40 @@ try{
   await delay(470);
   const pushed=await assess(`({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})`);
   if(!pushed.status.includes("栈顶 7")||pushed.history!==1)throw Error("Push failed "+JSON.stringify(pushed));
+  if(name==="mobile"){
+    const state=await assess(`(()=>{
+      const live=document.querySelector('[aria-label="当前栈实时视图"]');
+      const timeline=document.getElementById('learning-stack-timeline');
+      const log=document.querySelector('[aria-label="栈操作历史"]');
+      const gallery=[...document.querySelectorAll('section[aria-label="重试引导"],section[aria-label="正确答案反馈"],section[aria-label="错误答案反馈"]')];
+      const picker=[...document.querySelectorAll('button')].filter(x=>x.textContent.includes('✓ 正确')||x.textContent.includes('× 错误')||x.textContent.includes('↻ 重试'));
+      return {live:!!live&&getComputedStyle(live).display!=='none',
+        timelineHidden:getComputedStyle(timeline).display==='none',
+        logHidden:getComputedStyle(log).display==='none',
+        galleries:gallery.filter(x=>x.getClientRects().length>0).length,
+        picker:picker.length};
+    })()`);
+    if(!state.live||!state.timelineHidden||!state.logHidden||state.galleries!==1||state.picker!==3)
+      throw Error("Mobile compact default is invalid "+JSON.stringify(state));
+    const pic=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    writeFileSync(join(folder,"session-d-mobile-push-live.png"),Buffer.from(pic.data,"base64"));
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('查看四步回放与操作日志'))).click()`);
+    await delay(160);
+    const expanded=await assess(`({
+      steps:document.querySelector('#learning-stack-timeline')?.getClientRects().length,
+      log:document.querySelector('[aria-label="栈操作历史"]')?.getClientRects().length,
+      count:document.querySelectorAll('[aria-label="栈操作历史"] li').length
+    })`);
+    if(!expanded.steps||!expanded.log||expanded.count!==1)
+      throw Error("Real history disclosure broken: "+JSON.stringify(expanded));
+    const historyPic=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    writeFileSync(join(folder,"session-d-mobile-history-open.png"),Buffer.from(historyPic.data,"base64"));
+    await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('收起四步回放与日志'))).click()`);
+    await delay(100);
+    const closed=await assess(`getComputedStyle(document.querySelector('#learning-stack-timeline')).display==='none'`);
+    if(!closed)throw Error("Timeline must close without losing current stack");
+  }
+
   if(name==="desktop"){
     const afterPush=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
     writeFileSync(join(folder,"session-d-desktop-push.png"),Buffer.from(afterPush.data,"base64"));

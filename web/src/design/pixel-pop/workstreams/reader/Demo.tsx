@@ -94,11 +94,22 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   }
   useEffect(()=>{
     if(!jumpId)return;
-    const frame=requestAnimationFrame(()=>{const node=document.getElementById(jumpId);
-      if(node){node.scrollIntoView({block:"start",behavior:"auto"});node.focus({preventScroll:true});}
-      setJumpId(null);
+    // The mobile outline collapses during navigation, changing document height.
+    // Run after that layout settles and align below the persistent mobile controls.
+    let followup=0;
+    const frame=requestAnimationFrame(()=>{
+      followup=requestAnimationFrame(()=>{
+        const node=document.getElementById(jumpId);
+        if(node){
+          const inset=window.innerWidth<=680?86:32;
+          const targetY=Math.max(0,window.scrollY+node.getBoundingClientRect().top-inset);
+          window.scrollTo({top:targetY,behavior:"instant"});
+          node.focus({preventScroll:true});
+        }
+        setJumpId(null);
+      });
     });
-    return ()=>cancelAnimationFrame(frame);
+    return ()=>{cancelAnimationFrame(frame);cancelAnimationFrame(followup);};
   },[jumpId,selectedChapterId,sourceMode]);
   const mapped=adaptCoursePackV01(coursePackDemo,{mode:"demo",completedBlockIds:["concept"],activeBlockId:"more"});
   const currentLesson=sourceMode==="editorial"?editorialLesson(selectedChapterId):mapped.lesson as LessonData;

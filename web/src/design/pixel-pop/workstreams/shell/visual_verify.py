@@ -46,6 +46,10 @@ def main():
                                 "sidebar_width": round(rect["width"], 1) if rect else None,
                                 "page_scroll_width": doc_width, "screenshot": png.name})
 
+            if width == 1440:
+                page.locator('button[aria-haspopup="true"]').first.click()
+                page.screenshot(path=str(dest / "session-a-1440-density-open.png"), full_page=True)
+                page.keyboard.press("Escape")
             page.get_by_role("button", name="测试长中文标题").click()
             page.screenshot(path=str(dest / f"session-a-{width}-long-cn.png"), full_page=True)
             if width == 390:
@@ -62,7 +66,14 @@ def main():
                 trigger.click()
                 page.get_by_role("button", name=re.compile("飞书资料")).first.click()
                 assert page.locator('aside[aria-label="学习中心侧边导航"] [aria-current="page"]').count() == 1
+                page.screenshot(path=str(dest / "session-a-390-mobile-active.png"), full_page=True)
             else:
+                if width == 1440:
+                    docs_item = page.locator('aside[aria-label="学习中心侧边导航"]').get_by_role("button", name=re.compile("飞书资料"))
+                    docs_item.hover()
+                    page.screenshot(path=str(dest / "session-a-1440-nav-hover.png"), full_page=True)
+                    docs_item.click()
+                    page.screenshot(path=str(dest / "session-a-1440-nav-active.png"), full_page=True)
                 toggle = page.get_by_role("button", name="折叠侧栏")
                 toggle.click()
                 assert page.locator('[data-collapsed="true"]').count() == 1

@@ -1,0 +1,185 @@
+/* B workstream: only local dashboard card rules; shared design tokens stay in pixel-pop.css. */
+.progressCard:global(.pp-panel),
+.sourceCard:global(.pp-panel),
+.taskCard:global(.pp-panel) {
+  background: var(--pp-paper);
+  border: var(--pp-stroke) solid var(--pp-ink);
+  box-shadow: var(--pp-shadow);
+  border-radius: 12px;
+  padding: clamp(12px, 1.7vw, 20px);
+  color: var(--pp-ink);
+  min-width: 0;
+  overflow: hidden;
+}
+.cardHeading {
+  display: flex; align-items: center; gap: 10px;
+  margin: 0 0 15px; min-width: 0;
+}
+.cardHeading h2 {
+  font-size: clamp(16px, 1.5vw, 20px); letter-spacing: -.5px;
+  font-weight: 950; line-height: 1.25; margin: 0;
+}
+.headingIcon {
+  width: 36px; height: 36px; flex: 0 0 36px;
+  display: grid; place-items: center; border: 2px solid var(--pp-ink);
+  border-radius: 7px; box-shadow: 3px 3px 0 var(--pp-ink);
+}
+.headingIconMint {background:var(--pp-mint)}
+.headingIconBlue {background:var(--pp-blue);color:white}
+.headingIconYellow {background:var(--pp-yellow)}
+.textAction {
+  margin-left:auto; border:0; padding:5px 1px; color:var(--pp-ink);
+  background:transparent; display:inline-flex; align-items:center; gap:2px;
+  flex-shrink:0; font-weight:850; font-size:12px;
+}
+.textAction:hover {color:var(--pp-blue);text-decoration:underline}
+.progressBody {display:flex;align-items:center;gap:clamp(12px,2.2vw,30px);min-width:0}
+.progressBody :global(.pp-progress-ring) {width:clamp(116px,12vw,158px);height:clamp(116px,12vw,158px);flex:none}
+.progressBody :global(.pp-progress-core) {
+  width:calc(100% - 31px);height:calc(100% - 31px);
+}
+.progressBody :global(.pp-progress-core strong) {font-size:clamp(24px,2.5vw,33px)}
+.progressBody :global(.pp-progress-core span) {font-weight:850;color:var(--pp-ink);font-size:11px}
+.progressDetails {flex:1;min-width:0}
+.progressCount {display:block;font-weight:950;font-size:14px;white-space:normal;margin-bottom:9px;line-height:1.4}
+.chapterList, .fileList, .taskList {margin:0;padding:0;list-style:none}
+.chapterList {display:flex;flex-direction:column;gap:3px}
+.chapterList li{min-width:0}
+.chapterItem {
+  display:flex;align-items:center;gap:10px;min-height:29px;width:100%;
+  border:0;background:transparent;border-radius:6px;padding:2px 5px;
+  font-size:12px;font-weight:740;text-align:left;color:var(--pp-ink);
+}
+button.chapterItem:hover {background:var(--pp-canvas)}
+.chapterCurrent {background:color-mix(in srgb,var(--pp-blue) 15%,white);color:var(--pp-blue);font-weight:950}
+.chapterLocked {color:var(--pp-quiet);opacity:.7}
+.chapterMarker {width:22px;height:22px;border-radius:50%;border:2px solid #72809d;display:grid;place-items:center;flex:none;color:#72809d}
+.markerDone {background:var(--pp-mint);border-color:var(--pp-ink);color:var(--pp-ink);box-shadow:1px 2px 0 var(--pp-ink)}
+.markerCurrent {background:var(--pp-blue);border-color:var(--pp-blue);color:white}
+.chapterLabel{min-width:0;overflow-wrap:anywhere}
+.emptyChapter,.mutedText {font-size:12px;color:var(--pp-quiet)}
+.finishMessage {display:flex;align-items:center;gap:6px;color:#137754;font-size:12px;font-weight:900;margin-bottom:10px}
+.progressFooter {display:flex;justify-content:flex-end;margin-top:10px}
+.progressFooter :global(.pp-button),.progressCompactAction :global(.pp-button) {min-height:34px;padding:7px 12px;font-size:12px}
+.progressCompact .progressBody :global(.pp-progress-ring){width:82px;height:82px}
+.progressCompact .progressBody :global(.pp-progress-core){width:64px;height:64px}
+.progressCompact .progressBody :global(.pp-progress-core strong){font-size:19px}
+.progressCompact .progressBody :global(.pp-progress-core span){display:none}
+.progressCompact .cardHeading{margin-bottom:9px}
+.progressCompact .progressCount{margin-bottom:6px}
+.progressCompact .progressCompactAction :global(.pp-button){width:100%}
+.progressCompactAction{min-width:0}
+
+/* Feishu/CoursePack files: independent source state and generated-course status. */
+.fileList {border:2px solid var(--pp-ink);border-radius:9px;padding:3px 10px;background:white;box-shadow:4px 4px 0 var(--pp-ink)}
+.fileRow {border-bottom:1px solid #e4e8f3;min-width:0;position:relative}
+.fileRow:last-child{border-bottom:0}
+.fileOpen {width:100%;min-width:0;min-height:60px;padding:7px 1px;display:flex;align-items:center;gap:11px;
+  text-align:left;color:var(--pp-ink);border:0;background:none}
+:is(button.fileOpen,a.fileOpen):hover .fileText strong {color:var(--pp-blue)}
+.fileIcon {width:44px;height:44px;flex:0 0 44px;border-radius:8px;display:grid;place-items:center;
+  color:white;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 55%,transparent)}
+.fileGlyph {font-size:24px;font-weight:1000;line-height:1}
+.kind_pptx{background:#ff662b}.kind_pdf{background:#ff2446}
+.kind_markdown{background:#465576}.kind_feishu{background:var(--pp-purple)}
+.kind_other{background:#63738c}
+.fileText {display:flex;flex-direction:column;flex:1;min-width:0;gap:2px;overflow:hidden}
+.fileText strong {overflow-wrap:anywhere;font-size:13px;font-weight:900;line-height:1.35}
+.fileText small {font-size:11px;color:var(--pp-quiet);line-height:1.45;overflow-wrap:anywhere}
+.outcomeTag {flex:none;padding:5px 8px;border-radius:5px;font-size:11px;line-height:1.2;font-weight:850;
+  max-width:112px;text-align:center}
+.outcome_course,.outcome_practice{background:color-mix(in srgb,var(--pp-mint) 25%,white);color:#087b54}
+.outcome_supplement,.outcome_none {background:#e7eaf3;color:#49556a}
+.fileChevron {flex:none}
+.fileSyncInline {font-size:11px;font-weight:850;color:var(--pp-blue);display:flex;gap:4px;align-items:center}
+.fileSyncInline svg {flex:none}
+.fileError{color:#b2253a}
+.syncTrack {height:5px;border-radius:5px;background:#e3e8f3;overflow:hidden;margin:0 0 6px 55px}
+.syncTrack span{display:block;height:100%;background:var(--pp-blue);border-radius:inherit;transition:width .15s}
+.retryButton {display:flex;align-items:center;gap:4px;margin:0 0 7px 55px;
+  border:1px solid var(--pp-ink);border-radius:5px;background:white;font-size:11px;font-weight:900;padding:2px 6px}
+.emptyFiles,.emptyTasks {min-height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  border:2px dashed #bdc9ec;border-radius:8px;color:var(--pp-quiet);font-size:11px;text-align:center;padding:15px}
+.emptyFiles strong,.emptyTasks strong{font-size:13px;color:var(--pp-ink)}
+.sourceCompact .fileList {border:1px solid #c7d3ff;box-shadow:none}
+.sourceCompact .fileOpen{min-height:52px}
+.sourceCompact .fileIcon {width:36px;height:36px;flex-basis:36px}
+.sourceCompact .fileText strong{font-size:12px}
+.sourceCompact .outcomeTag{font-size:10px}
+.sourceCompact .fileChevron{display:none}
+.sourceSummary {display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;font-size:11px;font-weight:800;color:var(--pp-quiet)}
+.sourceSummary span,.sourceSummary button{display:flex;align-items:center;gap:4px}
+.sourceSummary button {border:0;background:transparent;color:var(--pp-blue);margin-left:auto;font-weight:900}
+
+/* Task list: blue video / yellow practice / mint assessment. */
+.taskDate {color:var(--pp-quiet);font-size:11px;font-weight:850;margin-right:auto}
+.taskCard .textAction{margin-left:auto}
+.taskList {border:2px solid var(--pp-ink);border-radius:9px;background:white;
+  padding:7px 10px;box-shadow:4px 4px 0 var(--pp-ink)}
+.taskRow {border-bottom:1px solid #e5e9f4;border-radius:6px}
+.taskRow:last-child{border-bottom:0}
+.taskState_in-progress {background:color-mix(in srgb,var(--pp-blue) 17%,white)}
+.taskState_completed {background:color-mix(in srgb,var(--pp-mint) 11%,white)}
+.taskAction {border:0;background:transparent;width:100%;display:flex;text-align:left;gap:10px;
+  align-items:center;min-height:46px;padding:4px 5px;color:var(--pp-ink)}
+button.taskAction:hover{background:color-mix(in srgb,var(--pp-blue) 11%,white);border-radius:6px}
+.taskIcon {width:37px;height:37px;display:grid;place-items:center;flex:none;border-radius:6px;
+  color:#fff;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 30%,transparent)}
+.taskKind_video{background:var(--pp-blue)}
+.taskKind_practice{background:#ffb634;color:var(--pp-ink)}
+.taskKind_quiz{background:var(--pp-mint);color:var(--pp-ink)}
+.taskText{display:flex;flex:1;min-width:0;flex-direction:column}
+.taskText strong{font-size:12px;font-weight:920;line-height:1.4;overflow-wrap:anywhere}
+.taskText small{font-size:11px;line-height:1.4;color:var(--pp-quiet)}
+.state_in-progress{color:var(--pp-blue);font-weight:950}
+.state_completed{color:#008b60;font-weight:950}
+.state_not-started{color:var(--pp-quiet)}
+.taskBars{flex:none;color:var(--pp-blue)}
+.taskCompleted{display:grid;place-items:center;background:var(--pp-mint);color:var(--pp-ink);
+  border-radius:50%;width:25px;height:25px;flex:none}
+.taskCompact .taskList{padding:4px;border:1px solid #c8d3ff;box-shadow:none}
+.taskCompact .taskDate{display:none}
+.taskCompact .taskAction{min-height:53px}
+.taskCompact .taskBars{display:none}
+
+/* Density changes decoration and spacing, not content or interaction. */
+:global(.pp-root[data-density="minimal"]) .progressCard,
+:global(.pp-root[data-density="minimal"]) .sourceCard,
+:global(.pp-root[data-density="minimal"]) .taskCard {
+  padding:12px;box-shadow:3px 3px 0 var(--pp-ink)
+}
+:global(.pp-root[data-density="minimal"]) .headingIcon {box-shadow:none}
+:global(.pp-root[data-density="minimal"]) .fileList,
+:global(.pp-root[data-density="minimal"]) .taskList{box-shadow:none}
+:global(.pp-root[data-density="normal"]) .progressCard,
+:global(.pp-root[data-density="normal"]) .sourceCard,
+:global(.pp-root[data-density="normal"]) .taskCard{padding:23px}
+:global(.pp-root[data-density="normal"]) .chapterList{gap:5px}
+:global(.pp-root[data-density="normal"]) .fileOpen{min-height:65px}
+
+@media (max-width: 560px){
+  .progressBody{align-items:flex-start;gap:10px}
+  .progressBody :global(.pp-progress-ring){width:105px;height:105px}
+  .progressBody :global(.pp-progress-core){width:80px;height:80px}
+  .progressBody :global(.pp-progress-core strong){font-size:23px}
+  .progressBody :global(.pp-progress-core span){font-size:9px}
+  .progressCount{font-size:12px}
+  .chapterItem{gap:6px;font-size:11px}
+  .fileList,.taskList{padding-left:6px;padding-right:6px}
+  .fileOpen{gap:7px}
+  .fileIcon{width:37px;height:37px;flex-basis:37px}
+  .fileText strong{font-size:12px}
+  .outcomeTag{max-width:75px;font-size:10px;padding:5px}
+  .fileChevron{display:none}
+  .cardHeading h2{font-size:16px}
+  .taskDate{font-size:10px}
+}
+@media (max-width: 350px){
+  .progressBody{flex-direction:column;align-items:center}
+  .progressDetails{width:100%}
+  .fileOpen{flex-wrap:wrap}
+  .outcomeTag{margin-left:43px}
+}
+@media (prefers-reduced-motion: reduce){
+  .syncTrack span{transition:none}
+}

@@ -1,0 +1,82 @@
+name: Pixel Pop A — three-page real component integration
+on:
+  push:
+    branches:
+      - feat/pixel-pop-shell-session-a-20261023
+    paths:
+      - "web/src/design/pixel-pop/workstreams/shell/**"
+      - "web/src/app/ui-lab/session-a/**"
+      - ".github/workflows/pixel-pop-a-composition.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Read-only B/C/D source overlay in this ephemeral checkout
+        run: |
+          git fetch --depth=1 --no-tags origin feat/pixel-pop-b-dashboard-cards-20261023
+          git restore --source=FETCH_HEAD -- web/src/design/pixel-pop/workstreams/dashboard/
+          git fetch --depth=1 --no-tags origin feat/pixel-pop-reader-session-c
+          git restore --source=FETCH_HEAD -- web/src/design/pixel-pop/workstreams/reader/
+          git fetch --depth=1 --no-tags origin feat/pixel-pop-session-d-learning-interactions
+          git restore --source=FETCH_HEAD -- web/src/design/pixel-pop/workstreams/learning/
+          git status --short | head -30
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Prepare real A frame with B/C/D content
+        working-directory: web
+        run: node src/design/pixel-pop/workstreams/shell/prepare-composition.mjs
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+      - name: Validate integrated Next.js TypeScript and production build
+        working-directory: web
+        run: |
+          npm run typecheck
+          npm run build
+      - name: Start composed Next.js
+        working-directory: web
+        run: |
+          npx next start --hostname 127.0.0.1 --port 3002 > /tmp/pp-a-composition.log 2>&1 &
+          echo $! > /tmp/pp-a-composition.pid
+          for attempt in {1..50}; do
+            if curl -fsS http://127.0.0.1:3002/ui-lab/session-a/integration/courses -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/pp-a-composition.log
+          exit 1
+      - name: Ensure readable Chinese without a full Noto CJK download
+        run: |
+          which google-chrome || which google-chrome-stable || which chromium
+          CJK_COUNT=$(fc-list :lang=zh | wc -l)
+          if [ "$CJK_COUNT" -eq 0 ]; then
+            sudo timeout 120s apt-get install -y --no-install-recommends fonts-wqy-microhei
+          fi
+          CJK_COUNT=$(fc-list :lang=zh | wc -l)
+          test "$CJK_COUNT" -gt 0
+          fc-match -f '%{family}\n' ":lang=zh" | head -1
+      - name: Exercise real course reader practice navigation and screenshots
+        working-directory: web
+        env:
+          PREVIEW_URL: http://127.0.0.1:3002
+          PREVIEW_OUT: ../ui-preview-a-composition
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" node src/design/pixel-pop/workstreams/shell/capture-composition.mjs
+      - name: Upload real B/C/D integration evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: session-a-real-bcd-composition-chromium
+          path: ui-preview-a-composition/
+          if-no-files-found: warn
+          retention-days: 14

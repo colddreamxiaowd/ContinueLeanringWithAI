@@ -1,0 +1,35 @@
+/* Session A-owned composition shell; B/C/D are supplied as children. */
+.root{min-height:100vh;background:linear-gradient(135deg,var(--pp-violet-soft,#EDE6FF),var(--pp-canvas,#F5F7FF) 45%,var(--pp-blue-soft,#E9F1FF));color:var(--pp-ink)}
+.main{max-width:1480px;margin:auto;padding:22px 24px 48px;min-width:0}
+.header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px}
+.heading{min-width:0}.eyebrow{font-size:11px;font-weight:900;letter-spacing:1px;color:var(--pp-purple)}
+.heading h1{font-size:clamp(24px,2.7vw,40px);line-height:1.13;margin:6px 0;color:var(--pp-ink)}
+.heading p{font-size:12px;margin:0;color:var(--pp-quiet)}
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.collapse{flex:none;min-height:44px;background:var(--pp-paper);border:2px solid var(--pp-ink);
+  border-radius:7px;box-shadow:3px 3px 0 var(--pp-ink);padding:8px 12px;
+  color:var(--pp-ink);font-weight:900;cursor:pointer;white-space:nowrap}
+.collapse:focus-visible{outline:3px solid var(--pp-blue);outline-offset:3px}
+.layout{display:flex;align-items:flex-start;gap:22px;min-width:0}
+.content{flex:1;min-width:0;display:flex;flex-direction:column;gap:18px}
+.slot{min-width:0;width:100%;background:var(--pp-paper);border:3px solid var(--pp-ink);
+  box-shadow:5px 5px 0 var(--pp-ink);border-radius:11px;padding:18px;overflow-wrap:anywhere}
+.slot :global([data-reader-block]){min-width:0}
+.root[data-density="minimal"] .layout{gap:28px}
+.root[data-density="minimal"] .content{gap:24px}
+.root[data-density="minimal"] .slot{padding:28px}
+.root[data-density="normal"] .layout{gap:12px}
+.root[data-density="normal"] .content{gap:12px}
+.root[data-density="normal"] .slot{padding:12px}
+@media(max-width:980px){.main{padding:16px 12px 28px}.header{align-items:flex-start;flex-direction:column}
+  .actions{width:100%}.layout{gap:12px}.slot{padding:11px}
+  .root[data-density="minimal"] .slot{padding:17px}
+  .root[data-density="normal"] .slot{padding:8px}}
+@media(max-width:720px){.main{padding:14px 10px 28px}.header{gap:13px}
+  .layout,.root[data-density="minimal"] .layout,.root[data-density="normal"] .layout{display:block}
+  .actions{justify-content:space-between;gap:9px}
+  .actions .collapse{display:none}
+  .content{gap:14px}.slot{padding:9px}
+  .root[data-density="minimal"] .slot{padding:15px}
+  .root[data-density="normal"] .slot{padding:8px}
+}

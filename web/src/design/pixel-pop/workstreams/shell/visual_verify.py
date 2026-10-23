@@ -61,7 +61,7 @@ def main():
                 # Reopen and click a demo navigation button to check selected state.
                 trigger.click()
                 page.get_by_role("button", name=re.compile("飞书资料")).first.click()
-                assert page.get_by_role("button", name=re.compile("飞书资料")).first.get_attribute("aria-current") == "page"
+                assert page.locator('aside[aria-label="学习中心侧边导航"] [aria-current="page"]').count() == 1
             else:
                 toggle = page.get_by_role("button", name="折叠侧栏")
                 toggle.click()

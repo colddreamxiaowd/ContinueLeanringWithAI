@@ -108,7 +108,7 @@ test("SVG fidelity: three cards reuse native Lucide vectors without image or ras
   const css=load("dashboard.module.css");
   for(const src of [progress,sources,tasks]) {
     assert.ok(src.includes('from "lucide-react"'));
-    assert.doesNotMatch(src,/<image\\b|data:image\\/|<img\\b/);
+    assert.ok(!src.includes("<image") && !src.includes("data:image/") && !src.includes("<img"));
   }
   assert.ok(progress.includes('<Trophy size={17}'));
   assert.ok(sources.includes('<FileText size={23}'));
@@ -128,5 +128,5 @@ test("PR32 visual-feedback regression: legible card density without changing con
     "@container (max-width: 370px)", "width:120px;height:120px",
     'pp-root[data-density="minimal"]','pp-root[data-density="normal"]'
   ]) assert.ok(css.includes(token),token);
-  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\\b/i, "do not fork the shared color palette");
+  assert.equal((css.match(/#[0-9a-fA-F]{3,8}/g) ?? []).length, 0, "CSS should not hardcode color values");
 });

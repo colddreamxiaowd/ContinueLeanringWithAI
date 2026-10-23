@@ -3,7 +3,7 @@
 import {useEffect,useState,type ReactNode} from "react";
 import {BrandHeader} from "../../blocks/lego";
 import "../../pixel-pop.css";
-import {SidebarMenuTrigger,SidebarNav,type ShellNavItem} from "./SidebarNav";
+import {SidebarMenuTrigger,SidebarNav,type ShellNavItem,type ShellNavIcon} from "./SidebarNav";
 import {DensitySwitch,type PixelPopDensity} from "./DensitySwitch";
 import {BreadcrumbTrail,type BreadcrumbItem,type BreadcrumbAction} from "./BreadcrumbTrail";
 import styles from "./integration.module.css";
@@ -13,19 +13,26 @@ import styles from "./integration.module.css";
  * imports or rewrites other owners' components. One parent .pp-root controls
  * density across the full page; the integrator supplies real route URLs.
  */
-export type IntegrationSurface = "courses" | "reader" | "practice";
+export type IntegrationSurface = "home" | "courses" | "reader" | "practice";
 export type IntegrationNavigation = {
   id:IntegrationSurface;
   label:string;
   href:string;
-  icon:"courses"|"docs"|"plan";
+  icon:ShellNavIcon;
 };
 export function ShellIntegrationFrame({
-  surface, navigation, crumbs, previous, next, children,
+  surface, navigation, crumbs, back, previous, next,
+  presentation="demo", showBrandHeader=true, children,
 }:{
   surface:IntegrationSurface;
   navigation:readonly IntegrationNavigation[];
   crumbs:readonly BreadcrumbItem[];
+  /** The real course parent route; never infer it from nav item order. */
+  back?:BreadcrumbAction;
+  /** Demo remains unchanged; I uses app for the three production routes. */
+  presentation?:"demo"|"app";
+  /** Prevent duplicate headers when I mounts one at the shared layout level. */
+  showBrandHeader?:boolean;
   previous?:BreadcrumbAction;
   next?:BreadcrumbAction;
   children:ReactNode;
@@ -52,7 +59,7 @@ export function ShellIntegrationFrame({
   },[collapsed,ready]);
 
   const primary:readonly ShellNavItem[]=navigation.map(({id,label,href,icon})=>({
-    id,label,href,icon,subtitle:id==="courses"?"MY COURSES":id==="reader"?"READING":"PRACTICE"
+    id,label,href,icon,subtitle:id==="home"?"HOME":id==="courses"?"MY COURSES":id==="reader"?"READING":"PRACTICE"
   }));
   const account:readonly ShellNavItem[]=[
     {id:"settings",label:"设置",subtitle:"SETTINGS",icon:"settings"}
@@ -60,13 +67,13 @@ export function ShellIntegrationFrame({
   const current=navigation.find(item=>item.id===surface);
   return <div className={"pp-root "+styles.root} data-density={density}
     data-integration-surface={surface} data-shell-ready={ready?"true":"false"}>
-    <BrandHeader/>
-    <main className={styles.main} aria-label="知序真实组件拼装验收">
+    {showBrandHeader&&<BrandHeader/>}
+    <main className={styles.main} aria-label={presentation==="demo"?"知序真实组件拼装验收":"知序学习工作台"}>
       <header className={styles.header}>
         <div className={styles.heading}>
-          <span className={styles.eyebrow}>SESSION A × B/C/D · REAL COMPONENT QA · DEMO</span>
+          {presentation==="demo"&&<span className={styles.eyebrow}>SESSION A × B/C/D · REAL COMPONENT QA · DEMO</span>}
           <h1>{current?.label||"学习中心"}</h1>
-          <p>课程资料与进度仅为演示，导航为真实路由，所有页面共享同一密度设置。</p>
+          {presentation==="demo"&&<p>课程资料与进度仅为演示，导航为真实路由，所有页面共享同一密度设置。</p>}
         </div>
         <div className={styles.actions}>
           <DensitySwitch value={density} onChange={setDensity}/>
@@ -82,7 +89,7 @@ export function ShellIntegrationFrame({
           onMobileClose={()=>setMobileOpen(false)}/>
         <section className={styles.content} aria-label={current?.label||"学习内容"}>
           <BreadcrumbTrail items={crumbs}
-            back={{label:"返回课程",href:navigation[0]?.href}}
+            back={back??(presentation==="demo"?{label:"返回课程",href:navigation[0]?.href}:undefined)}
             previous={previous} next={next}/>
           <div className={styles.slot}>{children}</div>
         </section>

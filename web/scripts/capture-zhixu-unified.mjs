@@ -89,7 +89,7 @@ try{
   await button("正常",'[role="radio"]');
   await until("document.querySelector('.pp-root')?.dataset.density==='normal'","normal density");
   const shots=[await capture("home",name,w,h)];
-  await click('a[href="'+prefix+'reader"]');
+  await click('a[href^="'+prefix+'reader"]');
   const reader=await view("reader");
   const readCheck=await js("({lesson:!!document.querySelector('[data-reader-block=\"lesson\"]'),outline:!!document.querySelector('[data-reader-block=\"outline\"]'),citation:!!document.querySelector('[data-reader-block=\"citation\"]')})");
   if(reader.density!=="normal"||!readCheck.lesson||!readCheck.outline||!readCheck.citation)

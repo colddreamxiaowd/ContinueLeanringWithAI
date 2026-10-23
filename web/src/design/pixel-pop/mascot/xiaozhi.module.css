@@ -19,7 +19,7 @@
 .frame[data-motion="idle"]:hover{animation:xz-hello 650ms steps(4,end) 1}
 .frame[data-motion="wave"]{animation:xz-hello 950ms steps(5,end) infinite}
 .frame[data-motion="bounce"]{animation:xz-hop 1000ms steps(4,end) infinite}
-.frame[data-pose="avatar"]{border-radius:50%;overflow:hidden}
+.frame[data-pose="avatar"]{border-radius:0;overflow:visible}
 @keyframes xz-hello{
   0%,100%{transform:rotate(0deg)}
   30%,65%{transform:rotate(-7deg)}

@@ -5,6 +5,7 @@ import {dirname,resolve} from "node:path";
 import {fileURLToPath} from "node:url";
 import {normalizeCapacity,readStackInput,pushStack,popStack} from "../../src/design/pixel-pop/workstreams/learning/stack-model.mjs";
 import {createQuizSession,evaluateQuizAttempt} from "../../src/design/pixel-pop/workstreams/learning/quiz-model.mjs";
+import {stackTimeline,popExitBottom} from "../../src/design/pixel-pop/workstreams/learning/stack-timeline.mjs";
 
 const base=resolve(dirname(fileURLToPath(import.meta.url)),"../../src/design/pixel-pop/workstreams/learning");
 const source=(file)=>readFileSync(resolve(base,file),"utf8");
@@ -123,4 +124,33 @@ test("pop exit and push entry use real operation value and reduced-motion fallba
   assert.match(css,/@keyframes stackPop/);
   assert.match(css,/\.popGhost\{display:none!important;animation:none!important\}/);
   assert.match(css,/\.slotEnter\{animation:none!important\}/);
+});
+
+
+test("stack view uses current state after clearing history and sliding four-step windows",()=>{
+  const snapshots=[
+    {id:1,kind:"push",value:7,stack:[7]},
+    {id:2,kind:"push",value:3,stack:[7,3]},
+    {id:3,kind:"pop",value:3,stack:[7]},
+    {id:4,kind:"push",value:5,stack:[7,5]},
+    {id:5,kind:"push",value:9,stack:[7,5,9]}
+  ];
+  const one=stackTimeline([],[],[],4);
+  assert.equal(one.length,4);
+  assert.equal(one[0].label,"初始状态");
+  const progressed=stackTimeline([],[7,5,9],snapshots.slice().reverse());
+  assert.deepEqual(progressed.map(x=>x.id),[2,3,4,5]);
+  assert.deepEqual(progressed.at(-1).stack,[7,5,9]);
+  const cleared=stackTimeline([],[7,5,9],[]);
+  assert.equal(cleared[0].label,"当前状态");
+  assert.deepEqual(cleared[0].stack,[7,5,9]);
+  const reset=stackTimeline([],[],[]);
+  assert.equal(reset[0].label,"初始状态");
+});
+test("pop exit overlay starts at the removed element slot, independent of stack result",()=>{
+  const first=popExitBottom(1,6);
+  const third=popExitBottom(3,6);
+  assert.equal(first,12);
+  assert.equal(third,12+2*166/6);
+  assert.ok(third>first);
 });

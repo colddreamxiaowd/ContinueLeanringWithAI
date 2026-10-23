@@ -368,3 +368,65 @@
   .mobileCurrent .slotEnter{animation:none!important}
   .mobileCurrent .popGhost{display:none!important}
 }
+
+
+/* Classroom surface inside the A-owned ShellIntegrationFrame (not the dev component lab). */
+.practicePage{min-width:0;color:var(--pp-ink,#12121d)}
+.practiceHero{background:linear-gradient(115deg,#edf4ff,#fff 70%);border:3px solid var(--pp-ink,#12121d);
+  border-radius:13px;box-shadow:4px 4px 0 var(--pp-ink,#12121d);padding:20px;
+  display:flex;justify-content:space-between;align-items:center;gap:18px}
+.practiceEyebrow{color:var(--pp-blue,#246bff);font-size:11px;letter-spacing:.7px;font-weight:900}
+.practiceHero h2{font-size:clamp(22px,2.4vw,30px);line-height:1.25;margin:6px 0 8px;font-weight:1000}
+.practiceHero p{font-size:13px;line-height:1.65;margin:0;max-width:620px;color:#415174}
+.practiceMetrics{border:2px solid var(--pp-ink,#12121d);border-radius:10px;background:#fff8c4;
+ padding:12px 16px;min-width:110px;flex:none;text-align:center;box-shadow:3px 3px 0 var(--pp-ink,#12121d)}
+.practiceMetrics strong{display:block;font-size:26px;line-height:1.1;color:#2366dd;font-weight:1000}
+.practiceMetrics strong small{font-size:15px;color:#475476}
+.practiceMetrics span{display:block;font-size:11px;font-weight:850;margin-top:4px;color:#364264}
+.practiceJump{display:flex;gap:9px;margin:19px 0}
+.practiceJump a{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;min-height:47px;
+ background:#fff;color:#26325e;border:2px solid var(--pp-ink,#12121d);box-shadow:3px 3px 0 var(--pp-ink,#12121d);
+ border-radius:8px;font-size:14px;font-weight:900;text-decoration:none}
+.practiceJump a[aria-current="step"]{background:var(--pp-yellow,#ffe342);color:var(--pp-ink,#12121d)}
+.practiceJump a:focus-visible{outline:3px solid var(--pp-blue,#246bff);outline-offset:3px}
+.practiceGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:19px}
+.practiceSection{min-width:0;border:3px solid var(--pp-ink,#12121d);border-radius:12px;
+ background:#fff;box-shadow:4px 4px 0 var(--pp-ink,#12121d);padding:17px}
+.practiceSectionHead{display:flex;align-items:center;gap:11px;margin:0 0 13px}
+.practiceSectionHead>span{flex:none;display:grid;place-items:center;height:40px;width:40px;
+ background:var(--pp-violet,#7440ff);border:2px solid var(--pp-ink,#12121d);
+ border-radius:7px;color:#fff;font-size:18px;font-weight:1000}
+.practiceSectionHead h3{font-size:20px;font-weight:1000;margin:0 0 3px}
+.practiceSectionHead p{margin:0;color:#56627c;font-size:12px;line-height:1.5}
+.practiceNext{display:flex;justify-content:flex-end;margin:14px 2px 0}
+.practiceNext :global(.pp-button){min-height:43px}
+.practiceAttemptNotice{margin:10px 0;border:1px solid #c9d6f5;border-radius:7px;
+ background:#f1f5ff;padding:9px;font-weight:850;font-size:12px;line-height:1.5;color:#1d468c}
+.practiceFooter{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+ padding:12px 1px 0;color:#596581;font-size:11px;line-height:1.5}
+.practiceFooter button{display:flex;gap:6px;align-items:center;min-height:40px;
+ font-size:12px;font-weight:900;border:2px solid #b5c6e6;border-radius:7px;background:white;cursor:pointer;color:#273c6c;padding:5px 9px}
+.practiceEmpty{display:grid;justify-items:center;gap:10px;text-align:center}
+.practiceEmpty h2{font-size:20px;margin:0}.practiceEmpty p{font-size:13px;line-height:1.6}
+.practiceEmpty .playground{width:100%}
+@media(max-width:720px){
+ .practiceHero{padding:13px 12px;gap:10px}
+ .practiceHero h2{font-size:22px}
+ .practiceHero p{font-size:12px}
+ .practiceMetrics{min-width:75px;padding:9px 5px}
+ .practiceMetrics strong{font-size:22px}
+ .practiceMetrics span{font-size:10px}
+ .practiceJump{gap:8px;margin:15px 0}
+ .practiceJump a{font-size:12px;gap:5px;min-height:44px}
+ .practiceSection{padding:10px 9px}
+ .practiceSectionHead>span{width:34px;height:34px}
+ .practiceSectionHead h3{font-size:17px}
+ .practiceNext :global(.pp-button){width:100%;justify-content:center}
+}
+@media(max-width:390px){
+ .practiceHero{align-items:flex-start;flex-direction:column}
+ .practiceMetrics{align-self:flex-start;display:flex;align-items:center;gap:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .practiceJump a{scroll-behavior:auto}
+}

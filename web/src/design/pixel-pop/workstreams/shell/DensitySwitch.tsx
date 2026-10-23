@@ -73,6 +73,7 @@ export function DensitySwitch({
             event.preventDefault();
             const buttons=Array.from(ref.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]')??[]);
             const next=(index+(event.key==="ArrowDown"?1:buttons.length-1))%buttons.length;
+            onChange(DENSITY_OPTIONS[next].value);
             buttons[next]?.focus();
           }}>
           <span className={styles.optionIcon}><Icon size={20} aria-hidden="true"/></span>

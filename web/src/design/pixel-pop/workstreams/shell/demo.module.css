@@ -61,3 +61,21 @@
   .densityExamples{grid-template-columns:1fr}
   .root[data-density="minimal"] .densityExamples{gap:12px}
 }
+
+/* Browser evidence correction: the lab must be readable even when the host
+   document uses a dark color scheme. Uses existing shared palette only. */
+:global(.pp-root).root{
+  background:linear-gradient(135deg,#EDE6FF 0%,var(--pp-canvas) 43%,#E9F1FF 100%);
+  color:var(--pp-ink);
+}
+.root .titleRow h1{color:var(--pp-ink)}
+.root .titleRow p{color:var(--pp-quiet)}
+.root .visualNotes{color:var(--pp-quiet)}
+.root .content :global(.pp-panel-head){min-width:0}
+.root .content :global(.pp-panel-head) h2{min-width:0;overflow-wrap:anywhere}
+.root .content :global(.pp-panel-head) :global(.pp-button){white-space:nowrap;flex:none}
+@media(max-width:720px){
+  .root .content :global(.pp-panel-head){flex-wrap:wrap;align-items:center}
+  .root .content :global(.pp-panel-head) :global(.pp-button){
+    font-size:11px;padding:6px 10px;min-height:35px}
+}

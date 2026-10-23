@@ -30,6 +30,7 @@ export function StackPlayground({
   const [message,setMessage]=useState("动手操作：试试 Push(7)、Push(3)、Pop()。");
   const [history,setHistory]=useState<StackAction[]>([]);
   const [lastKind,setLastKind]=useState<"push"|"pop"|null>(null);
+  const [popVisual,setPopVisual]=useState<{id:number;value:number;bottom:number}|null>(null);
   const counter=useRef(0);
   const start=useRef(initial);
   const commit=(kind:"push"|"pop")=>{
@@ -38,6 +39,11 @@ export function StackPlayground({
     if(!result.ok)return;
     setStack(result.stack);
     setLastKind(kind);
+    if(kind==="pop"){
+      // The result is committed immediately. Only the departing block is a visual overlay.
+      const oneSlot=166/limit;
+      setPopVisual({id:counter.current+1,value:result.value,bottom:12+(stack.length-1)*oneSlot});
+    }else setPopVisual(null);
     const record:StackAction={
       id:++counter.current,kind,value:result.value,stack:result.stack.slice(),
       time:new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit",hour12:false}),
@@ -50,6 +56,7 @@ export function StackPlayground({
     setHistory([]);
     setMessage("实验已重置，可重新进行 Push / Pop。");
     setLastKind(null);
+    setPopVisual(null);
   };
   const recent=history.slice(0,4).reverse();
   const changedWithoutHistory=history.length===0&&JSON.stringify(stack)!==JSON.stringify(start.current);
@@ -69,9 +76,11 @@ export function StackPlayground({
           {padded.map((stage,index)=>{
             const waiting=stage.id<0;
             const top=stage.stack.at(-1);
-            return <div className={styles.stageCard+(waiting?" "+styles.stageWaiting:"")} key={stage.id}>
+            const current=!waiting&&(stage.id===history[0]?.id||(stage.id===0&&history.length===0));
+            return <div className={styles.stageCard+(waiting?" "+styles.stageWaiting:"")+
+              (current?" "+styles.stageCurrent:"")} key={stage.id}>
               <div className={styles.stagePill}>{index+1}. {stage.label}</div>
-              <div className={styles.stackGraphic} aria-label={waiting?"尚未操作":"当前栈："+JSON.stringify(stage.stack)}>
+              <div className={styles.stackGraphic} aria-label={waiting?"尚未操作":"栈底到栈顶："+JSON.stringify(stage.stack)}>
                 <div className={styles.slotTower}>
                   {Array.from({length:limit},(_,i)=><div
                     key={i}
@@ -82,6 +91,13 @@ export function StackPlayground({
                   </div>)}
                 </div>
                 <div className={styles.stackBase}/>
+                {current&&popVisual&&stage.id===popVisual.id&&<div
+                  key={popVisual.id} className={styles.popGhost}
+                  style={{bottom:popVisual.bottom+"px"}}
+                  aria-hidden="true"
+                  onAnimationEnd={()=>setPopVisual(prev=>prev?.id===popVisual.id?null:prev)}>
+                  {popVisual.value}<ArrowUpFromLine size={14} aria-hidden="true"/>
+                </div>}
               </div>
               <div className={styles.stageTop}>栈顶：<strong>{top===undefined?"空":top}</strong></div>
               <div className={styles.arrayLabel}>[{stage.stack.join(", ")}]</div>
@@ -104,13 +120,14 @@ export function StackPlayground({
             <PopButton variant="outline" onClick={reset}><RotateCcw size={16}/> 重置</PopButton>
           </div>
           <div className={styles.operationMessage} role="status" aria-live="polite">
-            {message}<span>当前栈：[ {stack.join(", ")} ]</span>
+            <span className={lastKind==="push"?styles.pushMessage:lastKind==="pop"?styles.popMessage:""}>{message}</span>
+            <span>当前栈：[ {stack.join(", ")} ] · 栈顶 {stack.at(-1)??"空"}</span>
           </div>
         </div>
       </div>
       <aside className={styles.history} aria-label="栈操作历史">
         <div className={styles.historyHead}><strong><Clock3 size={17}/> 操作历史</strong>
-          <button type="button" onClick={()=>setHistory([])} disabled={!history.length} aria-label="清空操作历史">
+          <button type="button" onClick={()=>{setHistory([]);setPopVisual(null);setLastKind(null);}} disabled={!history.length} aria-label="清空操作历史">
             <Trash2 size={14}/> 清空
           </button>
         </div>

@@ -56,7 +56,7 @@ export function BreadcrumbTrail({items,back,previous,next,className=""}:Props){
   const ancestors=items.slice(0,-1);
   return <div className={[styles.trail,className].filter(Boolean).join(" ")}>
     {back&&<div className={styles.trailBack}><Action action={back} direction="back"/></div>}
-    <nav className={styles.trailNavigation} aria-label="面包屑导航">
+    <nav className={styles.trailNavigation} aria-label="面包屑导航" data-clipped={clipped?"true":"false"}>
       <ol className={styles.trailList}>
         {visible.map((item,index)=>{
           const last=index===visible.length-1;

@@ -1,0 +1,27 @@
+.page{min-width:0;width:100%;container-type:inline-size}
+.demoBand{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  padding:10px 13px;margin-bottom:17px;border:2px solid var(--pp-ink);
+  background:var(--pp-yellow);box-shadow:3px 3px 0 var(--pp-ink);border-radius:9px;
+  color:var(--pp-ink);font-size:12px}
+.demoBand strong{font-weight:950}.demoBand span{font-size:10px;font-weight:800}
+.sectionHeading{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:25px 0 14px}
+.sectionHeading h2{font-size:clamp(21px,2.6vw,32px);line-height:1.2;margin:4px 0;color:var(--pp-ink)}
+.overline{color:var(--pp-purple);font-size:10px;letter-spacing:1px;font-weight:900}
+.textLink{color:var(--pp-purple);text-decoration:underline;font-size:12px;font-weight:850}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;align-items:start}
+.cards>section{height:auto;min-height:0;align-self:start;min-width:0}
+.note{font-size:12px;line-height:1.6;padding:12px;margin:17px 0 0;color:var(--pp-ink);
+  border:2px solid var(--pp-ink);background:var(--pp-blue-soft);border-radius:7px}
+.bottomLink{display:flex;gap:13px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  padding:20px 0 8px;font-size:13px;font-weight:850}
+.bottomLink a{display:inline-flex;align-items:center;min-height:44px;padding:8px 13px;border:2px solid var(--pp-ink);
+  box-shadow:3px 3px 0 var(--pp-ink);border-radius:7px;background:var(--pp-paper);color:var(--pp-ink)}
+.bottomLink a:last-child{background:var(--pp-yellow)}
+.bottomLink a:focus-visible,.bottomLink a:hover{outline:3px solid var(--pp-purple);outline-offset:2px}
+@container(max-width:1050px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cards>section:last-child{grid-column:1/-1}}
+@container(max-width:690px){.cards{grid-template-columns:minmax(0,1fr)}
+.cards>section:last-child{grid-column:auto}}
+@media(max-width:680px){.demoBand{padding:9px 10px;margin-bottom:12px}
+ .sectionHeading{margin:19px 0 12px}.bottomLink{align-items:stretch;flex-direction:column}
+ .bottomLink a{justify-content:center}}

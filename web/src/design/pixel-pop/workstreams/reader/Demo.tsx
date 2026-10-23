@@ -81,6 +81,7 @@ function editorialLesson(chapterId:string):LessonData{
 }
 export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const [density,setDensity]=useState<"minimal"|"balanced"|"normal">("balanced");
+  const [sourceMode,setSourceMode]=useState<"editorial"|"coursepack">("editorial");
   const [selectedChapterId,setSelectedChapterId]=useState("ch3");
   const [jumpId,setJumpId]=useState<string|null>(null);
   function navigateTo(id:string){
@@ -96,7 +97,6 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
     });
     return ()=>cancelAnimationFrame(frame);
   },[jumpId,selectedChapterId,sourceMode]);
-  const [sourceMode,setSourceMode]=useState<"editorial"|"coursepack">("editorial");
   const mapped=adaptCoursePackV01(coursePackDemo,{mode:"demo",completedBlockIds:["concept"],activeBlockId:"more"});
   const currentLesson=sourceMode==="editorial"?editorialLesson(selectedChapterId):mapped.lesson as LessonData;
   const currentChapters=sourceMode==="editorial"?chapters:mapped.chapters as OutlineChapter[];

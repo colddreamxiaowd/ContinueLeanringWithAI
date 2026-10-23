@@ -53,12 +53,12 @@
 button.chapterItem:hover {background:var(--pp-canvas)}
 .chapterCurrent {background:color-mix(in srgb,var(--pp-blue) 15%,white);color:var(--pp-blue);font-weight:950}
 .chapterLocked {color:var(--pp-quiet);opacity:.7}
-.chapterMarker {width:22px;height:22px;border-radius:50%;border:2px solid #72809d;display:grid;place-items:center;flex:none;color:#72809d}
+.chapterMarker {width:22px;height:22px;border-radius:50%;border:2px solid var(--pp-quiet);display:grid;place-items:center;flex:none;color:var(--pp-quiet)}
 .markerDone {background:var(--pp-mint);border-color:var(--pp-ink);color:var(--pp-ink);box-shadow:1px 2px 0 var(--pp-ink)}
 .markerCurrent {background:var(--pp-blue);border-color:var(--pp-blue);color:white}
 .chapterLabel{min-width:0;overflow-wrap:anywhere}
 .emptyChapter,.mutedText {font-size:12px;color:var(--pp-quiet)}
-.finishMessage {display:flex;align-items:center;gap:6px;color:#137754;font-size:12px;font-weight:900;margin-bottom:10px}
+.finishMessage {display:flex;align-items:center;gap:6px;color:var(--pp-ink);font-size:12px;font-weight:900;margin-bottom:10px}
 .progressFooter {display:flex;justify-content:flex-end;margin-top:10px}
 .progressFooter :global(.pp-button),.progressCompactAction :global(.pp-button) {min-height:34px;padding:7px 12px;font-size:12px}
 .progressCompact .progressBody :global(.pp-progress-ring){width:82px;height:82px}
@@ -72,7 +72,7 @@ button.chapterItem:hover {background:var(--pp-canvas)}
 
 /* Feishu/CoursePack files: independent source state and generated-course status. */
 .fileList {border:2px solid var(--pp-ink);border-radius:9px;padding:3px 10px;background:white;box-shadow:4px 4px 0 var(--pp-ink)}
-.fileRow {border-bottom:1px solid #e4e8f3;min-width:0;position:relative}
+.fileRow {border-bottom:1px solid color-mix(in srgb,var(--pp-quiet) 16%,var(--pp-paper));min-width:0;position:relative}
 .fileRow:last-child{border-bottom:0}
 .fileOpen {width:100%;min-width:0;min-height:60px;padding:7px 1px;display:flex;align-items:center;gap:11px;
   text-align:left;color:var(--pp-ink);border:0;background:none}
@@ -80,7 +80,7 @@ button.chapterItem:hover {background:var(--pp-canvas)}
 .fileIcon {width:44px;height:44px;flex:0 0 44px;border-radius:8px;display:grid;place-items:center;
   color:white;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 55%,transparent)}
 .fileGlyph {font-size:24px;font-weight:1000;line-height:1}
-.kind_pptx{background:#FFA553;color:var(--pp-ink)}.kind_pdf{background:var(--pp-coral)}
+.kind_pptx{background:var(--pp-yellow);color:var(--pp-ink)}.kind_pdf{background:var(--pp-coral)}
 .kind_markdown{background:var(--pp-quiet)}.kind_feishu{background:var(--pp-purple)}
 .kind_other{background:var(--pp-quiet)}
 .fileText {display:flex;flex-direction:column;flex:1;min-width:0;gap:2px;overflow:hidden}
@@ -88,20 +88,20 @@ button.chapterItem:hover {background:var(--pp-canvas)}
 .fileText small {font-size:11px;color:var(--pp-quiet);line-height:1.45;overflow-wrap:anywhere}
 .outcomeTag {flex:none;padding:5px 8px;border-radius:5px;font-size:11px;line-height:1.2;font-weight:850;
   max-width:112px;text-align:center}
-.outcome_course,.outcome_practice{background:color-mix(in srgb,var(--pp-mint) 25%,white);color:#087b54}
-.outcome_supplement,.outcome_none {background:#e7eaf3;color:#49556a}
+.outcome_course,.outcome_practice{background:color-mix(in srgb,var(--pp-mint) 25%,white);color:var(--pp-ink)}
+.outcome_supplement,.outcome_none {background:color-mix(in srgb,var(--pp-quiet) 14%,var(--pp-paper));color:var(--pp-quiet)}
 .fileChevron {flex:none}
 .fileSyncInline {font-size:11px;font-weight:850;color:var(--pp-blue);display:flex;gap:4px;align-items:center}
 .fileSyncInline svg {flex:none}
-.fileError{color:#b2253a}
-.syncTrack {height:5px;border-radius:5px;background:#e3e8f3;overflow:hidden;margin:0 0 6px 55px}
+.fileError{color:var(--pp-ink)}
+.syncTrack {height:5px;border-radius:5px;background:color-mix(in srgb,var(--pp-blue) 12%,var(--pp-paper));overflow:hidden;margin:0 0 6px 55px}
 .syncTrack span{display:block;height:100%;background:var(--pp-blue);border-radius:inherit;transition:width .15s}
 .retryButton {display:flex;align-items:center;gap:4px;margin:0 0 7px 55px;
   border:1px solid var(--pp-ink);border-radius:5px;background:white;font-size:11px;font-weight:900;padding:2px 6px}
 .emptyFiles,.emptyTasks {min-height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  border:2px dashed #bdc9ec;border-radius:8px;color:var(--pp-quiet);font-size:11px;text-align:center;padding:15px}
+  border:2px dashed color-mix(in srgb,var(--pp-blue) 24%,var(--pp-paper));border-radius:8px;color:var(--pp-quiet);font-size:11px;text-align:center;padding:15px}
 .emptyFiles strong,.emptyTasks strong{font-size:13px;color:var(--pp-ink)}
-.sourceCompact .fileList {border:1px solid #c7d3ff;box-shadow:none}
+.sourceCompact .fileList {border:1px solid color-mix(in srgb,var(--pp-blue) 24%,var(--pp-paper));box-shadow:none}
 .sourceCompact .fileOpen{min-height:52px}
 .sourceCompact .fileIcon {width:36px;height:36px;flex-basis:36px}
 .sourceCompact .fileText strong{font-size:12px}
@@ -116,7 +116,7 @@ button.chapterItem:hover {background:var(--pp-canvas)}
 .taskCard .textAction{margin-left:auto}
 .taskList {border:2px solid var(--pp-ink);border-radius:9px;background:white;
   padding:7px 10px;box-shadow:4px 4px 0 var(--pp-ink)}
-.taskRow {border-bottom:1px solid #e5e9f4;border-radius:6px}
+.taskRow {border-bottom:1px solid color-mix(in srgb,var(--pp-quiet) 13%,var(--pp-paper));border-radius:6px}
 .taskRow:last-child{border-bottom:0}
 .taskState_in-progress {background:color-mix(in srgb,var(--pp-blue) 17%,white)}
 .taskState_completed {background:color-mix(in srgb,var(--pp-mint) 11%,white)}
@@ -124,7 +124,7 @@ button.chapterItem:hover {background:var(--pp-canvas)}
   align-items:center;min-height:46px;padding:4px 5px;color:var(--pp-ink)}
 button.taskAction:hover{background:color-mix(in srgb,var(--pp-blue) 11%,white);border-radius:6px}
 .taskIcon {width:37px;height:37px;display:grid;place-items:center;flex:none;border-radius:6px;
-  color:#fff;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 30%,transparent)}
+  color:var(--pp-paper);box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 30%,transparent)}
 .taskKind_video{background:var(--pp-blue)}
 .taskKind_practice{background:var(--pp-yellow);color:var(--pp-ink)}
 .taskKind_quiz{background:var(--pp-mint);color:var(--pp-ink)}
@@ -132,12 +132,12 @@ button.taskAction:hover{background:color-mix(in srgb,var(--pp-blue) 11%,white);b
 .taskText strong{font-size:12px;font-weight:920;line-height:1.4;overflow-wrap:anywhere}
 .taskText small{font-size:11px;line-height:1.4;color:var(--pp-quiet)}
 .state_in-progress{color:var(--pp-blue);font-weight:950}
-.state_completed{color:#008b60;font-weight:950}
+.state_completed{color:var(--pp-ink);font-weight:950}
 .state_not-started{color:var(--pp-quiet)}
 .taskBars{flex:none;color:var(--pp-blue)}
 .taskCompleted{display:grid;place-items:center;background:var(--pp-mint);color:var(--pp-ink);
   border-radius:50%;width:25px;height:25px;flex:none}
-.taskCompact .taskList{padding:4px;border:1px solid #c8d3ff;box-shadow:none}
+.taskCompact .taskList{padding:4px;border:1px solid color-mix(in srgb,var(--pp-blue) 23%,var(--pp-paper));box-shadow:none}
 .taskCompact .taskDate{display:none}
 .taskCompact .taskAction{min-height:53px}
 .taskCompact .taskBars{display:none}
@@ -183,3 +183,121 @@ button.taskAction:hover{background:color-mix(in srgb,var(--pp-blue) 11%,white);b
 @media (prefers-reduced-motion: reduce){
   .syncTrack span{transition:none}
 }
+
+/* Session B v2: reference-driven geometry and accessible state separation. */
+.progressCard:global(.pp-panel),.sourceCard:global(.pp-panel),.taskCard:global(.pp-panel) {
+  border:3px solid var(--pp-ink);
+  box-shadow:5px 5px 0 var(--pp-ink);
+  border-radius:12px;
+  padding:14px 16px;
+  container-type:inline-size;
+}
+.cardHeading{margin-bottom:12px;gap:10px}
+.cardHeading h2{font-weight:950;letter-spacing:-.55px}
+.headingIcon{border:2px solid var(--pp-ink);box-shadow:3px 3px 0 var(--pp-ink)}
+.progressBody{gap:clamp(12px,2vw,22px);align-items:center}
+.progressBody :global(.pp-progress-ring){width:140px;height:140px;min-width:0}
+.progressBody :global(.pp-progress-core){width:110px;height:110px}
+.progressBody :global(.pp-progress-core strong){font-size:29px;font-weight:1000}
+.progressBody :global(.pp-progress-core span){font-size:10px;line-height:1.3;max-width:70px;text-align:center}
+.progressCount{font-size:14px;margin-bottom:5px;font-weight:1000}
+.chapterList{gap:2px}
+.chapterItem{min-height:27px;padding:2px 5px;gap:8px;font-size:12px}
+.chapterMarker{width:22px;height:22px;border-width:2px}
+.markerDone{box-shadow:2px 2px 0 var(--pp-ink)}
+.markerCurrent{box-shadow:2px 2px 0 var(--pp-ink)}
+.chapterCurrent{background:color-mix(in srgb,var(--pp-blue) 17%,var(--pp-paper));border-radius:6px}
+button.chapterItem:active,button.fileOpen:active,button.taskAction:active{transform:translate(1px,1px)}
+.progressExplanation{font-size:10px;line-height:1.5;color:var(--pp-quiet);margin-top:10px}
+.progressIncompleteHint{font-size:11px;line-height:1.45;color:var(--pp-quiet);font-weight:750;margin-bottom:6px}
+.progressCompact .progressBody{gap:12px}
+.progressCompact .progressBody :global(.pp-progress-ring){width:82px;height:82px}
+.progressCompact .progressBody :global(.pp-progress-core){width:64px;height:64px}
+.progressCompact .progressBody :global(.pp-progress-core strong){font-size:20px}
+.progressCompact .progressCount{font-size:12px}
+.progressCompact .finishMessage{margin-bottom:5px}
+.progressCompact .progressCompactAction :global(.pp-button){box-shadow:2px 2px 0 var(--pp-ink)}
+.finishMessage{font-weight:900;color:var(--pp-ink)}
+.finishMessage svg{color:var(--pp-yellow)}
+/* A file name may be thousands of characters; flex shrink and ellipsis are mandatory. */
+.sourceCard .fileList{padding:3px 10px}
+.fileOpen{min-height:54px;gap:10px;max-width:100%}
+.fileText{flex:1 1 0;min-width:0;max-width:100%;overflow:hidden}
+.fileText strong,.fileText small{display:block;min-width:0;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fileText strong{font-size:12px;font-weight:950}
+.fileText small{font-size:10px}
+.fileIcon{width:42px;height:42px;flex-basis:42px;box-shadow:2px 2px 0 var(--pp-ink)}
+.fileGlyph{font-size:25px}
+.outcomeTag{min-width:0;max-width:104px;font-size:10px;border-radius:5px;line-height:1.35;white-space:nowrap}
+.outcome_course,.outcome_practice{background:color-mix(in srgb,var(--pp-mint) 28%,var(--pp-paper));color:var(--pp-ink)}
+.outcome_supplement,.outcome_none{background:color-mix(in srgb,var(--pp-quiet) 13%,var(--pp-paper));color:var(--pp-ink)}
+.syncTag{display:inline-flex;align-items:center;justify-content:center;gap:4px;max-width:110px;min-width:0;flex:none;
+  border-radius:5px;border:1px solid transparent;font-size:10px;font-weight:900;line-height:1.25;
+  padding:5px 6px;white-space:nowrap}
+.syncTag svg{flex:none}
+.syncTag_syncing{background:color-mix(in srgb,var(--pp-blue) 13%,var(--pp-paper));color:var(--pp-blue);
+  border-color:color-mix(in srgb,var(--pp-blue) 35%,var(--pp-paper))}
+.syncTag_error{background:color-mix(in srgb,var(--pp-coral) 21%,var(--pp-paper));color:var(--pp-ink);
+  border-color:var(--pp-coral)}
+.syncTag_pending{background:color-mix(in srgb,var(--pp-quiet) 13%,var(--pp-paper));color:var(--pp-quiet)}
+.syncedIcon{flex:none;width:22px;height:22px;display:grid;place-items:center;border-radius:50%;
+  background:var(--pp-mint);color:var(--pp-ink)}
+.syncedText{font-size:10px;font-weight:900;color:var(--pp-ink);display:inline-flex;align-items:center;gap:3px}
+.syncedText svg{color:var(--pp-mint)}
+.syncTrack{height:6px;margin:0 2px 7px 52px;background:color-mix(in srgb,var(--pp-blue) 12%,var(--pp-paper))}
+.syncTrack span{background:var(--pp-blue)}
+.retryButton{margin:0 0 7px 52px;border:2px solid var(--pp-ink);
+  box-shadow:2px 2px 0 var(--pp-ink);background:var(--pp-paper)}
+.fileRow_syncing .fileOpen,.fileRow_error .fileOpen{min-height:51px}
+.sourceCompact .sourceSummary{font-size:10px}
+.sourceCompact .fileText strong{font-size:11px}
+.sourceCompact .fileOpen{min-height:46px}
+.sourceCompact .fileIcon{width:33px;height:33px;flex-basis:33px}
+.sourceCompact .fileGlyph{font-size:20px}
+.emptyFiles,.emptyTasks{background:var(--pp-paper);border:2px dashed color-mix(in srgb,var(--pp-blue) 33%,var(--pp-paper));min-height:92px}
+/* Status belongs to the row, while the task-type icon never changes. */
+.taskCard .taskList{padding:5px 9px}
+.taskRow{transition:background-color .12s}
+.taskAction{min-height:42px;gap:9px;padding:4px 5px}
+.taskIcon{width:36px;height:36px;box-shadow:2px 2px 0 var(--pp-ink)}
+.taskText{overflow:hidden}
+.taskText strong{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.taskText small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.taskState_in-progress{background:color-mix(in srgb,var(--pp-blue) 16%,var(--pp-paper));box-shadow:inset 3px 0 0 var(--pp-blue)}
+.taskState_not-started{background:var(--pp-paper)}
+.taskState_completed{background:color-mix(in srgb,var(--pp-mint) 11%,var(--pp-paper))}
+.taskBars{color:var(--pp-quiet)}
+.taskBarsActive{color:var(--pp-blue)}
+.taskCompleted{border:2px solid var(--pp-ink);width:24px;height:24px}
+.state_completed{color:var(--pp-ink);font-weight:900}
+.taskCompact .taskAction{min-height:48px}
+.taskCompact .taskBars{display:grid}
+:global(.pp-root) :is(.chapterItem,.fileOpen,.retryButton,.taskAction,.textAction):focus-visible{
+  outline:3px solid var(--pp-blue);outline-offset:2px;position:relative;z-index:1
+}
+@container (max-width: 370px) {
+  .progressBody{gap:9px}
+  .progressBody :global(.pp-progress-ring){width:109px;height:109px}
+  .progressBody :global(.pp-progress-core){width:83px;height:83px}
+  .progressBody :global(.pp-progress-core strong){font-size:23px}
+  .progressBody :global(.pp-progress-core span){font-size:9px}
+  .chapterItem{font-size:11px;gap:5px}
+  .progressCount{font-size:12px}
+  .sourceCard .fileList{padding:3px 5px}
+  .fileOpen{gap:7px;min-height:49px;flex-wrap:nowrap}
+  .fileIcon{width:34px;height:34px;flex-basis:34px}
+  .fileText strong{font-size:11px}
+  .outcomeTag{font-size:9px;max-width:77px;padding:4px 5px}
+  .syncTag{font-size:9px;padding:4px;max-width:90px}
+  .fileChevron{display:none}
+  .taskDate{font-size:10px}
+}
+@container (max-width: 280px) {
+  .progressBody{flex-direction:column;align-items:stretch}
+  .progressBody :global(.pp-progress-ring){align-self:center}
+  .progressDetails{width:100%}
+  .fileOpen{flex-wrap:wrap}
+  .outcomeTag,.syncTag{margin-left:41px}
+  .taskDate{display:none}
+}
+@media(prefers-reduced-motion:reduce){.taskRow,.syncTrack span{transition:none}}

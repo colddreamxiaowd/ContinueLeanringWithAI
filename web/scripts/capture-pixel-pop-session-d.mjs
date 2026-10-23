@@ -294,6 +294,38 @@ try{
     score:document.querySelector('[aria-label="当前练习表现"]')?.textContent
   })`);
   if(!wrong.visible||!wrong.score.includes("0 / 1"))throw Error("A+D wrong/score failed "+JSON.stringify(wrong));
+  if(name==="desktop"||name==="mobile"){
+    const mascot=await dom(`(()=>{
+      const avatar=document.querySelector('[aria-label="单选题"] [aria-label="答案错误"] span[data-pose="avatar"]');
+      if(!avatar)return {found:false};
+      const art=avatar.querySelector('svg');
+      const hadImage=!!art?.querySelector('image');
+      const width=avatar.getBoundingClientRect().width;
+      const fixture=document.createElement('aside');fixture.id='session-d-svg-fidelity-fixture';
+      Object.assign(fixture.style,{position:'fixed',top:'10px',left:'10px',zIndex:'999999',
+        display:'flex',gap:'8px',background:'#fff',padding:'8px',border:'2px solid #12121d'});
+      for(const [label,color] of [['LIGHT','#FFFFFF'],['DARK','#111427']]){
+        const tile=document.createElement('div');
+        Object.assign(tile.style,{width:'145px',height:'115px',display:'grid',
+          justifyItems:'center',alignContent:'center',gap:'8px',background:color,
+          border:'2px solid #12121d',color:label==='LIGHT'?'#12121d':'#ffffff',
+          font:'900 12px Arial,sans-serif'});
+        const copy=avatar.cloneNode(true);
+        tile.appendChild(copy);const tag=document.createElement('span');tag.textContent=label;
+        tile.appendChild(tag);fixture.appendChild(tile);
+      }
+      document.body.appendChild(fixture);
+      return {found:true,hadImage,width};
+    })`);
+    if(!mascot.found||mascot.hadImage||mascot.width<36)
+      throw Error("Canonical inline small-size Xiaozhi SVG missing or embedded bitmap: "+JSON.stringify(mascot));
+    await delay(80);
+    const snap=await send("Page.captureScreenshot",{format:"png",fromSurface:true,
+      clip:{x:8,y:8,width:330,height:150,scale:1}});
+    writeFileSync(join(folder,"session-d-xiaozhi-40px-"+name+"-light-dark.png"),Buffer.from(snap.data,"base64"));
+    await dom(`document.getElementById('session-d-svg-fidelity-fixture')?.remove()`);
+  }
+
   await click(`([...document.querySelectorAll('[aria-label="单选题"] button')].find(b=>b.textContent.includes("重新作答"))).click()`);
   await delay(100);
   await click(`document.querySelector('[aria-label="单选题"] button[aria-label^="D，"]').click()`);

@@ -93,17 +93,20 @@ export function ChapterOutline({chapters,activeSectionId,onNavigate,defaultExpan
             aria-controls={`outline-${chapter.id}`} onClick={()=>toggle(chapter.id)}>
             {open?<ChevronDown size={16}/>:<ChevronRight size={16}/>}<strong>{chapter.label}</strong>
             <span>{done} / {total}</span></button>
-          {open&&<div className={s.chapterContents} id={`outline-${chapter.id}`}>
+          <div className={s.chapterContents} id={`outline-${chapter.id}`} hidden={!open}>
             <div className={s.progressTrack} role="progressbar" aria-label={`${chapter.label} 已完成进度`}
               aria-valuemin={0} aria-valuemax={total} aria-valuenow={done}>
               <span style={{width:`${total?100*done/total:0}%`}}/></div>
-            <ol>{chapter.sections.map(section=><li key={section.id}>
+            <ol>{chapter.sections.map(section=>{
+              const isActive=section.id===activeSectionId;
+              const visualStatus=section.status==="done"?"done":isActive?"current":section.status==="current"?"pending":section.status;
+              return <li key={section.id}>
               <button type="button" onClick={()=>onNavigate?.(section.id)}
                 aria-current={section.id===activeSectionId?"location":undefined}
-                className={s.sectionLink} data-status={section.status}>
-                <span className={s.statusIcon} aria-hidden="true">{section.status==="done"?<Check size={12}/>:section.status==="current"?<Play size={11} fill="currentColor"/>:null}</span>
-                <span>{section.label}</span></button></li>)}</ol>
-          </div>}</div>;
+                className={s.sectionLink} data-status={visualStatus}>
+                <span className={s.statusIcon} aria-hidden="true">{visualStatus==="done"?<Check size={12}/>:visualStatus==="current"?<Play size={11} fill="currentColor"/>:null}</span>
+                <span>{section.label}</span></button></li>;})}</ol>
+          </div></div>;
       })}</nav>
     </PopPanel>
     {learningGoals&&<PopPanel className={s.goalsPanel}><h3><span aria-hidden="true">🎯</span> 本章学习目标</h3>

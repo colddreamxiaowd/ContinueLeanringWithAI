@@ -108,7 +108,8 @@ try{
    await sleep(150);
   }
   // Actual Link navigation, not a simulated callback. Mobile links sit in the drawer.
-  await evalJs(`document.querySelector('aside a[href$="/reader"]')?.click()`);
+  const readerHref=await evalJs(`(()=>{const a=document.querySelector('aside a[href*="/reader"]');if(!a)return null;a.click();return a.getAttribute("href")})()`);
+  if(!readerHref)throw Error("Reader route link missing: "+device);
   await sleep(2400);
   let reader=await check("reader","balanced");
   if(width>720){
@@ -120,7 +121,8 @@ try{
    await evalJs(`document.querySelector('button[aria-label="打开侧边导航"]')?.click()`);
    await sleep(170);
   }
-  await evalJs(`document.querySelector('aside a[href$="/practice"]')?.click()`);
+  const practiceHref=await evalJs(`(()=>{const a=document.querySelector('aside a[href*="/practice"]');if(!a)return null;a.click();return a.getAttribute("href")})()`);
+  if(!practiceHref)throw Error("Practice route link missing: "+device);
   await sleep(2400);
   const practice=await check("practice","balanced");
   await capture("compose-"+device+"-practice");

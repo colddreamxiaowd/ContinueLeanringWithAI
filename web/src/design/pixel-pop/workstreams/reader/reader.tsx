@@ -29,6 +29,22 @@ export function safeReaderHref(value?:string){
   try{const url=new URL(value);return ["https:","http:"].includes(url.protocol)?url.href:undefined;}catch{return undefined;}
 }
 function safeFigurePath(value?:string){return value&&value.startsWith("/")&&!value.startsWith("//")&&!/[\\\u0000-\u001f\s]/.test(value)?value:undefined;}
+/** Escaped, read-only syntax accents for common teaching languages. No HTML injection. */
+function HighlightedCode({code,language}:{code:string;language:string}){
+  if(!/^(py|python|js|javascript|ts|typescript)$/i.test(language.trim()))return <>{code}</>;
+  const token=/(#[^\n]*|\/\/[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\b(?:class|def|return|if|elif|else|for|while|in|from|import|as|async|await|const|let|var|function|export|raise|try|except|finally|None|True|False|self|print)\b|\b\d+(?:\.\d+)?\b)/g;
+  return <>{code.split("\n").map((line,i)=>{
+    const fragments:ReactNode[]=[];let offset=0;
+    for(const match of line.matchAll(token)){
+      const start=match.index??0;if(start>offset)fragments.push(line.slice(offset,start));
+      const value=match[0];const kind=/^(#|\/\/)/.test(value)?"comment":/^['"]/.test(value)?"string":/^\d/.test(value)?"number":"keyword";
+      fragments.push(<span key={start} className={s["syntax"+kind]}>{value}</span>);offset=start+value.length;
+    }
+    if(offset<line.length)fragments.push(line.slice(offset));
+    return <span key={i}>{fragments.length?fragments:" "}{i<code.split("\n").length-1?"\n":null}</span>;
+  })}</>;
+}
+
 function InlineText({items,activeCitationId,onCitationSelect}:{items:readonly ReaderInline[];
   activeCitationId?:string|null;onCitationSelect?:(id:string)=>void}){
   return <>{items.map((item,i)=>{
@@ -76,7 +92,7 @@ export function LessonContent({lesson,activeCitationId,onCitationSelect,onCopyCo
             <PopButton variant="outline" onClick={()=>void copyCode(key,block.code)}>
               {copyState?.id===key&&copyState.kind==="success"?<Check size={14}/>:<Clipboard size={14}/>}
               {copyState?.id===key&&copyState.kind==="success"?"已复制":"复制"}</PopButton></div>
-          <pre><code>{block.code}</code></pre>
+          <pre><code><HighlightedCode code={block.code} language={block.language}/></code></pre>
           {copyState?.id===key&&<small role="status" className={s.copyStatus}>
             {copyState.kind==="success"?"代码已复制到剪贴板":"复制失败，请选择代码后手动复制"}</small>}</section>;
         if(block.type==="activity")return <section tabIndex={-1} id={block.id} key={key} className={s.activity}>

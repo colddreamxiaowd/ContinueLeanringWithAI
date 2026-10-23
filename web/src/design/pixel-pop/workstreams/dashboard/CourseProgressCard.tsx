@@ -49,7 +49,7 @@ export function CourseProgressCard({
         {compact ? <div className={styles.progressCompactAction}>
           {summary.fullyComplete && onCertificate ? <PopButton variant="outline" onClick={onCertificate}>查看证书</PopButton> :
             current && onContinue ? <PopButton variant="blue" onClick={onContinue}><Play size={14} fill="currentColor" aria-hidden="true"/> 继续学习</PopButton> :
-            <span className={styles.mutedText}>{summary.fullyComplete ? "全部学习已完成" : current ? "当前章节可继续学习" : "暂无可继续的章节"}</span>}
+            <span className={styles.mutedText}>{summary.fullyComplete ? "全部学习已完成" : summary.allChaptersCompleted ? "还有未完成的学习活动" : current ? "当前章节可继续学习" : "暂无可继续的章节"}</span>}
         </div> : <ol className={styles.chapterList}>
           {chapters.length === 0 && <li className={styles.emptyChapter}>课程尚无章节</li>}
           {chapters.map((chapter, index) => {

@@ -276,3 +276,13 @@
  .progressTasks>div{gap:7px;font-size:12px}
  .progressTasks>div b{font-size:10px}
 }
+
+
+/* Desktop quadrant balance: keep footer actions aligned with the taller mastery panel. */
+@media(min-width:1151px){
+ .demoFeedbackPanel{display:flex;flex-direction:column}
+ .demoFeedbackPanel .demoGrid{flex:1;align-items:stretch}
+ .demoFeedbackPanel .feedback{height:100%;display:flex;flex-direction:column}
+ .demoFeedbackPanel .feedbackContent{flex:1;display:flex;flex-direction:column}
+ .demoFeedbackPanel .feedbackActions{margin-top:auto}
+}

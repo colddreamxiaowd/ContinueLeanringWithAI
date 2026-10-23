@@ -55,17 +55,13 @@ jobs:
           done
           cat /tmp/pp-a-composition.log
           exit 1
-      - name: Load Chromium and Chinese font
+      - name: Inspect Chromium and existing Chinese font fallback
         run: |
           which google-chrome || which google-chrome-stable || which chromium
-          if ! fc-list :lang=zh | grep -q .; then
-            sudo apt-get install -y --no-install-recommends fonts-noto-cjk || {
-              sudo timeout 80s apt-get update -qq
-              sudo apt-get install -y --no-install-recommends fonts-noto-cjk
-            }
-          fi
-          fc-cache -f
           fc-match "Noto Sans CJK SC"
+          fc-match -f '%{family}\n' ":lang=zh" | head -1
+          # The resulting screenshot is inspected for actual glyph rendering.
+          # No blocking global apt refresh in this isolated integration check.
       - name: Exercise real course reader practice navigation and screenshots
         working-directory: web
         env:

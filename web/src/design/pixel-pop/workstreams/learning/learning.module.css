@@ -286,3 +286,85 @@
  .demoFeedbackPanel .feedbackContent{flex:1;display:flex;flex-direction:column}
  .demoFeedbackPanel .feedbackActions{margin-top:auto}
 }
+
+
+/* Session D · mobile-first active learning, keeping full history available on demand. */
+.mobileCurrent,.mobileTimelineToggle,.mobileGoalsToggle,.feedbackStatePicker{display:none}
+.feedbackGalleryItem{display:flex;min-width:0}
+.feedbackGalleryItem>.feedback{width:100%}
+@media(max-width:768px){
+  .playgroundMain{display:flex;flex-direction:column}
+  .sectionKicker{order:0}
+  .mobileCurrent{
+    order:1;display:block;border:2px solid var(--pp-ink,#12121d);border-radius:10px;
+    background:linear-gradient(145deg,#f9fcff,#e9f3ff);padding:9px 12px 11px;
+  }
+  .mobileCurrentCaption{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    font-size:13px}
+  .mobileCurrentCaption strong{font-size:15px}
+  .mobileCurrentCaption span{color:#3a5689;font-size:11px;font-weight:750;text-align:right}
+  .mobileLiveBody{display:flex;align-items:center;justify-content:center;gap:20px}
+  .mobileCurrent .stackGraphic{height:189px;min-width:108px;padding-top:7px}
+  .mobileCurrent .slotTower{height:166px;width:80px}
+  .mobileCurrent .stackBase{width:102px}
+  .mobileStackMeta{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-width:120px}
+  .mobileStackMeta>span{font-size:12px;color:#375796;font-weight:900}
+  .mobileStackMeta>strong{font-size:39px;line-height:1;font-weight:1000;color:var(--pp-blue,#246bff)}
+  .mobileStackMeta>code{font-size:14px;font-weight:900;overflow-wrap:anywhere;color:var(--pp-ink,#12121d)}
+  .mobileStackMeta>small{color:#53658a;font-size:11px;font-weight:780}
+  .controls{order:2;margin-top:9px}
+  .mobileTimelineToggle{
+    order:3;display:flex;align-items:center;gap:7px;justify-content:flex-start;min-height:44px;
+    width:100%;margin-top:9px;border:2px solid #96b0ed;border-radius:8px;
+    background:#ecf3ff;padding:9px 12px;cursor:pointer;color:#143774;font-weight:900;font-size:13px;
+  }
+  .mobileTimelineToggle span{margin-left:auto;font-size:11px;white-space:nowrap;color:#526da5}
+  .stageGrid{order:4;display:none}
+  .stageGrid.timelineExpanded{display:flex;gap:0;overflow-x:auto;scroll-snap-type:x proximity;
+    overscroll-behavior-x:contain;margin-top:8px;padding-bottom:4px}
+  .stageGrid.timelineExpanded .stageCard{flex:0 0 145px;scroll-snap-align:start}
+  .stageGrid.timelineExpanded .stageCard:nth-child(3),
+  .stageGrid.timelineExpanded .stageCard:nth-child(4){border-top:0;border-left:1px dashed #c8d6ef}
+  .stageGrid.timelineExpanded .stackGraphic{height:146px}
+  .stageGrid.timelineExpanded .slotTower{height:117px}
+  .stageGrid.timelineExpanded .popGhost{display:none}
+  .playgroundBody>.history{display:none}
+  .playgroundBody>.history.historyExpanded{display:block;margin-top:0}
+  .historyList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .historyTip{margin-top:8px}
+  .demoFeedbackPanel .demoGrid{grid-template-columns:minmax(0,1fr);gap:0}
+  .feedbackStatePicker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:10px}
+  .feedbackStatePicker button{border:2px solid var(--pp-ink,#12121d);border-radius:7px;
+    background:white;color:var(--pp-ink,#12121d);font-size:13px;font-weight:900;
+    min-height:43px;cursor:pointer}
+  .feedbackStatePicker .feedbackStateActive{background:var(--pp-violet,#7440ff);color:white;
+    box-shadow:3px 3px 0 var(--pp-ink,#12121d)}
+  .feedbackGalleryItem:not(.feedbackGalleryActive){display:none}
+  .feedbackGalleryItem.feedbackGalleryActive{display:flex}
+  .mobileGoalsToggle{
+    display:flex;align-items:center;justify-content:space-between;width:100%;
+    margin:13px 0 0;padding:10px 12px;min-height:44px;background:#ecf2ff;
+    border:2px solid #abc0ee;border-radius:8px;cursor:pointer;
+    font-size:13px;font-weight:900;color:#243c78}
+  .progressTasks:not(.goalsExpanded),.progressEncourage:not(.goalsExpanded){display:none}
+  .progressTasks.goalsExpanded{margin-top:8px}
+  .progressEncourage.goalsExpanded{margin-top:10px}
+  .progressSummary{gap:7px;margin-top:10px}
+  .progressSummary>div{min-height:65px}
+  .progressSummary b{font-size:23px}
+}
+@media(max-width:450px){
+  .playground{padding:9px}
+  .controlRow input{flex:1 1 100%;min-height:43px}
+  .controlRow :global(.pp-button){flex:1 1 0;min-width:0;padding:7px 4px;font-size:11px;gap:3px}
+  .demoSection{padding:10px}
+  .demoSectionTitle{gap:8px}
+  .demoNote{font-size:11px;line-height:1.5}
+  .demoProgress{gap:8px}
+  .progressSummary span{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  .stageGrid.timelineExpanded{scroll-behavior:auto}
+  .mobileCurrent .slotEnter{animation:none!important}
+  .mobileCurrent .popGhost{display:none!important}
+}

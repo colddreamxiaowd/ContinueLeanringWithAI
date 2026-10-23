@@ -362,3 +362,70 @@ button.chapterItem:active,button.fileOpen:active,button.taskAction:active{transf
 @media (prefers-reduced-motion:reduce) {
   .chapterItem,.fileOpen,.taskAction {transition:none}
 }
+
+
+/* Session B v4 · Director review 6364783026: content-driven cards.
+   Override integrator's .cards > section {height:100%;min-height:330px}
+   strictly inside the three owned components. Do not inflate short cards. */
+.progressCard:global(.pp-panel),
+.sourceCard:global(.pp-panel),
+.taskCard:global(.pp-panel) {
+  height:auto;
+  min-height:0;
+  align-self:start;
+}
+.progressCard .cardHeading {margin-bottom:14px}
+.progressCard .progressBody {align-items:center}
+.progressCard .progressDetails {min-width:0}
+.progressCard .chapterList {gap:4px}
+.progressCard .chapterItem {min-height:30px;padding-block:3px}
+.progressCard .progressExplanation {
+  font-size:12px;
+  line-height:1.55;
+  font-weight:680;
+  margin-top:13px;
+  max-width:46ch;
+  text-wrap:pretty;
+}
+/* Compact states remain compact instead of inheriting full-card rhythm. */
+.progressCompact .cardHeading {margin-bottom:8px}
+.progressCompact .progressBody {gap:12px}
+.progressCompact .progressExplanation {display:none}
+/* The file list is visually dense; 4 rows must stay readable, not expanded. */
+.sourceCard .fileOpen {min-height:61px}
+.sourceCard .fileText strong {font-weight:950;line-height:1.38}
+.sourceCard .fileText small {line-height:1.55}
+.sourceCard .fileIcon {box-shadow:2px 2px 0 var(--pp-ink)}
+.sourceCard .syncTag {white-space:nowrap}
+.sourceCard .retryButton:hover {
+  background:color-mix(in srgb,var(--pp-coral) 14%,var(--pp-paper));
+}
+.sourceCompact .fileOpen {min-height:50px}
+/* Task row targets and status text are the focus; remove decorative dead air. */
+.taskCard .cardHeading {margin-bottom:12px}
+.taskCard .taskList {padding-block:5px}
+.taskCard .taskAction {min-height:53px}
+.taskCard .taskText small {font-size:12px;font-weight:700}
+.taskCard .taskIcon {flex:none}
+.taskCard .taskRow:focus-within {outline-offset:2px}
+.taskCompact .taskAction {min-height:49px}
+:global(.pp-root[data-density="minimal"]) .taskCard .taskAction {min-height:46px}
+:global(.pp-root[data-density="normal"]) .taskCard .taskAction {min-height:58px}
+@container (max-width: 370px) {
+  .progressCard .progressBody :global(.pp-progress-ring) {width:124px;height:124px}
+  .progressCard .progressBody :global(.pp-progress-core) {width:96px;height:96px}
+  .progressCard .progressCount {font-size:13px}
+  .progressCard .chapterItem {font-size:12px;min-height:30px}
+  .progressCard .progressExplanation {font-size:11px;line-height:1.55}
+  .sourceCard .fileOpen {min-height:55px}
+  .sourceCard .fileText strong {font-size:12px}
+  .sourceCard .outcomeTag {font-size:10px}
+  .taskCard .taskAction {min-height:52px}
+  .taskCard .taskText strong {font-size:13px}
+  .taskCard .taskText small {font-size:11px}
+}
+@container (max-width: 280px) {
+  .progressCard .progressBody {flex-direction:column}
+  .progressCard .progressDetails {width:100%}
+  .sourceCard .fileOpen {flex-wrap:wrap}
+}

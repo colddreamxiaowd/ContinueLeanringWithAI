@@ -35,12 +35,15 @@ const SKILLS=[["概念理解",100,"#24DBA6"],["操作实验",70,"#246BFF"],["应
 export function LearningDemo(){
   const [density,setDensity]=useState<Density>("balanced");
   const [questionIndex,setQuestionIndex]=useState(0);
+  const [feedbackPreview,setFeedbackPreview]=useState<"correct"|"incorrect"|"retry">("retry");
+  const [showGoals,setShowGoals]=useState(false);
   const [notice,setNotice]=useState("点击按钮体验真实状态变化；所有分数和题目均为演示。");
   const showLab=()=>{
     document.getElementById("learning-demo-lab")?.scrollIntoView({behavior:"smooth",block:"start"});
     setNotice("已定位至上方栈实验区。");
   };
   const advance=()=>{
+    setFeedbackPreview("retry");
     setQuestionIndex(i=>(i+1)%EXAMPLE_QUESTIONS.length);
     setNotice("已切换到另一道演示题。");
   };
@@ -72,7 +75,7 @@ export function LearningDemo(){
         <QuizCard key={EXAMPLE_QUESTIONS[questionIndex].id} question={EXAMPLE_QUESTIONS[questionIndex]}
           questionIndex={questionIndex+1} questionCount={EXAMPLE_QUESTIONS.length}
           onAnswer={(_,correct)=>setNotice(correct?"首次成绩：回答正确。":"首次成绩：回答错误。后续重试不重复计分。")}
-          onAttempt={(_,correct,n)=>setNotice("第 "+n+" 次尝试："+(correct?"正确":"错误")+"；当前题只记录一次成绩。")}
+          onAttempt={(_,correct,n)=>{setFeedbackPreview(correct?"correct":"incorrect");setNotice("第 "+n+" 次尝试："+(correct?"正确":"错误")+"；当前题只记录一次成绩。");}}
           onNext={advance} onOpenLab={showLab} onReview={()=>setNotice("复习提示：栈遵循后进先出（LIFO）。")}/>
         <div className={styles.demoNote}>💡 本区域显示模拟练习题，不写入真实课程成绩。</div>
       </section>
@@ -92,7 +95,12 @@ export function LearningDemo(){
             </div>)}
           </div>
         </div>
-        <div className={styles.progressTasks}>
+        <button type="button" className={styles.mobileGoalsToggle}
+          aria-expanded={showGoals} aria-controls="session-d-mastery-goals"
+          onClick={()=>setShowGoals(open=>!open)}>
+          {showGoals?"收起学习目标与建议":"展开学习目标与建议"} <span>{showGoals?"▲":"▼"}</span>
+        </button>
+        <div id="session-d-mastery-goals" className={styles.progressTasks+(showGoals?" "+styles.goalsExpanded:"")}>
           <strong>本节学习目标 · 演示</strong>
           <div><span className={styles.taskDone}>✓</span>理解栈的后进先出原则 <b>已掌握</b></div>
           <div><span className={styles.taskDone}>✓</span>能操作 Push 和 Pop <b>已掌握</b></div>
@@ -104,7 +112,7 @@ export function LearningDemo(){
           <div><b>7</b><span>正确</span></div>
           <div><b>3</b><span>待巩固</span></div>
         </div>
-        <div className={styles.progressEncourage}>
+        <div className={styles.progressEncourage+(showGoals?" "+styles.goalsExpanded:"")}>
           <Xiaozhi size={72} mood="encourage" decorative/>
           <div><strong>继续加油！</strong><p>已经了解基本操作，接下来挑战综合练习。</p></div>
         </div>
@@ -113,18 +121,32 @@ export function LearningDemo(){
     <section className={styles.demoSection+" "+styles.demoFeedbackPanel}>
       <div className={styles.demoSectionTitle}><b>3</b><div>
         <h2>AnswerFeedback · 答题反馈组件</h2>
-        <p>三个独立可复用状态：正确、错误、重试；动作由调用方提供</p></div></div>
+        <p>学习时只呈现当前答案反馈；此处可切换检查三种组件状态</p></div></div>
+      <div className={styles.feedbackStatePicker} role="group" aria-label="切换反馈演示状态">
+        {(["correct","incorrect","retry"] as const).map(state=><button type="button" key={state}
+          aria-pressed={feedbackPreview===state}
+          className={feedbackPreview===state?styles.feedbackStateActive:""}
+          onClick={()=>setFeedbackPreview(state)}>
+          {({correct:"✓ 正确",incorrect:"× 错误",retry:"↻ 重试"})[state]}
+        </button>)}
+      </div>
       <div className={styles.demoGrid}>
+        <div className={styles.feedbackGalleryItem+(feedbackPreview==="correct"?" "+styles.feedbackGalleryActive:"")}>
         <AnswerFeedback status="correct" visual={<StackAnswerIllustration stack={[1,2,4]}/>}
           description="你已正确模拟 Push / Pop 后的栈顶变化。" correctAnswer="4"
           explanation={EXAMPLE_QUESTIONS[0].explanation} onNext={advance}/>
+        </div>
+        <div className={styles.feedbackGalleryItem+(feedbackPreview==="incorrect"?" "+styles.feedbackGalleryActive:"")}>
         <AnswerFeedback status="incorrect" visual={<StackAnswerIllustration stack={[1,2,4]}/>}
           description="试着按操作顺序重新追踪栈顶。" selectedAnswer="3" correctAnswer="4"
           explanation={EXAMPLE_QUESTIONS[0].explanation}
           onRetry={()=>setNotice("已触发重新作答。可在上方单选题中重新选择。")} onNext={advance}/>
+        </div>
+        <div className={styles.feedbackGalleryItem+(feedbackPreview==="retry"?" "+styles.feedbackGalleryActive:"")}>
         <AnswerFeedback status="retry" onOpenPractice={showLab} practiceLabel="打开实验区"
           onReview={()=>setNotice("知识点：栈的入栈、出栈操作均发生在栈顶。")}
           onRetry={()=>setNotice("已触发重新练习，请返回上方单选题。")}/>
+        </div>
       </div>
       <div className={styles.demoNote} role="status">{notice}</div>
     </section>

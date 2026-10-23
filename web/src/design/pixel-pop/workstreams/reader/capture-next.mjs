@@ -40,8 +40,23 @@ try{
    const file="nextjs-session-c-"+width+".png";
    await writeFile(root+"/"+file,Buffer.from(shot.data,"base64"));
    results.captures.push({width,file,...info});
+   const fold=await page("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+   await writeFile(root+"/nextjs-session-c-"+width+"-firstfold.png",Buffer.from(fold.data,"base64"));
  }
  await page("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false});
+ // Actual scrolling, not a full-page stitched screenshot, determines sticky behavior.
+ const before=await evaluate("(()=>{const el=document.querySelector('[data-reader-block=outline]')?.parentElement;return {top:el?.getBoundingClientRect().top,position:el?getComputedStyle(el).position:'missing',height:document.documentElement.scrollHeight}})()");
+ await evaluate("window.scrollTo({top:Math.min(840,document.documentElement.scrollHeight-innerHeight-200),behavior:'instant'})");
+ await sleep(380);
+ const middle=await evaluate("(()=>{const outline=document.querySelector('[data-reader-block=outline]')?.parentElement;const source=document.querySelector('[data-reader-block=citation]')?.parentElement;return {scrollY:window.scrollY,outlineTop:outline?.getBoundingClientRect().top,sourceTop:source?.getBoundingClientRect().top,outlinePosition:outline?getComputedStyle(outline).position:'missing',sourcePosition:source?getComputedStyle(source).position:'missing'}})()");
+ if(middle.scrollY<200||middle.outlinePosition!=="sticky"||middle.sourcePosition!=="sticky"||
+    Math.abs(middle.outlineTop-14)>9||Math.abs(middle.sourceTop-14)>9)
+    throw Error("Long-scroll sticky sidebars failed: "+JSON.stringify({before,middle}));
+ results.sticky={before,middle};
+ const midShot=await page("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+ await writeFile(root+"/nextjs-session-c-1440-midscroll.png",Buffer.from(midShot.data,"base64"));
+ results.checks.push("real document scroll keeps both side columns sticky");
+ await evaluate("window.scrollTo({top:0,behavior:'instant'})");await sleep(100);
  await evaluate("([...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='复制')||{}).click?.()");
  await wait("[...document.querySelectorAll('[role=status]')].some(e=>e.textContent.includes('复制'))","copy feedback");
  const copied=await evaluate("navigator.clipboard.readText().then(x=>x.includes('class Stack'))");
@@ -58,6 +73,36 @@ try{
  await evaluate("(()=>{const b=[...document.querySelectorAll('button[aria-expanded]')].find(b=>b.textContent.includes('第 4 章'));b.parentElement.querySelector('ol button').click()})()");
  await wait("document.activeElement?.id==='s41'","chapter scroll + focus");
  results.checks.push("cross-chapter section focus and scroll");
+
+ // Reset to the longer first chapter for mobile figure/code and overlay checks.
+ await page("Page.navigate",{url:results.url});
+ await wait("!!document.querySelector('[data-reader-block=lesson]')","mobile lesson");
+ await page("Emulation.setDeviceMetricsOverride",{width:390,height:844,deviceScaleFactor:1,mobile:false});
+ await sleep(400);
+ const mobileMetrics=await evaluate("(()=>{const pre=document.querySelector('[data-reader-block=lesson] pre');const figure=document.querySelector('[data-reader-block=lesson] figure');const mobile=figure?.querySelector('svg:nth-of-type(2)');const labels=[...(mobile?.querySelectorAll('text')||[])].map(el=>({text:el.textContent,height:el.getBoundingClientRect().height}));return {codeFont:parseFloat(getComputedStyle(pre).fontSize),pageWidth:document.documentElement.scrollWidth,viewport:window.innerWidth,figureWidth:figure?.getBoundingClientRect().width,svgWidth:mobile?.getBoundingClientRect().width,svgLabels:labels}})()");
+ if(mobileMetrics.codeFont<13||mobileMetrics.pageWidth>mobileMetrics.viewport+2||
+    !mobileMetrics.svgLabels?.length||mobileMetrics.svgLabels.some(x=>x.height<12))
+    throw Error("Mobile readability regression: "+JSON.stringify(mobileMetrics));
+ results.mobileMetrics=mobileMetrics;
+ const captureViewport=async file=>{await sleep(140);const shot=await page("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});await writeFile(root+"/"+file,Buffer.from(shot.data,"base64"));};
+ await evaluate("document.querySelector('[data-reader-block=lesson] figure')?.scrollIntoView({block:'center',behavior:'instant'})");
+ await captureViewport("nextjs-session-c-390-diagram.png");
+ await evaluate("document.querySelector('[data-reader-block=lesson] pre')?.scrollIntoView({block:'center',behavior:'instant'})");
+ await captureViewport("nextjs-session-c-390-code.png");
+ await evaluate("window.scrollTo({top:0,behavior:'instant'})");
+ await evaluate("document.querySelector('[aria-controls=session-c-mobile-outline]')?.click()");
+ await wait("document.querySelector('[aria-controls=session-c-mobile-outline]')?.getAttribute('aria-expanded')==='true'","mobile outline");
+ await captureViewport("nextjs-session-c-390-outline.png");
+ results.checks.push("mobile outline opens at reading top");
+ await evaluate("document.querySelector('[aria-controls=session-c-mobile-outline]')?.click()");
+ await evaluate("document.querySelector('[data-reader-block=lesson] button[aria-label^=\"查看引用\"]')?.click()");
+ await wait("!![...document.querySelectorAll('button')].find(b=>b.textContent.includes('关闭来源'))","mobile citation panel");
+ await captureViewport("nextjs-session-c-390-citation.png");
+ results.checks.push("mobile citation opens readable panel");
+ await evaluate("[...document.querySelectorAll('button')].find(b=>b.textContent.includes('关闭来源'))?.click()");
+ await wait("![...document.querySelectorAll('button')].find(b=>b.textContent.includes('关闭来源'))","mobile source closes");
+ results.checks.push("mobile source panel dismisses without resetting chapter");
+
  await writeFile(root+"/browser-results.json",JSON.stringify(results,null,2));
  console.log(JSON.stringify(results,null,2));
 }finally{socket.close();chrome.kill("SIGTERM");}

@@ -311,3 +311,16 @@
   :global(.pp-root[data-density="minimal"]) .trail,
   :global(.pp-root[data-density="normal"]) .trail{flex-wrap:nowrap}
 }
+
+/* Tablet: preserve the active lesson instead of letting the penultimate crumb
+   push its title out. The ... disclosure retains all omitted ancestor links. */
+@media(min-width:721px) and (max-width:1000px){
+  .trailNavigation[data-clipped="true"] .trailItem:nth-child(2)>span:last-child,
+  .trailNavigation[data-clipped="true"] .trailItem:nth-child(2)>a:last-child{display:none}
+  .trailNavigation[data-clipped="true"] .trailItem:nth-child(2){flex:none;gap:2px}
+  .trailNavigation[data-clipped="true"] .trailCurrent{flex:1 1 88px;min-width:0}
+  .trailNavigation[data-clipped="true"] .trailCurrent span{
+    max-width:100%!important;min-width:0;text-overflow:ellipsis}
+  .trailBack{padding-right:5px}
+  .trailAction{padding-inline:7px}
+}

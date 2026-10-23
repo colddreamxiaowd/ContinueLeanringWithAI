@@ -18,8 +18,8 @@
   box-shadow:3px 3px 0 var(--pp-ink);border-radius:7px;font-size:21px;font-weight:1000;padding:0 11px}
 .sectionHead h2{margin:0;font-size:19px;font-weight:950}
 .sectionHead p{color:var(--pp-quiet);font-size:12px;margin:0}
-.progressExamples{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(265px,.9fr);gap:20px}
-.sourceExamples{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(255px,.8fr);gap:20px}
+.progressExamples{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(265px,.9fr);gap:20px;align-items:start}
+.sourceExamples{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(255px,.8fr);gap:20px;align-items:start}
 .compactExamples{display:flex;flex-direction:column;gap:14px}
 .variantCase{display:flex;flex-direction:column;gap:5px;min-width:0}
 .variantTag{align-self:start;font-size:11px;font-weight:900;padding:3px 8px;border-radius:5px;

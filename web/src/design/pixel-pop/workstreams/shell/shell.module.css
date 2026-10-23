@@ -1,0 +1,137 @@
+/* Session A: three shell blocks. Tokens are inherited from the existing .pp-root. */
+.navShell,.navShell *,.density,.density *,.trail,.trail *{box-sizing:border-box}
+.navShell{position:relative;flex:none;width:238px;color:var(--pp-ink);z-index:10}
+.sidebar{position:relative;display:flex;flex-direction:column;gap:12px;width:100%;
+  min-height:520px;padding:13px 11px 14px;background:var(--pp-paper);
+  border:var(--pp-stroke,3px) solid var(--pp-ink);border-radius:10px;
+  box-shadow:var(--pp-shadow,5px 5px 0 var(--pp-ink))}
+.mobileHeading{display:none}
+.nav{flex:1}.navList{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.navEntry{min-width:0;margin:0}
+.navLink{min-height:49px;border:2px solid transparent;border-radius:6px;
+  display:flex;align-items:center;gap:11px;width:100%;padding:8px 8px;
+  background:transparent;color:var(--pp-ink);text-align:left;
+  text-decoration:none;font-size:13px;font-family:inherit;line-height:1.15;
+  transition:background .12s,transform .12s,box-shadow .12s}
+.navLink:not(.disabled){cursor:pointer}
+.navLink:not(.disabled):hover{border-color:var(--pp-ink);background:#EDE6FF;
+  transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--pp-ink)}
+.navLink.active{border-color:var(--pp-ink);color:#fff;background:var(--pp-purple);
+  box-shadow:3px 3px 0 var(--pp-ink);transform:translate(-1px,-1px)}
+.navLink.active:not(.disabled):hover{background:var(--pp-purple)}
+.navLink.disabled{opacity:.48;cursor:not-allowed}
+.navIcon{flex:none;stroke-width:2.4px}
+.navText{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.navText strong{font-size:13px;font-weight:900;white-space:nowrap}
+.navText small{font-size:9px;font-weight:800;letter-spacing:.18px;opacity:.72;white-space:nowrap}
+.mobileChevron{display:none}
+.navDivider{height:2px;background:var(--pp-ink);opacity:.55;margin:4px 4px 1px}
+.accountNav{flex:none}
+.navShell[data-collapsed="true"]{width:74px}
+.navShell[data-collapsed="true"] .sidebar{padding:13px 7px}
+.navShell[data-collapsed="true"] .navLink{justify-content:center;padding:8px}
+.navShell[data-collapsed="true"] .navText{display:none}
+.navShell[data-collapsed="true"] .navIcon{width:23px;height:23px}
+.menuTrigger{display:none;background:var(--pp-paper);color:var(--pp-ink);
+  border:2px solid var(--pp-ink);border-radius:6px;box-shadow:3px 3px 0 var(--pp-ink);
+  padding:8px;align-items:center;justify-content:center}
+.scrim{display:none}
+.density{position:relative;display:inline-block;min-width:232px;font-size:13px;color:var(--pp-ink);z-index:15}
+.densityTrigger{width:100%;min-height:52px;display:flex;align-items:center;gap:11px;
+  padding:9px 12px;border:2px solid var(--pp-ink);background:var(--pp-paper);color:inherit;
+  border-radius:7px;box-shadow:3px 3px 0 var(--pp-ink);white-space:nowrap}
+.densityTrigger strong{font-weight:900}
+.densityGlyph{color:var(--pp-blue);flex:none}
+.densityValue{background:#F5F7FF;border:1px solid #ABB7D1;border-radius:5px;
+  padding:5px 9px;font-weight:900;margin-left:auto}
+.densityTriggerOpen .densityValue,.densityTrigger:hover .densityValue{background:#EDE6FF}
+.chevronUp{transform:rotate(180deg);color:var(--pp-purple)}
+.densityMenu{position:absolute;right:0;top:calc(100% + 9px);width:max(100%,265px);
+  padding:6px;border:var(--pp-stroke,3px) solid var(--pp-ink);
+  border-radius:7px;background:var(--pp-paper);box-shadow:var(--pp-shadow,5px 5px 0 var(--pp-ink));z-index:20}
+.densityOption{display:flex;align-items:center;gap:11px;width:100%;min-height:55px;
+  padding:8px 10px;border:2px solid transparent;border-radius:5px;
+  background:transparent;color:var(--pp-ink);font:inherit;text-align:left}
+.densityOption:hover{border-color:var(--pp-ink);background:#F1ECFF}
+.densityOptionActive{background:#EDE6FF;color:#4424D8}
+.optionIcon{display:grid;place-items:center;width:31px;height:31px;flex:none;
+  border-radius:6px;background:#F5F7FF;color:var(--pp-purple)}
+.densityOptionActive .optionIcon{background:#fff}
+.optionText{flex:1;display:flex;flex-direction:column;gap:2px}
+.optionText strong{font-weight:900}
+.optionText small{font-size:11px;color:var(--pp-quiet);line-height:1.4}
+.densityOptionActive .optionText small{color:#563BD1}
+.trail{display:flex;align-items:center;gap:9px;min-height:52px;
+  padding:7px 10px;color:var(--pp-ink);background:var(--pp-paper);
+  border:2px solid var(--pp-ink);border-radius:8px;box-shadow:3px 3px 0 var(--pp-ink);
+  max-width:100%;min-width:0;font-size:12px;font-weight:850}
+.trailBack{padding-right:12px;border-right:1px solid #CAD0E2;flex:none}
+.trailNavigation{min-width:0;flex:1}
+.trailList{list-style:none;display:flex;align-items:center;gap:7px;margin:0;padding:0;min-width:0;overflow:hidden}
+.trailItem{display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap}
+.trailItem a,.trailItem span:last-child{display:block;min-width:0;max-width:160px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trailItem a:hover{text-decoration:underline;color:var(--pp-purple)}
+.trailCurrent{font-weight:950;flex:1;min-width:0}
+.trailCurrent span{max-width:100%!important}
+.trailSeparator{color:var(--pp-quiet);flex:none}
+.trailHome{flex:none}
+.trailEllipsis{display:flex!important;align-items:center;flex:none;padding:2px 4px;
+  color:var(--pp-quiet);background:#F5F7FF;border-radius:4px}
+.trailActions{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none}
+.trailAction{display:inline-flex;justify-content:center;align-items:center;gap:4px;
+  min-height:31px;padding:4px 9px;color:var(--pp-blue);background:#F0F5FF;
+  border:2px solid #A9C6FF;border-radius:6px;
+  white-space:nowrap;font:inherit;font-size:12px;font-weight:900;text-decoration:none}
+.trailAction:hover:not(.trailActionDisabled){border-color:var(--pp-ink);background:#EDE6FF}
+.trailActionNext{color:#fff;background:var(--pp-purple);border-color:var(--pp-ink);
+  box-shadow:2px 2px 0 var(--pp-ink)}
+.trailActionNext:hover:not(.trailActionDisabled){background:#5730CC}
+.trailActionDisabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.navShell :is(a,button):focus-visible,.density button:focus-visible,.trail :is(a,button):focus-visible{
+  outline:3px solid var(--pp-blue);outline-offset:3px}
+:global(.pp-root[data-density="minimal"]) .sidebar,
+:global(.pp-root[data-density="minimal"]) .densityMenu,
+:global(.pp-root[data-density="minimal"]) .trail{box-shadow:3px 3px 0 var(--pp-ink)}
+:global(.pp-root[data-density="minimal"]) .navLink.active{box-shadow:none;transform:none}
+:global(.pp-root[data-density="normal"]) .navLink.active{box-shadow:4px 4px 0 var(--pp-ink)}
+@media(max-width:1050px){
+  .trailItem a,.trailItem span:last-child{max-width:115px}
+  .trail{gap:5px}.trailList{gap:4px}
+}
+@media(max-width:720px){
+  .navShell,.navShell[data-collapsed="true"]{width:0;height:0;z-index:100}
+  .sidebar{position:fixed;top:0;bottom:0;left:0;z-index:102;
+    width:min(85vw,312px);height:100dvh;min-height:0;overflow-y:auto;
+    border-radius:0 12px 12px 0;transform:translateX(-110%);visibility:hidden;
+    transition:transform .18s ease,visibility .18s}
+  .navShell[data-mobile-open="true"] .sidebar{transform:translateX(0);visibility:visible}
+  .navShell[data-collapsed="true"] .sidebar{padding:13px 11px}
+  .navShell[data-collapsed="true"] .navLink{justify-content:flex-start;padding:8px}
+  .navShell[data-collapsed="true"] .navText{display:flex}
+  .mobileHeading{display:flex;align-items:center;justify-content:space-between;
+    border-bottom:2px solid var(--pp-ink);padding:6px 2px 15px;margin-bottom:7px}
+  .mobileHeading strong{font-size:17px;font-weight:950}
+  .mobileHeading strong span{font-size:11px}
+  .mobileHeading button{display:grid;place-items:center;background:white;
+    border:0;padding:5px;color:var(--pp-ink)}
+  .mobileChevron{display:block;margin-left:auto}
+  .navShell[data-mobile-open="true"] .scrim{display:block;position:fixed;inset:0;
+    width:100vw;height:100dvh;background:#12121DB3;border:none;z-index:101}
+  .menuTrigger{display:inline-flex}
+  .trail{flex-wrap:wrap;gap:5px;padding:8px;font-size:11px}
+  .trailBack{border:0;padding-right:4px}
+  .trailBack .trailAction span{display:none}
+  .trailNavigation{flex:1;min-width:120px}
+  .trailItem:not(:first-child):not(:last-child){display:none}
+  .trailActions{width:100%;justify-content:flex-end;border-top:1px solid #D6DAEA;padding-top:6px}
+  .trailAction{font-size:11px}
+}
+@media(max-width:420px){
+  .density{min-width:0;width:100%}
+  .densityMenu{width:100%}
+  .trailItem a,.trailItem span:last-child{max-width:145px}
+}
+@media(prefers-reduced-motion:reduce){
+  .navLink,.sidebar{transition:none}
+}

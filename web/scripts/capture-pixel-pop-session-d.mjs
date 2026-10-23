@@ -119,6 +119,10 @@ try{
   await delay(120);
   const wrong=await assess(`!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"答案错误\"]')`);
   if(!wrong)throw Error("Wrong feedback missing");
+  if(name==="desktop"){
+    const image=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    writeFileSync(join(folder,"session-d-desktop-quiz-wrong.png"),Buffer.from(image.data,"base64"));
+  }
   await assess(`([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('重新作答'))).click()`);
   await delay(110);
   const retried=await assess(`document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('第 2 次尝试')`);
@@ -127,6 +131,10 @@ try{
   await delay(110);
   const correct=await assess(`!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"正确答案\"]')`);
   if(!correct)throw Error("Correct feedback missing");
+  if(name==="desktop"){
+    const image=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    writeFileSync(join(folder,"session-d-desktop-quiz-correct.png"),Buffer.from(image.data,"base64"));
+  }
   await assess(`([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('下一题'))).click()`);
   await delay(110);
   const next=await assess(`document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('Push(5)')`);

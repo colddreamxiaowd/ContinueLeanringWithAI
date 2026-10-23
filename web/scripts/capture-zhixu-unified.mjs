@@ -13,20 +13,22 @@ const chrome=spawn(process.env.CHROME_BIN||"google-chrome",[
  "--headless=new","--no-sandbox","--disable-gpu","--disable-dev-shm-usage",
  "--hide-scrollbars","--remote-allow-origins=*","--remote-debugging-port=9273",
  "--user-data-dir="+profile,"--window-size=1440,900","about:blank"
-],{stdio:"ignore"});
+],{stdio:["ignore","ignore","pipe"]});
+let chromeStderr="";
+chrome.stderr?.on("data",b=>{chromeStderr=(chromeStderr+String(b)).slice(-2500);});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const output={kind:"actual Next.js 16 + React 19 + Chromium CDP",origin:host,views:[]};
 let socket;
 try{
  let url;
- for(let i=0;i<80&&!url;i++){
+ for(let i=0;i<180&&!url;i++){
   if(chrome.exitCode!==null)throw Error("Chrome exited: "+chrome.exitCode);
   try{const r=await fetch("http://127.0.0.1:9273/json/list");
    if(r.ok)url=(await r.json()).find(x=>x.type==="page")?.webSocketDebuggerUrl;
   }catch{}
   if(!url)await sleep(200);
  }
- if(!url)throw Error("Chromium debugging endpoint unavailable");
+ if(!url)throw Error("Chromium debugging endpoint unavailable; code="+chrome.exitCode+"; stderr="+chromeStderr);
  socket=new WebSocket(url);
  await new Promise((yes,no)=>{socket.addEventListener("open",yes,{once:true});socket.addEventListener("error",no,{once:true});});
  let seq=0;const waiting=new Map();

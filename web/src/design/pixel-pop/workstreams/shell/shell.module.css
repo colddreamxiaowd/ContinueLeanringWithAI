@@ -135,3 +135,126 @@
 @media(prefers-reduced-motion:reduce){
   .navLink,.sidebar{transition:none}
 }
+
+
+/* Session A / round 2 — align to approved concept board (no shared token override).
+   Expanded 232px, compact 66px; selectors stay inside this CSS module. */
+.navShell{width:232px;transition:width .18s ease}
+.navShell[data-collapsed="true"]{width:66px}
+.sidebar{min-height:520px;gap:11px;padding:11px 10px 13px;
+  border:3px solid var(--pp-ink);border-radius:9px;
+  box-shadow:5px 5px 0 var(--pp-ink)}
+.navList{gap:3px}
+.navLink{min-height:48px;gap:10px;padding:8px 9px;border-radius:5px;
+  border:2px solid transparent;font-weight:850;line-height:1.1}
+.navLink .navIcon{height:21px;width:21px;stroke:var(--pp-ink)}
+.navLink .navText strong{font-size:13px;font-weight:900;letter-spacing:-.15px}
+.navLink .navText small{font-size:9px;font-weight:850;letter-spacing:.12px}
+.navLink:not(.disabled):hover:not(.active){background:linear-gradient(100deg,var(--pp-purple,#7440ff) -120%,#EDE6FF 75%);
+  border-color:var(--pp-purple);color:var(--pp-ink);
+  box-shadow:2px 2px 0 var(--pp-ink)}
+.navLink.active{border:2px solid var(--pp-ink);
+  background:linear-gradient(115deg,#D5BBFF -25%,var(--pp-purple) 100%);
+  color:var(--pp-ink);transform:translate(-1px,-1px);
+  box-shadow:3px 3px 0 var(--pp-ink)}
+.navLink.active:not(.disabled):hover{background:linear-gradient(115deg,#BD9AFF -15%,var(--pp-purple) 100%);
+  color:var(--pp-ink)}
+.navLink.active .navText small{color:#24134A;opacity:.86}
+.navLink.disabled{opacity:.52}
+.navDivider{height:1px;background:var(--pp-ink);opacity:.55;margin:4px 2px 2px}
+.navShell[data-collapsed="true"] .sidebar{padding:11px 6px 13px}
+.navShell[data-collapsed="true"] .navLink{min-height:48px;padding:8px 5px}
+.navShell[data-collapsed="true"] .navIcon{width:22px;height:22px}
+.navShell[data-collapsed="true"] .navList{gap:3px}
+.navShell[data-collapsed="true"] .navDivider{margin-inline:1px}
+/* Reference dropdown: 240px trigger; 270px menu; 48px rows. */
+.density{min-width:240px}
+.densityTrigger{min-height:48px;gap:10px;padding:6px 11px;border:2px solid var(--pp-ink);
+  box-shadow:3px 3px 0 var(--pp-ink)}
+.densityTrigger .densityValue{min-width:57px;text-align:center}
+.densityTrigger:hover{background:var(--pp-purple-soft,#EDE6FF)}
+.densityTriggerOpen{background:var(--pp-paper)}
+.densityTriggerOpen .densityValue{color:#fff;background:var(--pp-purple);
+  border-color:var(--pp-ink)}
+.densityMenu{width:max(100%,270px);top:calc(100% + 8px);padding:5px;
+  border:3px solid var(--pp-ink);box-shadow:5px 5px 0 var(--pp-ink)}
+.densityOption{min-height:54px;gap:10px;padding:7px 9px;border-radius:5px}
+.densityOptionActive{background:linear-gradient(100deg,#EDE6FF,#DCCBFF);color:#24134A}
+.densityOptionActive .optionIcon{color:var(--pp-purple)}
+.densityOption .optionText strong{font-size:13px}
+.densityOption .optionText small{font-size:11px}
+.densityOption:focus-visible{background:#D6C6FF}
+/* Breadcrumb: single restrained strip, action buttons keep 3px brutalist feedback. */
+.trail{min-height:51px;padding:6px 8px;gap:8px;box-shadow:3px 3px 0 var(--pp-ink);
+  border:2px solid var(--pp-ink);border-radius:8px;line-height:1.35}
+.trailBack{padding-right:10px}
+.trailNavigation{min-width:0;overflow:hidden}
+.trailList{gap:5px;min-width:0}
+.trailItem{gap:5px;flex-shrink:1}
+.trailItem a,.trailItem span:last-child{max-width:clamp(85px,14vw,200px)}
+.trailItem:first-child{flex-shrink:0}
+.trailCurrent{flex:1}
+.trailCurrent span{font-weight:950}
+.trailSeparator{color:var(--pp-ink);opacity:.8}
+.trailHome{color:var(--pp-ink);stroke-width:2.5}
+.trailAction{min-height:32px;padding:5px 10px;border:2px solid #B6CDFF;
+  font-size:12px;border-radius:6px;box-shadow:0 0 0 transparent}
+.trailActionNext{border-color:var(--pp-ink);background:var(--pp-purple);
+  box-shadow:2px 2px 0 var(--pp-ink)}
+.trailAction:hover:not(.trailActionDisabled){transform:translate(-1px,-1px);
+  box-shadow:2px 2px 0 var(--pp-ink)}
+.trailActionDisabled{transform:none!important;box-shadow:none!important}
+/* Density contract: same content, progressively more compact geometry.
+   Minimal = comfortable/less decoration, balanced = default, normal = information-dense. */
+:global(.pp-root[data-density="minimal"]) .navShell{width:248px}
+:global(.pp-root[data-density="minimal"]) .navShell[data-collapsed="true"]{width:68px}
+:global(.pp-root[data-density="minimal"]) .sidebar{padding:16px 12px;min-height:565px;gap:16px;
+  box-shadow:3px 3px 0 var(--pp-ink)}
+:global(.pp-root[data-density="minimal"]) .navList{gap:9px}
+:global(.pp-root[data-density="minimal"]) .navLink{min-height:55px;padding-block:12px}
+:global(.pp-root[data-density="minimal"]) .navLink.active{transform:none;box-shadow:none}
+:global(.pp-root[data-density="minimal"]) .navLink:not(.disabled):hover{transform:none}
+:global(.pp-root[data-density="minimal"]) .densityTrigger{min-height:54px;padding:11px 14px}
+:global(.pp-root[data-density="minimal"]) .densityOption{min-height:61px;padding:11px}
+:global(.pp-root[data-density="minimal"]) .trail{min-height:59px;padding:11px 13px;gap:12px}
+:global(.pp-root[data-density="minimal"]) .trailAction{min-height:35px;padding:7px 12px}
+:global(.pp-root[data-density="normal"]) .navShell{width:216px}
+:global(.pp-root[data-density="normal"]) .navShell[data-collapsed="true"]{width:62px}
+:global(.pp-root[data-density="normal"]) .sidebar{padding:8px 8px 10px;min-height:462px;gap:7px;
+  box-shadow:6px 6px 0 var(--pp-ink)}
+:global(.pp-root[data-density="normal"]) .navList{gap:1px}
+:global(.pp-root[data-density="normal"]) .navLink{min-height:42px;padding:5px 7px}
+:global(.pp-root[data-density="normal"]) .navLink .navIcon{width:19px;height:19px}
+:global(.pp-root[data-density="normal"]) .navText small{font-size:8px}
+:global(.pp-root[data-density="normal"]) .densityTrigger{min-height:43px;padding:4px 10px}
+:global(.pp-root[data-density="normal"]) .densityOption{min-height:48px;padding:5px 8px}
+:global(.pp-root[data-density="normal"]) .trail{min-height:43px;padding:4px 7px;gap:5px}
+:global(.pp-root[data-density="normal"]) .trailAction{min-height:29px;padding:3px 8px}
+@media(max-width:1050px){
+  .trailItem a,.trailItem span:last-child{max-width:100px}
+  .trailActions{gap:4px}
+}
+@media(max-width:720px){
+  .navShell,.navShell[data-collapsed="true"],
+  :global(.pp-root[data-density="minimal"]) .navShell,
+  :global(.pp-root[data-density="normal"]) .navShell{width:0;height:0}
+  .sidebar{width:min(85vw,312px);min-height:0;height:100dvh;gap:12px;padding:13px}
+  :global(.pp-root[data-density="minimal"]) .sidebar,
+  :global(.pp-root[data-density="normal"]) .sidebar{width:min(85vw,312px);min-height:0;height:100dvh;
+    padding:13px;gap:12px}
+  .navShell[data-collapsed="true"] .sidebar{padding:13px}
+  :global(.pp-root[data-density="minimal"]) .navList{gap:7px}
+  :global(.pp-root[data-density="normal"]) .navList{gap:2px}
+  .navShell[data-collapsed="true"] .navLink{justify-content:flex-start;padding:8px 9px}
+  .navShell[data-collapsed="true"] .navText{display:flex}
+  .trail{gap:6px;padding:8px;min-height:46px}
+  .trailNavigation{min-width:0}
+  .trailList{gap:4px}
+  .trailItem a,.trailItem span:last-child{max-width:100px}
+  .trailBack{padding-right:6px;border-right:1px solid #D7DAE7}
+  .trailActions{margin:0;width:100%;justify-content:flex-end;
+    padding-top:7px;border-top:1px solid #D7DAE7}
+  :global(.pp-root[data-density="minimal"]) .trail{min-height:52px;padding:10px}
+  :global(.pp-root[data-density="normal"]) .trail{min-height:41px;padding:6px}
+}
+@media(prefers-reduced-motion:reduce){.navShell,.trailAction{transition:none}}

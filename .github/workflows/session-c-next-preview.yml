@@ -1,0 +1,64 @@
+name: Session C A-shell integrated Next.js Chromium preview
+on:
+  pull_request:
+    paths:
+      - 'web/src/app/ui-lab/session-c/**'
+      - 'web/src/design/pixel-pop/workstreams/reader/**'
+      - '.github/workflows/session-c-next-preview.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  next-chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Compose A shell and C reader (CI worktree only)
+        run: |
+          git fetch --no-tags --depth=1 origin 92ce1bb2cf23d17a4f3bd68ce280deba17719314
+          git checkout FETCH_HEAD -- web/src/design/pixel-pop/workstreams/shell
+          node web/src/design/pixel-pop/workstreams/reader/prepare-shell-integration.mjs
+      - name: Install
+        working-directory: web
+        run: npm ci
+      - name: Session C tests and TypeScript
+        working-directory: web
+        run: |
+          node --test tests/library/pixel-pop-reader-c.test.mjs
+          npm run typecheck
+      - name: Build Next.js
+        working-directory: web
+        run: npm run build
+      - name: Install CJK fonts for faithful Chinese typography
+        run: |
+          if fc-list : family | grep -qi 'Noto Sans CJK'; then
+            echo 'Existing Noto CJK font found'
+          else
+            timeout 100s sudo apt-get -o Acquire::Retries=0 update -qq
+            timeout 100s sudo apt-get -o Acquire::Retries=0 install -y fonts-noto-cjk
+          fi
+          fc-cache -f
+          fc-match 'Noto Sans CJK SC'
+      - name: Browser screenshot and interaction evidence
+        working-directory: web
+        run: |
+          ./node_modules/.bin/next start -p 3100 > /tmp/session-c-server.log 2>&1 &
+          for i in $(seq 1 50); do
+            if curl -fsS http://127.0.0.1:3100/ui-lab/session-c > /dev/null; then break; fi
+            sleep 1
+          done
+          node src/design/pixel-pop/workstreams/reader/capture-shell-next.mjs
+      - name: Upload 1440 / 768 / 390 browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: session-c-A-shell-chromium-${{ github.run_number }}
+          path: web/test-artifacts/session-c-integrated/**
+          if-no-files-found: warn
+          retention-days: 14

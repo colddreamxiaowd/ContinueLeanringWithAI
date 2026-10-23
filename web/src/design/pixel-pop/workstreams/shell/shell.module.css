@@ -258,3 +258,56 @@
   :global(.pp-root[data-density="normal"]) .trail{min-height:41px;padding:6px}
 }
 @media(prefers-reduced-motion:reduce){.navShell,.trailAction{transition:none}}
+
+
+/* Breadcrumb hierarchy disclosure: keyboard accessible and intentionally not clipped. */
+.trail{position:relative}
+.trailNavigation,.trailList{overflow:visible}
+.trailNavigation{min-width:0}
+.trailItem{min-width:0}
+.trailOverflow{display:inline-flex;position:relative;align-items:center;flex:none}
+.trailOverflow summary{display:grid;place-items:center;list-style:none;
+  width:28px;height:27px;padding:3px;cursor:pointer;border-radius:5px;
+  background:#F5F7FF;color:var(--pp-ink);border:1px solid #D7DBEC}
+.trailOverflow summary::-webkit-details-marker{display:none}
+.trailOverflow summary:hover,.trailOverflow[open] summary{background:#EDE6FF;
+  color:var(--pp-purple);border-color:var(--pp-purple)}
+.trailOverflow summary:focus-visible{outline:3px solid var(--pp-blue);outline-offset:2px}
+.trailOverflowMenu{position:absolute;top:calc(100% + 9px);left:0;min-width:220px;
+  max-width:min(320px,90vw);padding:8px;z-index:30;
+  background:var(--pp-paper);border:3px solid var(--pp-ink);border-radius:7px;
+  box-shadow:5px 5px 0 var(--pp-ink);white-space:normal}
+.trailOverflowHeading{font-size:10px;font-weight:900;color:var(--pp-quiet);
+  padding:5px 8px;text-transform:uppercase;letter-spacing:.5px}
+.trailOverflowRow{min-width:0;border-bottom:1px solid #E5E7F0}
+.trailOverflowRow:last-of-type{border-bottom:0}
+.trailOverflowRow a,.trailOverflowRow span{display:block;overflow-wrap:anywhere;
+  padding:9px 8px;font-size:12px;font-weight:800;line-height:1.5;text-decoration:none}
+.trailOverflowRow a:hover{background:#EDE6FF;color:var(--pp-purple)}
+.trailMobileOverflow{display:none}
+.trailEnd{display:flex;align-items:center;flex:none;min-width:0;margin-left:auto}
+.trailOverflowActions{display:flex;flex-wrap:wrap;justify-content:flex-end;
+  gap:6px;border-top:1px solid #D7DBEC;margin-top:7px;padding-top:9px}
+@media(max-width:1050px){
+  .trailList{gap:3px}
+  .trailItem a,.trailItem span:last-child{max-width:95px}
+}
+@media(max-width:720px){
+  .trail{flex-wrap:nowrap;min-height:47px}
+  .trailNavigation{min-width:0;flex:1}
+  .trailBack{flex:none}
+  .trailList{overflow:hidden}
+  .trailItem{flex-shrink:1}
+  .trailItem:last-child{flex:1;min-width:0}
+  .trailItem:last-child span:last-child{display:block;max-width:100%!important;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trailEnd{width:auto;flex:none;border:0;padding:0;margin:0}
+  .trailActions{display:none}
+  .trailDesktopOverflow{display:none}
+  .trailMobileOverflow{display:inline-flex}
+  .trailMobileOverflow .trailOverflowMenu{left:auto;right:0;min-width:min(290px,88vw)}
+  .trailMobileOverflow .trailOverflowRow a,
+  .trailMobileOverflow .trailOverflowRow span{max-width:none;white-space:normal}
+  :global(.pp-root[data-density="minimal"]) .trail,
+  :global(.pp-root[data-density="normal"]) .trail{flex-wrap:nowrap}
+}

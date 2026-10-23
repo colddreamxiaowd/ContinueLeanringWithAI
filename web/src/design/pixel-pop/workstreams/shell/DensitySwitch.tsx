@@ -45,6 +45,8 @@ export function DensitySwitch({
     return ()=>{document.removeEventListener("pointerdown",outside);document.removeEventListener("keydown",escape);};
   },[open]);
 
+  useEffect(()=>{if(open)firstOption.current?.focus();},[open]);
+
   const pick=(next:PixelPopDensity)=>{
     onChange(next);
     setOpen(false);
@@ -58,7 +60,7 @@ export function DensitySwitch({
       <strong>页面密度</strong><span className={styles.densityValue}>{selected.label}</span>
       <ChevronDown size={20} className={open?styles.chevronUp:""} aria-hidden="true"/>
     </button>
-    {open&&<div id={id} className={styles.densityMenu} role="group" aria-label="页面密度选项">
+    {open&&<div id={id} className={styles.densityMenu} role="radiogroup" aria-label="页面密度选项">
       {DENSITY_OPTIONS.map((option,index)=>{
         const active=option.value===value;
         const Icon=index===0?LayoutGrid:index===1?Rows3:Layers3;

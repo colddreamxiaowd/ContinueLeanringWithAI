@@ -13,7 +13,7 @@ export default function IntegratedHome(){
  const taskClick=(id:string)=>router.push(id==="lesson"?"/ui-lab/integrated/reader":"/ui-lab/integrated/practice");
  return <div className={s.page} data-integrated-page="home">
    <div className={s.demoBand}><strong>今天，继续探索知识。</strong><span>统一产品预览 · 合成示例数据</span></div>
-   <CourseHero href="/ui-lab/integrated/reader"/>
+   <div className={s.heroWrap}><CourseHero href="/ui-lab/integrated/reader"/></div>
    <div className={s.sectionHeading}>
      <div><span className={s.overline}>YOUR LEARNING DESK</span><h2>学习工作台</h2></div>
      <Link href="/coursepacks" className={s.textLink}>进入真实私人课程库 →</Link>

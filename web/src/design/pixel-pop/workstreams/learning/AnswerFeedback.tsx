@@ -50,6 +50,8 @@ export function AnswerFeedback({
       <div className={styles.feedbackIntro}>
         {success?<CheckCircle2 size={36}/>:retry?<RefreshCcw size={36}/>:<XCircle size={36}/>}
         <div><h3>{title??copy.title}</h3><p>{description??copy.description}</p></div>
+        {compact&&<span className={styles.compactMascot}><Xiaozhi size={40} pose="avatar"
+          mood={retry?"thinking":success?"celebrate":"encourage"} decorative/></span>}
       </div>
       {(visual||!compact)&&<div className={styles.feedbackScene}>
         {visual?<div className={styles.feedbackVisual}>{visual}</div>:

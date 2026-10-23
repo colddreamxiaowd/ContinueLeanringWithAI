@@ -108,3 +108,16 @@
 @media(max-width:1180px){.demoGrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.demoColumn:first-child{grid-column:1/-1}}
 @media(max-width:680px){.demoGrid{grid-template-columns:minmax(0,1fr);gap:16px;padding:9px}.demoColumn:first-child{grid-column:auto}
  .demoTop h1{font-size:22px}.demoPage{padding:7px}.stackScene{gap:7px;flex-wrap:wrap}.stackCallout{max-width:135px}}
+/* Session C real Next.js reader tweaks: calm content first, syntax distinctions second. */
+.syntaxkeyword{color:#B4A6FF}.syntaxcomment{color:#92ABC1}.syntaxstring{color:#FFDC93}.syntaxnumber{color:#70E5C1}
+.codeBox code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+.demoPage[data-session-c-live="true"] .demoTop{background:linear-gradient(111deg,#7440FF,#246BFF 66%,#7440FF);
+  border:3px solid var(--pp-ink);box-shadow:5px 5px 0 var(--pp-ink);border-radius:13px;
+  padding:14px 19px;margin:0 0 12px}
+.demoPage[data-session-c-live="true"] .demoTop p,.demoPage[data-session-c-live="true"] .demoTop small{color:#fff}
+.demoPage[data-session-c-live="true"] .demoTop h1{color:#fff}
+.demoPage[data-session-c-live="true"] .demoGrid{background:#f5f7ff;gap:15px}
+.demoPage[data-session-c-live="true"] .demoColumn:first-child :global(.pp-panel){padding:clamp(16px,2.25vw,28px)}
+.demoPage[data-session-c-live="true"] .lessonFlow{width:min(100%,760px)}
+@media(max-width:680px){.demoPage[data-session-c-live="true"] .demoTop{padding:12px}
+  .demoPage[data-session-c-live="true"] .demoGrid{padding:10px}}

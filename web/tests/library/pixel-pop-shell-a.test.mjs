@@ -85,3 +85,31 @@ test("Round 2: interactive showroom exercises long Chinese titles and same-conte
   assert.match(css,/min-height:85px/);
   assert.match(css,/min-height:58px/);
 });
+
+
+test("Session A integration frame owns route navigation and shared density, without B/C/D imports",()=>{
+  const s=source("IntegrationFrame.tsx");
+  const demo=source("capture-session-a.mjs");
+  assert.match(s,/href,icon,subtitle/);
+  assert.match(s,/aria-label="知序真实组件拼装验收"/);
+  assert.match(s,/sessionStorage\.setItem\("zhixu_shell_collapsed"/);
+  assert.match(s,/localStorage\.setItem\("zhixu_pixel_pop_density"/);
+  assert.match(s,/data-integration-surface=\{surface\}/);
+  assert.doesNotMatch(s,/from ["'][^"']*workstreams\/(dashboard|reader|learning)/);
+  assert.match(demo,/navCurrent/);
+  assert.match(demo,/densityLabel/);
+  assert.match(demo,/persisted/);
+  assert.match(demo,/session-a-mobile-drawer-closed/);
+});
+test("CI-only B/C/D composite is real Next.js and never committed across workstream owners",()=>{
+  const generator=source("prepare-composition.mjs");
+  const proof=source("capture-composition.mjs");
+  assert.match(generator,/CourseProgressCard/);
+  assert.match(generator,/LessonContent/);
+  assert.match(generator,/StackPlayground/);
+  assert.match(generator,/writeFileSync/);
+  assert.match(proof,/aria-current/);
+  assert.match(proof,/zhixu_pixel_pop_density/);
+  assert.match(proof,/compose-mobile-drawer-open/);
+  assert.match(proof,/compose-mobile-drawer-closed/);
+});

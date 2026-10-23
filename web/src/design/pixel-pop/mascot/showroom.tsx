@@ -21,6 +21,7 @@ export default function XiaozhiShowroom(){
  const [mood,setMood]=useState<XiaozhiMood>("idle");
  const [motion,setMotion]=useState<XiaozhiMotion>("idle");
  const [theme,setTheme]=useState<"light"|"dark">("light");
+ const [art,setArt]=useState<"reference"|"vector">("reference");
  return <div className={styles.page}>
   <header className={styles.header}>
     <div><span className={styles.overline}>PIXEL POP / CHARACTER SYSTEM / V1</span>
@@ -32,7 +33,7 @@ export default function XiaozhiShowroom(){
   <div className={styles.layout}>
     <section className={styles.spotlight+" "+(theme==="dark"?styles.spotlightDark:"")}>
       <div className={styles.sparkTop} aria-hidden="true">✦ <b>LEARN • PRACTICE • GROW</b> ✦</div>
-      <div className={styles.mascotMain}><Xiaozhi size={286} mood={mood} motion={motion}/></div>
+      <div className={styles.mascotMain}><Xiaozhi size={286} mood={mood} motion={motion} art={art}/></div>
       <div className={styles.spotlightCaption}>
        <strong>{names[mood]}</strong><span>{uses[mood]}</span>
       </div>
@@ -46,7 +47,7 @@ export default function XiaozhiShowroom(){
           aria-pressed={mood===state}
           className={mood===state?styles.selected:styles.moodButton}
           onClick={()=>setMood(state)}>
-          <Xiaozhi size={64} mood={state}/><span>{names[state]}</span>
+          <Xiaozhi size={64} mood={state} art={art}/><span>{names[state]}</span>
         </button>)}
       </div>
       <h2>02 / 动作状态</h2>
@@ -55,7 +56,14 @@ export default function XiaozhiShowroom(){
           className={motion===m.id?styles.activeSegment:""} aria-pressed={motion===m.id}
           onClick={()=>setMotion(m.id)}>{m.title}</button>)}
       </div>
-      <h2>03 / 对比场景</h2>
+      <h2>03 / 原图与矢量对照</h2>
+      <div className={styles.segmented}>
+       <button type="button" onClick={()=>setArt("reference")} aria-pressed={art==="reference"}
+         className={art==="reference"?styles.activeSegment:""}>参考图轮廓（默认）</button>
+       <button type="button" onClick={()=>setArt("vector")} aria-pressed={art==="vector"}
+         className={art==="vector"?styles.activeSegment:""}>可编辑矢量版</button>
+      </div>
+      <h2>04 / 对比场景</h2>
       <div className={styles.segmented}>
         <button type="button" onClick={()=>setTheme("light")} aria-pressed={theme==="light"}
           className={theme==="light"?styles.activeSegment:""}>明亮背景</button>
@@ -71,7 +79,7 @@ export default function XiaozhiShowroom(){
      {[{size:32,name:"32px",use:"导航头像"},{size:48,name:"48px",use:"反馈提示"},
        {size:96,name:"96px",use:"课程卡片"},{size:160,name:"160px",use:"完整角色"}].map(item=>
        <div key={item.size} className={styles.scaleCard}>
-        <div className={styles.scaleAsset}><Xiaozhi size={item.size} mood={mood}
+        <div className={styles.scaleAsset}><Xiaozhi size={item.size} mood={mood} art={art}
           pose={item.size<=48?"avatar":"full"}/></div>
         <strong>{item.name}</strong><span>{item.use}</span>
        </div>)}

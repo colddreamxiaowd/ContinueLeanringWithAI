@@ -67,7 +67,7 @@ try{
   await send("Page.navigate",{url:origin});
   await delay(2300);
   const evalResult=await send("Runtime.evaluate",{
-   expression:"({width:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,height:document.documentElement.scrollHeight,title:document.title,cardCount:document.querySelectorAll('section').length,lab:!!document.querySelector('[aria-label="可交互的栈操作实验"]'),quiz:!!document.querySelector('section[aria-label="单选题"]'),root:!!document.querySelector('.pp-root')})",
+   expression:`({width:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,height:document.documentElement.scrollHeight,title:document.title,cardCount:document.querySelectorAll('section').length,lab:!!document.querySelector('[aria-label="可交互的栈操作实验"]'),quiz:!!document.querySelector('section[aria-label="单选题"]'),root:!!document.querySelector('.pp-root')})`,
    returnByValue:true
   });
   const check=evalResult.result.value;
@@ -90,46 +90,46 @@ try{
     if(result.exceptionDetails)throw Error(JSON.stringify(result.exceptionDetails));
     return result.result.value;
   }
-  const pushClicked=await assess("(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('Push 入栈'));if(!b)return false;b.click();return true})()");
+  const pushClicked=await assess(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes('Push 入栈'));if(!b)return false;b.click();return true})()`);
   if(!pushClicked)throw Error("Push button missing in "+name);
   await delay(470);
-  const pushed=await assess("({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})");
+  const pushed=await assess(`({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})`);
   if(!pushed.status.includes("栈顶 7")||pushed.history!==1)throw Error("Push failed "+JSON.stringify(pushed));
   if(name==="desktop"){
     const afterPush=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
     writeFileSync(join(folder,"session-d-desktop-push.png"),Buffer.from(afterPush.data,"base64"));
   }
-  await assess("([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Pop 出栈'))).click()");
+  await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Pop 出栈'))).click()`);
   await delay(160);
-  const popped=await assess("({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})");
+  const popped=await assess(`({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})`);
   if(!popped.status.includes("栈已空")||popped.history!==2)throw Error("Pop failed "+JSON.stringify(popped));
   if(name==="desktop"){
     const afterPop=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
     writeFileSync(join(folder,"session-d-desktop-pop.png"),Buffer.from(afterPop.data,"base64"));
   }
-  await assess("([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Pop 出栈'))).click()");
+  await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('Pop 出栈'))).click()`);
   await delay(100);
-  const empty=await assess("({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})");
+  const empty=await assess(`({status:document.querySelector('[aria-label=\"可交互的栈操作实验\"] [role=\"status\"]')?.textContent,history:document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length})`);
   if(!empty.status.includes("空栈")||empty.history!==2)throw Error("Empty Pop failed "+JSON.stringify(empty));
-  await assess("([...document.querySelectorAll('button')].find(x=>x.textContent.includes('重置'))).click()");
+  await assess(`([...document.querySelectorAll('button')].find(x=>x.textContent.includes('重置'))).click()`);
   await delay(100);
-  const reset=await assess("document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length");
+  const reset=await assess(`document.querySelectorAll('[aria-label=\"栈操作历史\"] li').length`);
   if(reset!==0)throw Error("Reset history failed");
-  await assess("document.querySelector('section[aria-label=\"单选题\"] button[aria-label^=\"A，\"]').click()");
+  await assess(`document.querySelector('section[aria-label=\"单选题\"] button[aria-label^=\"A，\"]').click()`);
   await delay(120);
-  const wrong=await assess("!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"答案错误\"]')");
+  const wrong=await assess(`!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"答案错误\"]')`);
   if(!wrong)throw Error("Wrong feedback missing");
-  await assess("([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('重新作答'))).click()");
+  await assess(`([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('重新作答'))).click()`);
   await delay(110);
-  const retried=await assess("document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('第 2 次尝试')");
+  const retried=await assess(`document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('第 2 次尝试')`);
   if(!retried)throw Error("Retry count missing");
-  await assess("document.querySelector('section[aria-label=\"单选题\"] button[aria-label^=\"D，\"]').click()");
+  await assess(`document.querySelector('section[aria-label=\"单选题\"] button[aria-label^=\"D，\"]').click()`);
   await delay(110);
-  const correct=await assess("!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"正确答案\"]')");
+  const correct=await assess(`!!document.querySelector('section[aria-label=\"单选题\"] [aria-label=\"正确答案\"]')`);
   if(!correct)throw Error("Correct feedback missing");
-  await assess("([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('下一题'))).click()");
+  await assess(`([...document.querySelectorAll('section[aria-label=\"单选题\"] button')].find(x=>x.textContent.includes('下一题'))).click()`);
   await delay(110);
-  const next=await assess("document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('Push(5)')");
+  const next=await assess(`document.querySelector('section[aria-label=\"单选题\"]')?.textContent.includes('Push(5)')`);
   if(!next)throw Error("Next question not changed");
   outputs.at(-1).interaction={push:true,pop:true,empty:true,reset:true,wrong,retried,correct,next};
 

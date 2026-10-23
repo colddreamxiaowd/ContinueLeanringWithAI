@@ -60,9 +60,9 @@ try{
   if(initial.width>initial.viewport+3)throw Error("Horizontal overflow "+size+": "+JSON.stringify(initial));
   const modeMeasures=[];
   for(const [mode,label] of [["minimal","极简"],["balanced","较简"],["normal","正常"]]){
-   const set=await evaluate(`(()=>{const b=document.querySelector('button[aria-haspopup="true"]');
-    if(!b)return false;b.click();
-    const choice=[...document.querySelectorAll('[role="radio"]')].find(el=>el.textContent.includes(${JSON.stringify(label)}));
+   await evaluate(`document.querySelector('button[aria-haspopup="true"]')?.click()`);
+   await sleep(120);
+   const set=await evaluate(`(()=>{const choice=[...document.querySelectorAll('[role="radio"]')].find(el=>el.textContent.includes(${JSON.stringify(label)}));
     if(!choice)return false;choice.click();return true;})()`);
    if(!set)throw Error("Density mode option missing: "+mode);
    await sleep(200);
@@ -92,7 +92,9 @@ try{
    if(!collapsed)throw Error("Collapse interaction failed");
    await capture(`session-a-${size}-collapsed`,width,height);
   }else{
-   const mobileOpen=await evaluate(`(()=>{const b=document.querySelector('button[aria-label="打开侧边导航"]');b?.click();return !!document.querySelector('[data-mobile-open="true"]')})()`);
+   await evaluate(`document.querySelector('button[aria-label="打开侧边导航"]')?.click()`);
+   await sleep(150);
+   const mobileOpen=await evaluate(`!!document.querySelector('[data-mobile-open="true"]')`);
    if(!mobileOpen)throw Error("Mobile drawer open failed");
    await sleep(250);
    await capture("session-a-mobile-drawer",width,height);
@@ -108,8 +110,9 @@ try{
    if(!active?.includes("飞书资料"))throw Error("Nav selection failed: "+active);
    await capture("session-a-mobile-selected",width,height);
   }
-  const changed=await evaluate(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes("测试长中文标题"));b?.click();
-   return document.querySelector('nav[aria-label="面包屑导航"] [aria-current="page"]')?.textContent})()`);
+  await evaluate(`[...document.querySelectorAll('button')].find(x=>x.textContent.includes("测试长中文标题"))?.click()`);
+  await sleep(150);
+  const changed=await evaluate(`document.querySelector('nav[aria-label="面包屑导航"] [aria-current="page"]')?.textContent`);
   if(!changed?.includes("长中文"))throw Error("Long Chinese breadcrumb state not updated: "+changed);
   await sleep(150);await capture(`session-a-${size}-long-chinese`,width,height);
   results.push({size,width,height,initial,modeMeasures,changedTitle:changed});

@@ -63,7 +63,7 @@ test("Round 2: visual geometry is tied to exact three canonical density modes",(
   assert.match(css,/normal"\]\) \.navLink\{min-height:42px/);
   assert.match(css,/\.densityOption\{min-height:54px/);
   assert.match(css,/\.trailMobileOverflow\{display:inline-flex/);
-  for(const label of ["舒适","标准","紧凑"])assert.ok(density.includes(label));
+  for(const label of ["极简","较简","正常"])assert.ok(density.includes(label));
 });
 test("Round 2: navigation menu exposes the entire path and mobile navigation actions",()=>{
   const trail=source("BreadcrumbTrail.tsx");

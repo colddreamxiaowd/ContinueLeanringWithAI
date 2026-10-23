@@ -10,7 +10,9 @@ export const UNIFIED_NAV:readonly IntegrationNavigation[]=[
 ];
 export default function IntegratedShell({children}:{children:ReactNode}){
   const pathname=usePathname();
-  const surface:IntegrationSurface=pathname.endsWith("/reader")?"reader":pathname.endsWith("/practice")?"practice":"home";
+  // Next.js is configured with trailingSlash=true; normalize for active navigation.
+  const currentPath=pathname.endsWith("/")?pathname.slice(0,-1):pathname;
+  const surface:IntegrationSurface=currentPath.endsWith("/reader")?"reader":currentPath.endsWith("/practice")?"practice":"home";
   const current=UNIFIED_NAV.find(x=>x.id===surface)!;
   const crumbs=[{label:"知序学习中心",href:UNIFIED_NAV[0].href},{label:current.label}];
   return <ShellIntegrationFrame surface={surface} navigation={UNIFIED_NAV}

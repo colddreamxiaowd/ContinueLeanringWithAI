@@ -99,3 +99,34 @@ test("Demo clearly labels synthetic actions and reconciles its 3/5 chapter count
     "status: \"completed\"","status: \"current\"","LongUnbrokenIdentifier",
     '"minimal","balanced","normal"']) assert.ok(demo.includes(token),token);
 });
+
+
+test("SVG fidelity: three cards reuse native Lucide vectors without image or raster wrappers",()=>{
+  const progress=load("CourseProgressCard.tsx");
+  const sources=load("SourceFileCard.tsx");
+  const tasks=load("StudyTaskCard.tsx");
+  const css=load("dashboard.module.css");
+  for(const src of [progress,sources,tasks]) {
+    assert.ok(src.includes('from "lucide-react"'));
+    assert.doesNotMatch(src,/<image\\b|data:image\\/|<img\\b/);
+  }
+  assert.match(progress,/<Trophy size=\\{17\\}/);
+  assert.match(sources,/<FileText size=\\{23\\}/);
+  assert.match(sources,/<FileCode2 size=\\{23\\}/);
+  assert.match(sources,/<Link2 size=\\{23\\}/);
+  assert.ok(css.includes(".fileIcon :global(svg)"));
+  assert.ok(css.includes("stroke-linejoin:round"));
+  assert.ok(css.includes("filter:none"));
+  assert.ok(css.includes("prefers-reduced-motion"));
+});
+
+test("PR32 visual-feedback regression: legible card density without changing content",()=>{
+  const css=load("dashboard.module.css");
+  for(const token of [
+    ".kind_pptx", ".kind_pdf", ".kind_feishu", ".finishMessage svg",
+    ".taskState_in-progress", ".markerCurrent", "text-overflow:ellipsis",
+    "@container (max-width: 370px)", "width:120px;height:120px",
+    'pp-root[data-density="minimal"]','pp-root[data-density="normal"]'
+  ]) assert.ok(css.includes(token),token);
+  assert.doesNotMatch(css, /#[0-9a-f]{3,8}\\b/i, "do not fork the shared color palette");
+});

@@ -33,3 +33,10 @@
   .root[data-density="minimal"] .slot{padding:15px}
   .root[data-density="normal"] .slot{padding:8px}
 }
+
+/* The existing global .pp-root can set a dark fallback surface.
+   Match the scoped app-root specificity so the lab stays readable. */
+.root:global(.pp-root){background:linear-gradient(135deg,var(--pp-violet-soft,#EDE6FF) 0%,var(--pp-canvas,#F5F7FF) 47%,var(--pp-blue-soft,#E9F1FF) 100%);
+  color:var(--pp-ink)}
+.root .heading h1{color:var(--pp-ink)}
+.root .heading p{color:var(--pp-quiet)}

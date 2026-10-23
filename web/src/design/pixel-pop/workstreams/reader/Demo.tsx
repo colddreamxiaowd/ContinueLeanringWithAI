@@ -79,7 +79,7 @@ function editorialLesson(chapterId:string):LessonData{
   const title=chapterId==="ch4"?"链表与节点":chapterId==="ch5"?"树与层级结构":lesson.title;
   return {...lesson,title,breadcrumb:chapterId==="ch3"?lesson.breadcrumb:["数据结构",chapters.find(x=>x.id===chapterId)?.label||"课程内容"],blocks:lesson.blocks.slice(start,end)};
 }
-export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
+export function ReaderDemo({fullPage=false,embedded=false}:{fullPage?:boolean;embedded?:boolean}={}){
   const [density,setDensity]=useState<"minimal"|"balanced"|"normal">("balanced");
   const [sourceMode,setSourceMode]=useState<"editorial"|"coursepack">("editorial");
   const [selectedChapterId,setSelectedChapterId]=useState("ch3");
@@ -120,6 +120,39 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   useEffect(()=>{if(sourceMode==="coursepack"){setActiveSectionId("more");setSelectedCitationId("mock-12");}
     else {setSelectedChapterId("ch3");setActiveSectionId("s32");setSelectedCitationId("cite-1");}},[sourceMode]);
   const selectCitation=(id:string)=>{setSelectedCitationId(id);if(typeof window!=="undefined"&&window.innerWidth<=680)setMobileCitationOpen(true);};
+  if(embedded) return <section className={s.integratedReader} data-session-c-embedded="true"
+    aria-label="深度阅读工作区">
+    <div className={s.integratedMeta} role="note">
+      <span>合成课程与来源 · 仅用于整合验收</span>
+      <div className={s.integratedMode} role="group" aria-label="阅读内容模式">
+        <button type="button" aria-pressed={sourceMode==="editorial"} onClick={()=>setSourceMode("editorial")}>长文阅读</button>
+        <button type="button" aria-pressed={sourceMode==="coursepack"} onClick={()=>setSourceMode("coursepack")}>CoursePack v0.1 映射</button>
+      </div>
+    </div>
+    <div className={s.mobileReaderBar} aria-label="移动端阅读导航">
+      <div className={s.mobileReaderControls}>
+        <button type="button" aria-expanded={mobileOutlineOpen} aria-controls="session-c-mobile-outline"
+          onClick={()=>setMobileOutlineOpen(v=>!v)}>章节目录</button>
+        <strong>{currentLesson.title}</strong>
+        <button type="button" aria-expanded={mobileCitationOpen} onClick={()=>setMobileCitationOpen(true)}>查看来源</button>
+      </div>
+      {mobileOutlineOpen&&<div id="session-c-mobile-outline" className={s.mobileOutlinePanel}>
+        <ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId} onNavigate={navigateTo}/>
+      </div>}
+    </div>
+    <main className={s.integratedLayout}>
+      <div className={s.integratedLesson}>
+        <LessonContent lesson={currentLesson} activeCitationId={selectedCitationId} onCitationSelect={selectCitation}/>
+      </div>
+      <div className={`${s.integratedSidebar} ${mobileCitationOpen?s.integratedSidebarOpen:""}`} data-integrated-reader-sidebar="true">
+        {mobileCitationOpen&&<button className={s.mobileSourceClose} type="button" onClick={()=>setMobileCitationOpen(false)}>关闭来源 ×</button>}
+        <div className={s.integratedChapter}><ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId}
+          onNavigate={navigateTo} learningGoals={[{label:"理解栈的基本概念",done:true},{label:"掌握 Push / Pop 操作",done:false}]}/></div>
+        <div className={s.integratedCitation}><SourceCitation citations={currentCitations}
+          selectedId={selectedCitationId} onSelect={setSelectedCitationId}/></div>
+      </div>
+    </main>
+  </section>;
   return <div className={`pp-root ${s.demoPage}`} data-density={density} data-session-c-live={fullPage?"true":undefined}>
     <div className={s.demoFrame}>
       <header className={s.demoTop}><div><p>知序 Learning Hub · Pixel Pop / Session C</p>

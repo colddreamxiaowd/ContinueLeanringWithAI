@@ -31,6 +31,7 @@ export function StackPlayground({
   const [message,setMessage]=useState("动手操作：试试 Push(7)、Push(3)、Pop()。");
   const [history,setHistory]=useState<StackAction[]>([]);
   const [lastKind,setLastKind]=useState<"push"|"pop"|null>(null);
+  const [detailsOpen,setDetailsOpen]=useState(false);
   const [popVisual,setPopVisual]=useState<{id:number;value:number;bottom:number}|null>(null);
   const counter=useRef(0);
   const start=useRef(initial);
@@ -57,13 +58,44 @@ export function StackPlayground({
     setMessage("实验已重置，可重新进行 Push / Pop。");
     setLastKind(null);
     setPopVisual(null);
+    setDetailsOpen(false);
   };
   const padded=stackTimeline(start.current,stack,history);
   return <section className={styles.playground+" "+className} aria-label="可交互的栈操作实验">
     <div className={styles.playgroundBody}>
       <div className={styles.playgroundMain}>
         <div className={styles.sectionKicker}><ArrowDownToLine size={16}/> 栈的 Push / Pop 过程 <span>容量 {limit} · 后进先出</span></div>
-        <div className={styles.stageGrid}>
+        <div className={styles.mobileCurrent} aria-label="当前栈实时视图">
+          <div className={styles.mobileCurrentCaption}>
+            <strong>当前栈</strong>
+            <span>{history.length?"已操作 "+history.length+" 步":"从空栈开始 · 现在可 Push(7)"}</span>
+          </div>
+          <div className={styles.mobileLiveBody}>
+            <div className={styles.stackGraphic} aria-label={"栈底到栈顶："+JSON.stringify(stack)}>
+              <div className={styles.slotTower}>
+                {Array.from({length:limit},(_,i)=><div key={i}
+                  className={styles.slot+(i<stack.length?" "+styles.slotFilled:"")+
+                    (i===stack.length-1?" "+styles.slotTop:"")+
+                    (i===stack.length-1&&lastKind==="push"?" "+styles.slotEnter:"")}>
+                  {i<stack.length?stack[i]:""}
+                </div>)}
+              </div>
+              <div className={styles.stackBase}/>
+              {popVisual&&<div key={popVisual.id} className={styles.popGhost}
+                style={{bottom:popVisual.bottom+"px"}} aria-hidden="true"
+                onAnimationEnd={()=>setPopVisual(prev=>prev?.id===popVisual.id?null:prev)}>
+                {popVisual.value}<ArrowUpFromLine size={14} aria-hidden="true"/>
+              </div>}
+            </div>
+            <div className={styles.mobileStackMeta}>
+              <span>栈顶 TOP</span>
+              <strong>{stack.at(-1)??"空"}</strong>
+              <code>[ {stack.join(", ")||"空"} ]</code>
+              <small>后进先出 LIFO</small>
+            </div>
+          </div>
+        </div>
+        <div id="learning-stack-timeline" className={styles.stageGrid+(detailsOpen?" "+styles.timelineExpanded:"")}>
           {padded.map((stage,index)=>{
             const waiting=stage.id<0;
             const top=stage.stack.at(-1);
@@ -115,8 +147,15 @@ export function StackPlayground({
             <span>当前栈：[ {stack.join(", ")} ] · 栈顶 {stack.at(-1)??"空"}</span>
           </div>
         </div>
+        <button type="button" className={styles.mobileTimelineToggle}
+          aria-expanded={detailsOpen}
+          aria-controls="learning-stack-timeline"
+          onClick={()=>setDetailsOpen(open=>!open)}>
+          <Clock3 size={16}/> {detailsOpen?"收起四步回放与日志":"查看四步回放与操作日志"}
+          <span>{history.length} 次真实操作 {detailsOpen?"▲":"▼"}</span>
+        </button>
       </div>
-      <aside className={styles.history} aria-label="栈操作历史">
+      <aside className={styles.history+(detailsOpen?" "+styles.historyExpanded:"")} aria-label="栈操作历史">
         <div className={styles.historyHead}><strong><Clock3 size={17}/> 操作历史</strong>
           <button type="button" onClick={()=>{setHistory([]);setPopVisual(null);setLastKind(null);}} disabled={!history.length} aria-label="清空操作历史">
             <Trash2 size={14}/> 清空

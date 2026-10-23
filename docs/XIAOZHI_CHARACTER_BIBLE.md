@@ -1,6 +1,6 @@
 # 小知 Xiaozhi · Character Bible v1
 
-**Status:** Canonical vector character implemented, visual approval pending. **Scope:** mascot ONLY; the product remains 65% neobrutalism / 25% pixel academy / 10% quiet learning surfaces.
+**Status:** Reference-sheet art + editable vector alternative implemented, visual approval pending. **Scope:** mascot ONLY; the product remains 65% neobrutalism / 25% pixel academy / 10% quiet learning surfaces.
 
 ## 1. Approved visual reference
 

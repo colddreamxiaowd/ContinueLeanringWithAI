@@ -202,3 +202,14 @@ test("A shell classroom composition exposes learning names, not developer compon
  assert.match(css,/@media\(max-width:720px\)/);
  assert.match(css,/\.practiceGrid\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
 });
+
+
+test("in-question feedback reuses canonical 40px avatar without independent artwork",()=>{
+ const feedback=source("AnswerFeedback.tsx");
+ const css=source("learning.module.css");
+ assert.match(feedback,/<Xiaozhi size=\{40\} pose="avatar"/);
+ assert.match(feedback,/compact&&/);
+ assert.match(feedback,/mood=\{retry\?"thinking":success\?"celebrate":"encourage"\}/);
+ assert.doesNotMatch(feedback,/<image |<svg |data:image\/png/);
+ assert.match(css,/\.compactMascot\{/);
+});

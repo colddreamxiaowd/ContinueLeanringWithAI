@@ -47,3 +47,41 @@ test("Mobile shell and reduced motion remain isolated to the shell CSS module",(
     assert.match(css,pattern);
   assert.doesNotMatch(css,/(^|\n)body\s*\{/);
 });
+
+
+test("Round 2: visual geometry is tied to exact three canonical density modes",()=>{
+  const css=source("shell.module.css");
+  const demoCss=source("demo.module.css");
+  const density=source("DensitySwitch.tsx");
+  assert.match(css,/\.navShell\{width:232px/);
+  assert.match(css,/\.navShell\[data-collapsed="true"\]\{width:66px/);
+  for(const mode of ["minimal","normal"]){
+    assert.ok(css.includes('.pp-root[data-density="'+mode+'"]'),"missing shell density "+mode);
+    assert.ok(demoCss.includes('.root[data-density="'+mode+'"]'),"missing demo density "+mode);
+  }
+  assert.match(css,/minimal"\]\) \.navLink\{min-height:55px/);
+  assert.match(css,/normal"\]\) \.navLink\{min-height:42px/);
+  assert.match(css,/\.densityOption\{min-height:54px/);
+  assert.match(css,/\.trailMobileOverflow\{display:inline-flex/);
+  for(const label of ["舒适","标准","紧凑"])assert.ok(density.includes(label));
+});
+test("Round 2: navigation menu exposes the entire path and mobile navigation actions",()=>{
+  const trail=source("BreadcrumbTrail.tsx");
+  assert.match(trail,/<details/);
+  assert.match(trail,/<summary/);
+  assert.match(trail,/items\.slice\(0,-1\)/);
+  assert.match(trail,/items\.slice\(1,-2\)/);
+  assert.match(trail,/aria-label="面包屑导航"/);
+  assert.match(trail,/aria-current="page"/);
+  assert.match(trail,/trailOverflowActions/);
+});
+test("Round 2: interactive showroom exercises long Chinese titles and same-content layout",()=>{
+  const demo=source("Demo.tsx");
+  const css=source("demo.module.css");
+  assert.match(demo,/setLongTitle/);
+  assert.match(demo,/长中文溢出测试/);
+  assert.match(demo,/densityExamples/);
+  assert.match(css,/densityExamples/);
+  assert.match(css,/min-height:85px/);
+  assert.match(css,/min-height:58px/);
+});

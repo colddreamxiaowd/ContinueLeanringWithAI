@@ -1,9 +1,9 @@
 "use client";
 
 import {useState} from "react";
-import {CourseProgressCard, type ProgressChapter} from "./CourseProgressCard";
-import {SourceFileCard, type DashboardSourceFile} from "./SourceFileCard";
-import {StudyTaskCard, type DashboardStudyTask} from "./StudyTaskCard";
+import {CourseProgressCard, type ChapterProgressStatus, type ProgressChapter} from "./CourseProgressCard";
+import {SourceFileCard, type DashboardSourceFile, type SourceSyncState} from "./SourceFileCard";
+import {StudyTaskCard, type DashboardStudyTask, type StudyTaskStatus} from "./StudyTaskCard";
 import styles from "./demo.module.css";
 
 const INITIAL_CHAPTERS: ProgressChapter[] = [
@@ -36,23 +36,34 @@ export default function DashboardCardsDemo() {
   const selectChapter = (id: string) => {
     const chapter = chapters.find(item => item.id === id);
     if (!chapter || chapter.status === "locked") return;
-    setChapters(previous => previous.map(item => ({...item, status: item.id === id ? "current" : item.status === "current" ? "available" : item.status})));
+    setChapters(previous => previous.map(item => {
+      const status: ChapterProgressStatus = item.id === id ? "current" : item.status === "current" ? "available" : item.status;
+      return {...item, status};
+    }));
     setLastAction("已选择章节：" + chapter.title + "（只更新演示组件的本地状态）");
   };
   const openTask = (id: string) => {
     const task = tasks.find(item => item.id === id);
     if (!task) return;
-    setTasks(previous => previous.map(item => item.id === id && item.status === "not-started" ? {...item, status: "in-progress"} : item));
+    setTasks(previous => previous.map(item => {
+      const status: StudyTaskStatus = item.id === id && item.status === "not-started" ? "in-progress" : item.status;
+      return {...item, status};
+    }));
     setLastAction("打开任务：" + task.title + " · " + task.kind);
   };
   const retryFile = (id: string) => {
-    setFiles(previous => previous.map(item => item.id === id ? {...item, syncState: "syncing", syncPercent: 0} : item));
+    setFiles(previous => previous.map(item => {
+      const syncState: SourceSyncState = item.id === id ? "syncing" : item.syncState;
+      return item.id === id ? {...item, syncState, syncPercent: 0} : item;
+    }));
     setLastAction("已触发模拟同步重试：" + id);
   };
   const advanceSync = () => {
-    setFiles(previous => previous.map(item => item.syncState === "syncing"
-      ? (item.syncPercent ?? 0) >= 100 ? {...item, syncState: "synced", syncPercent: 100} : {...item, syncPercent: Math.min(100, (item.syncPercent ?? 0) + 20)}
-      : item));
+    setFiles(previous => previous.map(item => {
+      if (item.syncState !== "syncing") return item;
+      const syncState: SourceSyncState = (item.syncPercent ?? 0) >= 100 ? "synced" : "syncing";
+      return {...item, syncState, syncPercent: syncState === "synced" ? 100 : Math.min(100, (item.syncPercent ?? 0) + 20)};
+    }));
     setLastAction("手动推进模拟同步进度（非真实飞书同步）");
   };
   return <div className="pp-root" data-density={density}>

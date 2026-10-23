@@ -52,7 +52,7 @@ export default function DashboardOverview(){
            </button>)}
        </fieldset>
      </div>
-     <CourseHero href="/coursepacks"/>
+     <div className={styles.heroWrap}><CourseHero href="/coursepacks"/></div>
      <div className={styles.sectionHeader}><div><span className={styles.overline}>YOUR LEARNING DESK</span>
        <h2>今天，继续探索知识。</h2></div>
        <span className={styles.version}>B / DASHBOARD CARDS V2</span>

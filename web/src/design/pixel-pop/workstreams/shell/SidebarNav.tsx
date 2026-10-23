@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useEffect,useRef} from "react";
 import {
-  BookOpen, Bookmark, CalendarDays, ChevronRight, FileText, FolderOpen,
+  Bookmark, CalendarDays, ChevronRight, FileText, FolderOpen,
   Home, Menu, Settings, Star, Trash2, UserRound, X
 } from "lucide-react";
 import styles from "./shell.module.css";
@@ -20,7 +20,7 @@ export type ShellNavItem = {
 
 const ICONS = {
   home: Home, courses: FileText, docs: FolderOpen, plan: CalendarDays,
-  favorites: Bookmark, trash: Trash2, profile: UserRound, settings: Settings
+  favorites: Star, trash: Trash2, profile: UserRound, settings: Settings
 } as const;
 
 /** Missing routes deliberately stay disabled: no fictitious destination or learning data. */
@@ -75,11 +75,12 @@ export function SidebarNav({
 
   function links(items:readonly ShellNavItem[]){
     return items.map(item=>{
-      const Icon=ICONS[item.icon]||BookOpen;
+      const Icon=ICONS[item.icon]??Bookmark;
       const active=item.id===activeId;
       const cls=[styles.navLink,active?styles.active:""].filter(Boolean).join(" ");
       const children=<>
-        <Icon size={22} strokeWidth={2.4} aria-hidden="true" className={styles.navIcon}/>
+        <Icon size={21} strokeWidth={2.5} aria-hidden="true" className={styles.navIcon}
+          fill={item.icon==="favorites"?"var(--pp-yellow)":"none"}/>
         <span className={styles.navText}><strong>{item.label}</strong>
           {item.subtitle&&<small>{item.subtitle}</small>}</span>
         <ChevronRight size={16} aria-hidden="true" className={styles.mobileChevron}/>
@@ -102,7 +103,8 @@ export function SidebarNav({
     data-collapsed={collapsed?"true":"false"} data-mobile-open={mobileOpen?"true":"false"}>
     {mobileOpen&&<button type="button" className={styles.scrim} aria-label="关闭侧边导航"
       onClick={onMobileClose}/>}
-    <aside ref={asideRef} className={styles.sidebar} aria-label="学习中心侧边导航">
+    <aside ref={asideRef} className={styles.sidebar} aria-label="学习中心侧边导航"
+      aria-modal={mobileOpen?true:undefined}>
       <div className={styles.mobileHeading}>
         <strong>知序 <span>Learning Hub</span></strong>
         <button type="button" aria-label="关闭导航菜单" onClick={onMobileClose}><X size={22}/></button>

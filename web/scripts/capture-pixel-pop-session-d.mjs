@@ -224,6 +224,105 @@ try{
   outputs.at(-1).interaction={push:true,pop:true,empty:true,reset:true,wrong,retried,correct,next};
 
  }
+
+ // A-owned shell + D-owned real classroom composition — separate from the component showcase.
+ const classroom=[];
+ for(const [name,width,height] of [["desktop",1440,900],["tablet",768,1024],["mobile",390,844]]){
+  await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<600});
+  await send("Page.navigate",{url:"http://127.0.0.1:3001/ui-lab/session-d/learning"});
+  await delay(1800);
+  async function dom(expression){
+    const response=await send("Runtime.evaluate",{expression,returnByValue:true,awaitPromise:true});
+    if(response.exceptionDetails)throw Error("Classroom browser JS: "+JSON.stringify(response.exceptionDetails));
+    return response.result.value;
+  }
+  const before=await dom(`(()=>{
+   const root=document.querySelector('[data-integration-surface="practice"]');
+   const body=document.body.textContent||"";
+   const controls=[...document.querySelectorAll('[aria-label="可交互的栈操作实验"] button')];
+   return {root:!!root,brand:body.includes("知序"),nav:!!document.querySelector('[aria-label="学习中心侧边导航"]'),
+    crumb:!!document.querySelector('[aria-label="面包屑导航"]'),density:!!root?.dataset.density,
+    devLabels:["StackPlayground","QuizCard","AnswerFeedback"].filter(s=>body.includes(s)),
+    scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth,
+    controls:controls.filter(b=>/Push 入栈|Pop 出栈|重置/.test(b.textContent||""))
+      .map(b=>({text:b.textContent.trim(),width:b.getBoundingClientRect().width,
+        height:b.getBoundingClientRect().height}))};
+  })()`);
+  if(!before.root||!before.brand||!before.nav||!before.crumb||!before.density)
+    throw Error("A+D complete shell missing at "+name+": "+JSON.stringify(before));
+  if(before.devLabels.length||before.scroll>before.client+3)
+    throw Error("Developer labels or overflow in learning page "+name+": "+JSON.stringify(before));
+  if(before.controls.length!==3||before.controls.some(b=>b.height<38||b.width<65))
+    throw Error("Push/Pop/reset controls too small "+name+": "+JSON.stringify(before));
+  const dimensions=await send("Page.getLayoutMetrics");
+  const fullHeight=Math.min(19000,Math.ceil(dimensions.cssContentSize.height));
+  const image=await send("Page.captureScreenshot",{format:"png",fromSurface:true,captureBeyondViewport:true,
+   clip:{x:0,y:0,width,height:fullHeight,scale:1}});
+  const imageName="session-d-shell-"+name+"-"+width+".png";
+  writeFileSync(join(folder,imageName),Buffer.from(image.data,"base64"));
+  const click=(expr)=>dom(expr);
+  await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("Push 入栈"))).click()`);
+  await delay(220);
+  const push=await dom(`document.querySelector('[aria-label="可交互的栈操作实验"] [role="status"]')?.textContent`);
+  if(!push.includes("栈顶 7"))throw Error("A+D Push failed");
+  if(name==="mobile"){
+    const pushPic=await send("Page.captureScreenshot",{format:"png",captureBeyondViewport:true});
+    writeFileSync(join(folder,"session-d-shell-mobile-push.png"),Buffer.from(pushPic.data,"base64"));
+    await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("查看四步回放与操作日志"))).click()`);
+    await delay(140);
+    const expanded=await dom(`({
+      history:document.querySelectorAll('[aria-label="栈操作历史"] li').length,
+      expanded:document.querySelector('[aria-label="栈操作历史"]')?.getClientRects().length>0,
+      top:document.querySelector('[aria-label="当前栈实时视图"]')?.textContent
+    })`);
+    if(expanded.history!==1||!expanded.expanded||!expanded.top.includes("7"))
+      throw Error("A+D mobile history disclosure changed actual stack "+JSON.stringify(expanded));
+    await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("收起四步回放与日志"))).click()`);
+  }
+  await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("Pop 出栈"))).click()`);
+  await delay(150);
+  const pop=await dom(`document.querySelector('[aria-label="可交互的栈操作实验"] [role="status"]')?.textContent`);
+  if(!pop.includes("栈已空"))throw Error("A+D Pop failed");
+  await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("重置"))).click()`);
+  await delay(100);
+  const reset=await dom(`document.querySelectorAll('[aria-label="栈操作历史"] li').length`);
+  if(reset!==0)throw Error("A+D reset failed");
+  await click(`document.querySelector('[aria-label="单选题"] button[aria-label^="A，"]').click()`);
+  await delay(180);
+  const wrong=await dom(`({
+    visible:!!document.querySelector('[aria-label="单选题"] [aria-label="答案错误"]'),
+    score:document.querySelector('[aria-label="当前练习表现"]')?.textContent
+  })`);
+  if(!wrong.visible||!wrong.score.includes("0 / 1"))throw Error("A+D wrong/score failed "+JSON.stringify(wrong));
+  await click(`([...document.querySelectorAll('[aria-label="单选题"] button')].find(b=>b.textContent.includes("重新作答"))).click()`);
+  await delay(100);
+  await click(`document.querySelector('[aria-label="单选题"] button[aria-label^="D，"]').click()`);
+  await delay(180);
+  const retry=await dom(`({
+    correct:!!document.querySelector('[aria-label="单选题"] [aria-label="正确答案"]'),
+    score:document.querySelector('[aria-label="当前练习表现"]')?.textContent,
+    attempt:(document.querySelector('[data-learning-practice]')?.textContent||"").includes("第 2 次作答")
+  })`);
+  if(!retry.correct||!retry.score.includes("0 / 1")||!retry.attempt)
+    throw Error("A+D retry must not score twice "+JSON.stringify(retry));
+  await click(`([...document.querySelectorAll('[aria-label="单选题"] button')].find(b=>b.textContent.includes("下一题"))).click()`);
+  await delay(130);
+  const next=await dom(`document.querySelector('[aria-label="单选题"]')?.textContent.includes("Push(5)")`);
+  if(!next)throw Error("A+D next question failed");
+  await click(`document.querySelector('[aria-label="单选题"] button[aria-label^="A，"]').click()`);
+  await delay(130);
+  const twoScore=await dom(`document.querySelector('[aria-label="当前练习表现"]')?.textContent`);
+  if(!twoScore.includes("1 / 2"))throw Error("A+D scored second question incorrectly "+twoScore);
+  await click(`([...document.querySelectorAll('button')].find(b=>b.textContent.includes("返回第一题"))).click()`);
+  await delay(120);
+  await click(`document.querySelector('[aria-label="单选题"] button[aria-label^="D，"]').click()`);
+  await delay(130);
+  const backScore=await dom(`document.querySelector('[aria-label="当前练习表现"]')?.textContent`);
+  if(!backScore.includes("1 / 2"))throw Error("Returning to first question duplicated score "+backScore);
+  classroom.push({name,width,height:fullHeight,before,flow:{push:true,pop:true,reset:true,wrong:true,retry:true,next:true,oneRecordPerQuestion:true},image:imageName});
+  console.log("PASS A+D shell "+name+" "+JSON.stringify(classroom.at(-1)));
+ }
+ writeFileSync(join(folder,"classroom-results.json"),JSON.stringify({route:"/ui-lab/session-d/learning",classroom},null,2));
  await send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"reduce"}]});
  const reduce=await send("Runtime.evaluate",{expression:"matchMedia(\'(prefers-reduced-motion: reduce)\').matches",returnByValue:true});
  if(!reduce.result.value)throw Error("Reduced-motion test failed");

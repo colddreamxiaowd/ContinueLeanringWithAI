@@ -101,64 +101,102 @@ function DashboardContent({go}:{go:(v:View)=>void}){
     <div className="pp-main-grid">
       <PopPanel tone="yellow" className="pp-hero">
         <div className="pp-hero-content">
-          <MiniBadge><Sparkles size={15}/> 继续学习 · 示例课程</MiniBadge>
-          <div className="pp-hero-route">数据结构 <b>›</b> 第 3 章 · 栈与队列</div>
-          <h1>栈的 <em>Push / Pop</em></h1>
-          <p>把资料变成可阅读、可操作、可练习的课程。今天从一个栈开始，理解后进先出。</p>
+          <div className="pp-hero-topline"><MiniBadge><Star size={15} fill="currentColor"/> 继续学习</MiniBadge>
+            <span>数据结构 <b>›</b> 第 3 章 · 栈与队列</span></div>
+          <h1><span>栈的 Push / Pop</span></h1>
+          <div className="pp-hero-subtitle">基于 CoursePack 的互动式学习体验</div>
+          <p>把飞书资料转化成可视化学习内容，结合动手操作、随堂练习与即时反馈，真正理解「栈」的原理。</p>
           <div className="pp-hero-ctas">
-            <PopButton onClick={()=>go("reader")}>继续学习 <ArrowRight size={17}/></PopButton>
-            <span className="pp-soft-text">这是一份交互演示，不代表真实学习进度</span>
+            <PopButton onClick={()=>go("reader")}><Play size={18} fill="currentColor"/> 继续学习 <ArrowRight size={17}/></PopButton>
+            <span className="pp-soft-text">上次学习：栈的基本操作 · 示例</span>
           </div>
         </div>
         <div className="pp-hero-art" aria-hidden="true">
-          <span className="pp-floating-label">PUSH!</span>
-          <div className="pp-hero-block pp-hero-block--a">Push</div>
-          <div className="pp-hero-block pp-hero-block--b">Pop</div>
-          <div className="pp-hero-block pp-hero-block--c">Stack</div>
-          <div className="pp-hero-cat"><PixelCat size={92}/></div>
+          <img src="/pixel-pop/stack-hero.svg" width="550" height="420" alt="" />
+          <span className="pp-hero-callout">后进先出<br/>LIFO</span>
+          <div className="pp-hero-cat"><PixelCat size={72}/></div>
         </div>
         <div className="pp-hero-dots pp-decoration" aria-hidden="true"/>
       </PopPanel>
-      <PopPanel title="学习进度" eyebrow="DEMO PROGRESS" className="pp-progress-panel"
-        actions={<Trophy size={23} color="#7440FF"/>}>
+      <PopPanel title="学习进度" eyebrow="DEMO · 示例数据" className="pp-progress-panel"
+        actions={<Trophy size={23} color="#F2B818"/>}>
         <div className="pp-progress-layout">
-          <ProgressRing value={40} label="示例进度"/>
+          <ProgressRing value={68} label="示例进度"/>
           <div className="pp-lessons">
-            {DEMO_LESSONS.map((lesson,i)=><div key={lesson.name}>
-              <span className={lesson.done?"pp-dot pp-dot--done":"pp-dot"}>{lesson.done?"✓":i+1}</span>{lesson.name}
+            <strong className="pp-lessons-count">3 / 5 章节已完成</strong>
+            {["栈的基本概念","Push / Pop 操作","栈的应用场景","综合练习","章节测验"].map((name,i)=><div key={name}>
+              <span className={i<3?"pp-dot pp-dot--done":"pp-dot"}>{i<3?"✓":""}</span>{name}
             </div>)}
           </div>
         </div>
-        <small className="pp-quiet">正式学习记录将在私人 CoursePack 中保存。</small>
+        <small className="pp-quiet">演示数据；私人 CoursePack 将独立保存真实进度。</small>
       </PopPanel>
     </div>
     <div className="pp-home-panels">
+      <PopPanel title="我的资料库" eyebrow="FEISHU & COURSEPACK" className="pp-library"
+        actions={<Link href="/library" className="pp-inline-link">查看全部 <ArrowRight size={15}/></Link>}>
+        <p className="pp-quiet">从飞书同步资料，并生成属于自己的互动课程。</p>
+        {[
+          ["P","数据结构.pptx","课程主讲内容 · 示例","橙"],
+          ["PDF","栈与队列_课后习题.pdf","习题与参考答案 · 示例","红"],
+          ["M↓","笔记：栈的实现与应用.md","个人补充资料 · 示例","灰"],
+          ["↗","面试高频：栈的常见题型","飞书云文档 · 示例","紫"]
+        ].map(([ext,name,desc,color])=><div className="pp-file pp-file--sample" key={name}>
+          <span className={"pp-file-icon pp-file-icon--"+color}>{ext}</span>
+          <div><strong>{name}</strong><small>{desc}</small></div><span className="pp-file-tag">演示</span><ArrowRight size={15}/>
+        </div>)}
+      </PopPanel>
+      <PopPanel title="互动实验" eyebrow="TRY THE STACK" className="pp-small-lab"
+        actions={<button className="pp-icon-action" type="button" onClick={()=>go("lab")}>完整实验 <ArrowRight size={17}/></button>}>
+        <p className="pp-quiet">在这里操作栈，直观理解后进先出（LIFO）的过程。</p>
+        <StackPlayground/>
+      </PopPanel>
+      <PopPanel title="练习检测" eyebrow="QUICK CHECK" className="pp-small-quiz"
+        actions={<button className="pp-icon-action" type="button" onClick={()=>go("quiz")}>1 / 1 <ArrowRight size={16}/></button>}>
+        <QuizCard compact/>
+      </PopPanel>
       <PopPanel title="今日学习" eyebrow="YOUR NEXT STEP" className="pp-today"
         actions={<Clock3 size={20}/>}>
         <button type="button" className="pp-task" onClick={()=>go("reader")}>
-          <span className="pp-task-play"><Play size={21} fill="currentColor"/></span><span><strong>栈的 Push / Pop</strong><small>8 分钟 · 继续上次演示</small></span><ArrowRight size={18}/>
+          <span className="pp-task-play"><Play size={21} fill="currentColor"/></span>
+          <span><strong>栈的 Push / Pop</strong><small>8 分钟 · 阅读演示</small></span><ArrowRight size={18}/>
+        </button>
+        <button type="button" className="pp-task" onClick={()=>go("lab")}>
+          <span className="pp-task-play pp-task-play--yellow"><FlaskConical size={22}/></span>
+          <span><strong>栈的应用场景</strong><small>12 分钟 · 动手实践</small></span><ArrowRight size={18}/>
         </button>
         <button type="button" className="pp-task" onClick={()=>go("quiz")}>
-          <span className="pp-task-play pp-task-play--yellow"><ListChecks size={22}/></span><span>
-          <strong>章节练习</strong><small>理解检测 · 随时开始</small></span><ArrowRight size={18}/>
+          <span className="pp-task-play pp-task-play--mint"><ListChecks size={21}/></span>
+          <span><strong>章节测验</strong><small>10 分钟 · 检测理解</small></span><ArrowRight size={18}/>
         </button>
-        <div className="pp-home-cat pp-decoration"><PixelCat size={55} cheer/> <span>知识是一场冒险！</span></div>
       </PopPanel>
-      <PopPanel title="我的学习资料" eyebrow="PRIVATE FEISHU LIBRARY" className="pp-library"
-        actions={<Link href="/library" className="pp-inline-link">进入资料库 <ArrowRight size={15}/></Link>}>
-        <p className="pp-quiet">连接自己的飞书空间，把原始资料转换成私人学习课程。</p>
-        <div className="pp-file"><FileText size={20}/><div><strong>资料读取</strong><small>从飞书文档与 Office 资料开始</small></div><span>私有</span></div>
-        <div className="pp-file"><BookOpenCheck size={20}/><div><strong>CoursePack</strong><small>导入结构化互动课程包</small></div><span>学习</span></div>
-        <Link className="pp-library-cta" href="/library"><LibraryBig size={17}/> 打开我的飞书资料 <ArrowRight size={17}/></Link>
+      <PopPanel title="最近课程" eyebrow="COURSE COLLECTION" className="pp-recent"
+        actions={<Link href="/courses" className="pp-inline-link">查看全部 <ArrowRight size={15}/></Link>}>
+        {[
+          ["数据结构","5 章 · 32 个知识点",68,"#7440FF"],
+          ["算法基础","6 章 · 28 个知识点",42,"#15C69B"],
+          ["计算机组成原理","4 章 · 18 个知识点",12,"#FFA553"]
+        ].map(([name,detail,val,color])=><div className="pp-recent-item" key={name as string}>
+          <span className="pp-recent-glyph" style={{background:String(color)}}><BookOpen size={20}/></span>
+          <div><strong>{name}</strong><small>{detail}</small>
+            <div className="pp-recent-track"><span style={{width:String(val)+"%",background:String(color)}}/></div></div>
+          <span className="pp-recent-percent">{String(val)}%*</span>
+        </div>)}
+        <small className="pp-quiet">* 数值为视觉演示，不代表用户的真实进度</small>
       </PopPanel>
-      <PopPanel title="交互实验" eyebrow="TRY IT NOW" className="pp-small-lab"
-        actions={<button className="pp-icon-action" type="button" onClick={()=>go("lab")} aria-label="打开完整实验"><ArrowRight size={20}/></button>}>
-        <StackPlayground/>
-      </PopPanel>
-      <PopPanel title="练习检测" eyebrow="CHECK UNDERSTANDING" className="pp-small-quiz"
-        actions={<button className="pp-icon-action" type="button" onClick={()=>go("quiz")} aria-label="打开练习"><ArrowRight size={20}/></button>}>
-        <QuizCard compact/>
-      </PopPanel>
+      <div className="pp-last-column">
+        <PopPanel title="来源追溯" eyebrow="PROVENANCE" className="pp-source"
+          actions={<Link href="/library" className="pp-inline-link">查看来源 <ArrowRight size={15}/></Link>}>
+          <p className="pp-quiet">真实课程的知识点可以回到原始飞书资料。</p>
+          <div className="pp-source-document"><span>P</span><div>
+            <strong>数据结构.pptx（示例）</strong><small>第 12 页 · 栈的定义与操作</small></div><FileText size={18}/></div>
+        </PopPanel>
+        <PopPanel title="课程设置" eyebrow="PRIVATE BY DEFAULT" className="pp-source">
+          <div className="pp-private-row"><Settings2 size={19}/><span><strong>私人课程</strong>
+            <small>仅你可见，课程内容源自你授权的资料</small></span>
+            <Link href="/coursepacks" className="pp-inline-link">设置 <ArrowRight size={15}/></Link></div>
+        </PopPanel>
+      </div>
     </div>
   </>;
 }

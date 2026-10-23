@@ -136,6 +136,26 @@
 .demo[data-density="minimal"] .demoNote{font-size:11px}
 .demo[data-density="normal"] .demoSection{padding:22px}
 .demo[data-density="normal"] .feedbackScene{min-height:135px}
+
+/* Concept-board geometry: Stack | Quiz / Feedback | Progress. */
+.demoBoard{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(350px,1fr);gap:16px;align-items:stretch}
+.demoBoard .demoSection{margin:0;min-width:0}
+.demoLabPanel{grid-column:1;grid-row:1}
+.demoQuizPanel{grid-column:2;grid-row:1}
+.demoFeedbackPanel{grid-column:1;grid-row:2}
+.demoProgressPanel{grid-column:2;grid-row:2}
+.demoTop{background:linear-gradient(112deg,#7440ff,#246bff 56%,#7440ff);color:#fff}
+.demoTop h1{color:#fff;text-shadow:3px 3px 0 #12121d;-webkit-text-stroke:1px #12121d}
+.demoTop p{color:#fff;font-weight:750}
+.demoTop .demoEyebrow{color:#ffe342}
+.demoTop .demoDensity{color:#12121d}
+@media (max-width:1150px){
+ .demoBoard{grid-template-columns:minmax(0,1fr)}
+ .demoLabPanel,.demoQuizPanel,.demoFeedbackPanel,.demoProgressPanel{grid-column:auto;grid-row:auto}
+ .demoFeedbackPanel{order:3}
+ .demoProgressPanel{order:4}
+}
+
 @keyframes stackDrop{from{transform:translateY(-14px);opacity:.55}to{transform:translateY(0);opacity:1}}
 @media (max-width:1150px){
   .playgroundBody{grid-template-columns:1fr}

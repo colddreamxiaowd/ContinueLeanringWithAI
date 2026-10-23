@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
+import {execFileSync} from "node:child_process";
 
 const web = resolve(import.meta.dirname, "../../");
 const golden = readFileSync(resolve(web, "public/pixel-pop/xiaozhi-traced-master.svg"),"utf8");
@@ -55,4 +56,10 @@ test("24px and 32px optical avatars are real paths, not embedded raster",()=>{
   assert.doesNotMatch(svg,/<image\b|data:image|stroke=/);
  }
  assert.match(component,/const opticalAvatar=traceArt&&isPortrait&&bounded<=32/);
+});
+
+test("the 12 semantic layers can be regenerated from the frozen mother asset",()=>{
+  assert.doesNotThrow(()=>execFileSync(process.execPath,[
+    resolve(web,"scripts/build-xiaozhi-layers.mjs"),"--check"
+  ],{stdio:"pipe"}));
 });

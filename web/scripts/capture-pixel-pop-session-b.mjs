@@ -88,5 +88,8 @@ try{
 }finally{
  if(socket)socket.close();
  chrome.kill("SIGTERM");
- rmSync(profile,{recursive:true,force:true});
+ // Chrome may still be flushing its profile files after SIGTERM.
+ await Promise.race([new Promise(resolve=>chrome.once("exit",resolve)),delay(1800)]);
+ try { rmSync(profile,{recursive:true,force:true,maxRetries:6,retryDelay:180}); }
+ catch(error) { console.warn("Deferred Chrome profile cleanup:",String(error)); }
 }

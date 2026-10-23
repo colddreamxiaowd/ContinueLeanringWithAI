@@ -68,10 +68,19 @@ try{
    await sleep(200);
    const check=await evaluate(`(()=>{let aside=document.querySelector('aside[aria-label="学习中心侧边导航"]');
     return {mode:document.querySelector(".pp-root")?.dataset.density,navWidth:aside?.getBoundingClientRect().width,
-      selected:document.querySelector('[aria-checked="true"]')?.textContent??null,
+      selected:{densityLabel:document.querySelector('button[aria-haspopup="true"]')?.textContent?.trim()??null,
+        densityValue:document.querySelector('.pp-root')?.getAttribute('data-density')??null,
+        persisted:localStorage.getItem('zhixu_pixel_pop_density'),
+        navLabel:aside?.querySelector('[aria-current="page"]')?.textContent?.trim()??null,
+        navCurrent:aside?.querySelector('[aria-current="page"]')?.getAttribute('aria-current')??null,
+        menuExpanded:document.querySelector('button[aria-haspopup="true"]')?.getAttribute('aria-expanded')??null},
       rowHeight:aside?.querySelector('li')?.getBoundingClientRect().height,
       width:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth}})()`);
-   if(check.mode!==mode)throw Error("Density state not updated "+mode+": "+JSON.stringify(check));
+   if(check.mode!==mode||!check.selected.densityLabel?.includes(label)||
+      check.selected.densityValue!==mode||check.selected.persisted!==mode||
+      check.selected.navCurrent!=="page"||!check.selected.navLabel||
+      check.selected.menuExpanded!=="false")
+     throw Error("Density/visible selection evidence mismatch "+mode+": "+JSON.stringify(check));
    if(check.width>check.viewport+3)throw Error("Overflow after density "+size+"/"+mode);
    modeMeasures.push(check);
    const name=`session-a-${size}-${width}-${mode}`;
@@ -99,6 +108,7 @@ try{
    await sleep(250);
    await capture("session-a-mobile-drawer",width,height);
    await key("Escape","Escape");await sleep(140);
+   await capture("session-a-mobile-drawer-closed",width,height);
    const closed=await evaluate(`(()=>({closed:!!document.querySelector('[data-mobile-open="false"]'),
     focus:document.activeElement?.getAttribute("aria-label")}))()`);
    if(!closed.closed||closed.focus!=="打开侧边导航")throw Error("Escape focus recovery failed: "+JSON.stringify(closed));
@@ -106,8 +116,8 @@ try{
    await sleep(140);
    await evaluate(`[...document.querySelectorAll('aside button')].find(x=>x.textContent.includes("飞书资料"))?.click()`);
    await sleep(180);
-   const active=await evaluate(`document.querySelector('aside [aria-current="page"]')?.textContent`);
-   if(!active?.includes("飞书资料"))throw Error("Nav selection failed: "+active);
+   const active=await evaluate(`(()=>{const a=document.querySelector('aside [aria-current="page"]');return {label:a?.textContent?.trim(),ariaCurrent:a?.getAttribute('aria-current'),density:document.querySelector('.pp-root')?.dataset.density}})()`);
+   if(!active.label?.includes("飞书资料")||active.ariaCurrent!=="page")throw Error("Nav selection failed: "+JSON.stringify(active));
    await capture("session-a-mobile-selected",width,height);
   }
   await evaluate(`[...document.querySelectorAll('button')].find(x=>x.textContent.includes("测试长中文标题"))?.click()`);
@@ -115,7 +125,8 @@ try{
   const changed=await evaluate(`document.querySelector('nav[aria-label="面包屑导航"] [aria-current="page"]')?.textContent`);
   if(!changed?.includes("长中文"))throw Error("Long Chinese breadcrumb state not updated: "+changed);
   await sleep(150);await capture(`session-a-${size}-long-chinese`,width,height);
-  results.push({size,width,height,initial,modeMeasures,changedTitle:changed});
+  results.push({size,width,height,initial,modeMeasures,changedTitle:changed,
+    selectedNav:await evaluate(`(()=>{const a=document.querySelector('aside [aria-current="page"]');return {label:a?.textContent?.trim()??null,ariaCurrent:a?.getAttribute('aria-current')??null}})()`)});
   console.log(JSON.stringify({size,passed:true,width:initial.width,modes:modeMeasures.map(x=>x.mode)}));
  }
  writeFileSync(join(out,"results.json"),JSON.stringify({url,results,kind:"real Next.js + Chromium CDP"},null,2));

@@ -10,7 +10,7 @@ test("real Next.js route mounts Session C in content-focused mode",()=>{
  assert.match(route,/ReaderDemo fullPage/);
  const demo=text("Demo.tsx");
  assert.match(demo,/data-session-c-live/);
- assert.match(demo,/onNavigate=\{setActiveSectionId\}/);
+ assert.match(demo,/onNavigate=\{navigateTo\}/);
 });
 test("long synthetic lesson has native teaching diagram, code and reflection sections",()=>{
  const demo=text("Demo.tsx");

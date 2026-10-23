@@ -14,6 +14,7 @@ export type XiaozhiMood =
   "idle"|"happy"|"thinking"|"curious"|"focused"|"encourage"|"celebrate"|"surprised";
 export type XiaozhiPose = "full"|"avatar";
 export type XiaozhiMotion = "idle"|"wave"|"bounce"|"none";
+export type XiaozhiArt = "reference"|"vector";
 
 export const XIAOZHI_MOODS:readonly XiaozhiMood[]=[
   "idle","happy","thinking","curious","focused","encourage","celebrate","surprised"
@@ -25,19 +26,21 @@ const moodNames:Record<XiaozhiMood,string>={
 };
 
 export function Xiaozhi({
-  size=112,mood="idle",pose="full",motion="none",
+  size=112,mood="idle",pose="full",motion="none",art="reference",
   label,decorative=false,className=""
 }:{
   size?:number;
   mood?:XiaozhiMood;
   pose?:XiaozhiPose;
   motion?:XiaozhiMotion;
+  art?:XiaozhiArt;
   label?:string;
   decorative?:boolean;
   className?:string;
 }){
   const bounded=Math.max(24,Math.min(480,size));
   const isPortrait=pose==="avatar";
+  const referenceArt=art==="reference";
   const state=({
     "--xz-size":bounded+"px",
   }) as CSSProperties;
@@ -47,10 +50,13 @@ export function Xiaozhi({
   const focused=mood==="focused";
   return <span className={style.frame+" "+className} data-mood={mood} data-pose={pose} data-motion={motion} style={state}>
     <svg className={style.art} width={bounded} height={bounded}
-      viewBox={isPortrait?"8 27 112 112":"0 0 128 176"}
+      viewBox={referenceArt?(isPortrait?"0 0 125 125":"0 0 125 164"):(isPortrait?"8 27 112 112":"0 0 128 176")}
       role={decorative?undefined:"img"} aria-hidden={decorative?"true":undefined}
       aria-label={decorative?undefined:(label||"小知，"+moodNames[mood]+"表情的学士帽像素小猫")}
       shapeRendering="crispEdges" focusable="false">
+      {referenceArt&&<image x={0} y={0} width={125} height={164}
+        href="/pixel-pop/xiaozhi-reference.svg" preserveAspectRatio="xMidYMid meet"/>}
+      {!referenceArt&&<>
       {/* Far tail is behind the head/torso and deliberately turns toward viewer. */}
       <g stroke="#12121D" strokeWidth="5" strokeLinejoin="miter" strokeLinecap="square">
         <path d="M88 126h13v-7h12v6h5v12h-5v19h-8v7h-15v-8h-7v-14z" fill="#FFF"/>
@@ -108,6 +114,15 @@ export function Xiaozhi({
       {mood==="celebrate"&&<g className={style.accent} fill="#FFE342" stroke="#12121D" strokeWidth="2">
         <path d="M15 27l4-11 4 11 10 4-10 4-4 11-4-11-10-4z"/>
         <path d="M111 40l3-8 3 8 8 3-8 3-3 8-3-8-8-3z"/>
+      </g>}
+      </>}
+      {referenceArt&&mood!=="idle"&&<g className={style.accent} aria-hidden="true">
+        <rect x="102" y="7" width="23" height="24" rx="1" fill={mood==="celebrate"?"#FFE342":"#FFFFFF"} stroke="#12121D" strokeWidth="2"/>
+        <text x="113.5" y="25" fill="#12121D" fontFamily="Arial, sans-serif"
+          fontSize="17" fontWeight="900" textAnchor="middle">{({
+            happy:"♥",thinking:"?",curious:"✦",focused:"!",encourage:"♥",
+            celebrate:"★",surprised:"!"
+          } as Record<Exclude<XiaozhiMood,"idle">,string>)[mood as Exclude<XiaozhiMood,"idle">]}</text>
       </g>}
     </svg>
   </span>;

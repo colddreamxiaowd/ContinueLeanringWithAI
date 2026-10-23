@@ -140,6 +140,7 @@
 @media(max-width:680px){
   .diagramDesktop{display:none}.diagramMobile{display:block}
   .figureBody{min-height:0}.figureBody svg{width:100%;height:auto}
+  .lessonHeading,.lessonFlow [id]{scroll-margin-top:86px}
   .mobileReaderBar{display:block;position:sticky;top:0;z-index:40;background:#fff;border:2px solid var(--pp-ink);border-radius:8px;box-shadow:3px 3px 0 var(--pp-ink);padding:7px;margin:0 0 6px}
   .mobileReaderControls{display:flex;gap:8px;align-items:center;justify-content:space-between}
   .mobileReaderControls button,.mobileSourceClose{font-size:13px;font-weight:850;color:var(--pp-ink);background:#fff;border:2px solid var(--pp-ink);border-radius:6px;padding:7px 11px;min-height:38px}

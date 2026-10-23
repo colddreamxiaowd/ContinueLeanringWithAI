@@ -66,11 +66,13 @@ try{
       navCurrent:active?.getAttribute('aria-current')??null,wrapperWidth:document.querySelector('aside')?.getBoundingClientRect().width,
       width:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,
       component:!!document.querySelector('[data-real-composition]'),
+      appPresentation:!!document.querySelector('main[aria-label="知序学习工作台"]'),
+      qaLabelVisible:[...document.querySelectorAll('main span')].some(el=>el.textContent?.includes('REAL COMPONENT QA')),
       navBorder:getComputedStyle(document.querySelector('aside[aria-label="学习中心侧边导航"]')).borderTopWidth,
       ink:getComputedStyle(root).getPropertyValue('--pp-ink').trim()};})()`);
    if(actual.surface!==surface||actual.mode!==mode||actual.persisted!==mode||actual.navCurrent!=="page"||
-     !actual.component||actual.width>actual.viewport+3||
-     actual.navBorder!=="3px"||!actual.ink)
+     !actual.component||!actual.appPresentation||actual.qaLabelVisible||
+     actual.width>actual.viewport+3||actual.navBorder!=="3px"||!actual.ink)
      throw Error("Integration mismatch "+device+"/"+surface+"/"+mode+": "+JSON.stringify(actual));
    return actual;
   };

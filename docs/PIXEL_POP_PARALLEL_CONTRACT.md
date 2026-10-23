@@ -47,6 +47,12 @@ PR 都指向同一基线或由整合者重新择基；不能互相“接力改�
 | D · 学习交互 | **先抽取** \`StackPlayground\`、\`QuizCard\`，再做 \`AnswerFeedback\` | \`.../workstreams/learning/\` | 不独立改教程数据源或 CoursePack schema |
 | I · 整合者（单人） | 接入首页、阅读、实验、做题；解决跨文件冲突 | **唯一**有权调整 \`page.tsx\`、全局 \`pixel-pop.css\`、\`primitives.tsx\`、\`spec.mjs\`、\`mascot/**\`、\`blocks/lego*.\` | 不重画已签收的各零件 |
 
+各工作会话只在自己的 `workstreams/<领域>/` 目录内写组件、样式及 `Demo.tsx` 预览模块；
+如需测试，可额外创建唯一命名的 `web/tests/library/pixel-pop-<领域>-*.test.mjs`。
+中央 `/ui-lab` 路由由整合者统一接入各会话 Demo，避免并行修改同一路由。
+共享 `pixel-pop.css` 在此阶段仍是容器基础样式，独立预览必须显式提供 `.pp-root` 祖先；
+新组件的局部 CSS 尽量只通过 `var(--pp-*)` 使用规范值。
+
 所有会话对其他目录只读。每批不超过 3 块，使用独立 CSS Module，
 **单个零件单独渲染并截屏**，接口/状态由调用者传入。实现时阅读已有
 \`PopPanel\`、\`PopButton\`、\`ProgressRing\` 的代码，而不是复刻另一版。

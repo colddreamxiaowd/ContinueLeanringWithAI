@@ -1,6 +1,7 @@
 "use client";
 
 import {useEffect,useState} from "react";
+import {BookOpen,FileText,FolderOpen} from "lucide-react";
 import {BrandHeader} from "../../blocks/lego";
 import {PopButton,PopPanel} from "../../primitives";
 import {BreadcrumbTrail} from "./BreadcrumbTrail";
@@ -21,6 +22,7 @@ export function ShellDemo(){
   const [mobileOpen,setMobileOpen]=useState(false);
   const [active,setActive]=useState("home");
   const [lesson,setLesson]=useState(1);
+  const [longTitle,setLongTitle]=useState(false);
 
   useEffect(()=>{
     const stored=localStorage.getItem("zhixu_pixel_pop_density");
@@ -60,17 +62,23 @@ export function ShellDemo(){
           <PopPanel eyebrow="02 / DENSITY" title="DensitySwitch · 页面密度">
             <div className={styles.densityRow}>
               <DensitySwitch value={density} onChange={setDensity}/>
-              <span className={styles.helper}>真实切换 data-density，当前：<b>{density}</b>。</span>
+              <span className={styles.helper}>真实切换 data-density：<b>{density==="minimal"?"舒适":density==="balanced"?"标准":"紧凑"}</b>。观察下方卡片行高、间距及边栏尺寸。</span>
+            </div>
+            <div className={styles.densityExamples} aria-label="相同内容的密度变化示例">
+              <div className={styles.densitySample}><BookOpen size={21} aria-hidden="true"/><span><strong>数据结构：栈与队列</strong><small>相同学习条目 · 只改变排版密度</small></span></div>
+              <div className={styles.densitySample}><FolderOpen size={21} aria-hidden="true"/><span><strong>我的飞书资料</strong><small>课程内容与保存状态保持不变</small></span></div>
+              <div className={styles.densitySample}><FileText size={21} aria-hidden="true"/><span><strong>学习笔记：Push / Pop</strong><small>菜单、卡片、路径共同响应密度</small></span></div>
             </div>
           </PopPanel>
           <PopPanel eyebrow="03 / BREADCRUMBS" title="BreadcrumbTrail · 面包屑导航">
             <p className={styles.helper}>以下是明确标记的课程层级演示，不读取 CoursePack。</p>
+            <div className={styles.trailTools}><PopButton variant="outline" onClick={()=>setLongTitle(v=>!v)}>{longTitle?"使用普通标题":"测试长中文标题"}</PopButton></div>
             <BreadcrumbTrail
               items={[
                 {label:"首页",href:"#shell-demo"},
                 {label:"数据结构",href:"#shell-demo"},
                 {label:"第 3 章 栈与队列",href:"#shell-demo"},
-                {label:"3."+lesson+" 栈的 "+(lesson===1?"基本概念":lesson===2?"Push / Pop":"应用")}
+                {label:longTitle?"3."+lesson+" 栈的 Push / Pop 操作与复杂数据结构算法实现原理讲解、课堂练习及学习笔记（长中文溢出测试）":"3."+lesson+" 栈的 "+(lesson===1?"基本概念":lesson===2?"Push / Pop":"应用")}
               ]}
               back={{label:"返回课程",onClick:()=>setLesson(1)}}
               previous={{label:"上一节",onClick:()=>setLesson(n=>Math.max(1,n-1)),disabled:lesson===1}}

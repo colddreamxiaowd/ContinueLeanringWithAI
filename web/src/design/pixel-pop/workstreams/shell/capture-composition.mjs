@@ -65,9 +65,12 @@ try{
       persisted:localStorage.getItem('zhixu_pixel_pop_density'),navLabel:active?.textContent?.trim()??null,
       navCurrent:active?.getAttribute('aria-current')??null,wrapperWidth:document.querySelector('aside')?.getBoundingClientRect().width,
       width:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,
-      component:!!document.querySelector('[data-real-composition]'),header:!!document.querySelector('.pp-header')};})()`);
+      component:!!document.querySelector('[data-real-composition]'),
+      navBorder:getComputedStyle(document.querySelector('aside[aria-label="学习中心侧边导航"]')).borderTopWidth,
+      ink:getComputedStyle(root).getPropertyValue('--pp-ink').trim()};})()`);
    if(actual.surface!==surface||actual.mode!==mode||actual.persisted!==mode||actual.navCurrent!=="page"||
-     !actual.component||actual.width>actual.viewport+3)
+     !actual.component||actual.width>actual.viewport+3||
+     actual.navBorder!=="3px"||!actual.ink)
      throw Error("Integration mismatch "+device+"/"+surface+"/"+mode+": "+JSON.stringify(actual));
    return actual;
   };

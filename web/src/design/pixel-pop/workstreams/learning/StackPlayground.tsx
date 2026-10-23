@@ -4,6 +4,7 @@ import {useRef,useState} from "react";
 import {Clock3,RotateCcw,Trash2,ArrowDownToLine,ArrowUpFromLine} from "lucide-react";
 import {PopButton} from "../../primitives";
 import {normalizeCapacity,popStack,pushStack} from "./stack-model.mjs";
+import {stackTimeline,popExitBottom} from "./stack-timeline.mjs";
 import styles from "./learning.module.css";
 
 export type StackAction = {
@@ -41,8 +42,7 @@ export function StackPlayground({
     setLastKind(kind);
     if(kind==="pop"){
       // The result is committed immediately. Only the departing block is a visual overlay.
-      const oneSlot=166/limit;
-      setPopVisual({id:counter.current+1,value:result.value,bottom:12+(stack.length-1)*oneSlot});
+      setPopVisual({id:counter.current+1,value:result.value,bottom:popExitBottom(stack.length,limit)});
     }else setPopVisual(null);
     const record:StackAction={
       id:++counter.current,kind,value:result.value,stack:result.stack.slice(),
@@ -58,16 +58,7 @@ export function StackPlayground({
     setLastKind(null);
     setPopVisual(null);
   };
-  const recent=history.slice(0,4).reverse();
-  const changedWithoutHistory=history.length===0&&JSON.stringify(stack)!==JSON.stringify(start.current);
-  const stages=history.length>3
-    ? recent.map(a=>({id:a.id,label:a.kind==="push"?"Push("+a.value+")":"Pop() → "+a.value,stack:a.stack,kind:a.kind}))
-    : [{id:0,label:changedWithoutHistory?"当前状态":"初始状态",
-        stack:changedWithoutHistory?stack:start.current,kind:null as "push"|"pop"|null},
-      ...recent.map(a=>({id:a.id,label:a.kind==="push"?"Push("+a.value+")":"Pop() → "+a.value,stack:a.stack,kind:a.kind}))];
-  const padded=[...stages,...Array.from({length:Math.max(0,4-stages.length)},(_,i)=>({
-    id:-(i+1),label:"等待下一步",stack:[] as number[],kind:null
-  }))];
+  const padded=stackTimeline(start.current,stack,history);
   return <section className={styles.playground+" "+className} aria-label="可交互的栈操作实验">
     <div className={styles.playgroundBody}>
       <div className={styles.playgroundMain}>

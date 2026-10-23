@@ -110,10 +110,10 @@ test("SVG fidelity: three cards reuse native Lucide vectors without image or ras
     assert.ok(src.includes('from "lucide-react"'));
     assert.doesNotMatch(src,/<image\\b|data:image\\/|<img\\b/);
   }
-  assert.match(progress,/<Trophy size=\\{17\\}/);
-  assert.match(sources,/<FileText size=\\{23\\}/);
-  assert.match(sources,/<FileCode2 size=\\{23\\}/);
-  assert.match(sources,/<Link2 size=\\{23\\}/);
+  assert.ok(progress.includes('<Trophy size={17}'));
+  assert.ok(sources.includes('<FileText size={23}'));
+  assert.ok(sources.includes('<FileCode2 size={23}'));
+  assert.ok(sources.includes('<Link2 size={23}'));
   assert.ok(css.includes(".fileIcon :global(svg)"));
   assert.ok(css.includes("stroke-linejoin:round"));
   assert.ok(css.includes("filter:none"));

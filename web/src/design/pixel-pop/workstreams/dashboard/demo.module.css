@@ -21,6 +21,9 @@
 .progressExamples{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(265px,.9fr);gap:20px}
 .sourceExamples{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(255px,.8fr);gap:20px}
 .compactExamples{display:flex;flex-direction:column;gap:14px}
+.variantCase{display:flex;flex-direction:column;gap:5px;min-width:0}
+.variantTag{align-self:start;font-size:11px;font-weight:900;padding:3px 8px;border-radius:5px;
+  color:#204b9f;background:color-mix(in srgb,var(--pp-blue) 15%,white)}
 .taskExamples{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(230px,1fr) minmax(180px,.75fr);gap:20px;align-items:start}
 .demoButton{align-self:start;background:var(--pp-yellow)}
 @media(max-width:900px){

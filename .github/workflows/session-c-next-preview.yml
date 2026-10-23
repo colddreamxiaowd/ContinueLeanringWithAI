@@ -1,4 +1,4 @@
-name: Session C real Next.js Chromium preview
+name: Session C A-shell integrated Next.js Chromium preview
 on:
   pull_request:
     paths:
@@ -19,6 +19,11 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - name: Compose A shell and C reader (CI worktree only)
+        run: |
+          git fetch --no-tags --depth=1 origin 92ce1bb2cf23d17a4f3bd68ce280deba17719314
+          git checkout FETCH_HEAD -- web/src/design/pixel-pop/workstreams/shell
+          node web/src/design/pixel-pop/workstreams/reader/prepare-shell-integration.mjs
       - name: Install
         working-directory: web
         run: npm ci
@@ -44,12 +49,12 @@ jobs:
             if curl -fsS http://127.0.0.1:3100/ui-lab/session-c > /dev/null; then break; fi
             sleep 1
           done
-          node src/design/pixel-pop/workstreams/reader/capture-next.mjs
+          node src/design/pixel-pop/workstreams/reader/capture-shell-next.mjs
       - name: Upload 1440 / 768 / 390 browser screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: session-c-nextjs-chromium-${{ github.run_number }}
-          path: web/test-artifacts/session-c/**
+          name: session-c-A-shell-chromium-${{ github.run_number }}
+          path: web/test-artifacts/session-c-integrated/**
           if-no-files-found: warn
           retention-days: 14

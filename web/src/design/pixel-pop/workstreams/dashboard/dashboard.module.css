@@ -80,9 +80,9 @@ button.chapterItem:hover {background:var(--pp-canvas)}
 .fileIcon {width:44px;height:44px;flex:0 0 44px;border-radius:8px;display:grid;place-items:center;
   color:white;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 55%,transparent)}
 .fileGlyph {font-size:24px;font-weight:1000;line-height:1}
-.kind_pptx{background:#ff662b}.kind_pdf{background:#ff2446}
-.kind_markdown{background:#465576}.kind_feishu{background:var(--pp-purple)}
-.kind_other{background:#63738c}
+.kind_pptx{background:#FFA553;color:var(--pp-ink)}.kind_pdf{background:var(--pp-coral)}
+.kind_markdown{background:var(--pp-quiet)}.kind_feishu{background:var(--pp-purple)}
+.kind_other{background:var(--pp-quiet)}
 .fileText {display:flex;flex-direction:column;flex:1;min-width:0;gap:2px;overflow:hidden}
 .fileText strong {overflow-wrap:anywhere;font-size:13px;font-weight:900;line-height:1.35}
 .fileText small {font-size:11px;color:var(--pp-quiet);line-height:1.45;overflow-wrap:anywhere}
@@ -126,7 +126,7 @@ button.taskAction:hover{background:color-mix(in srgb,var(--pp-blue) 11%,white);b
 .taskIcon {width:37px;height:37px;display:grid;place-items:center;flex:none;border-radius:6px;
   color:#fff;box-shadow:2px 2px 0 color-mix(in srgb,var(--pp-ink) 30%,transparent)}
 .taskKind_video{background:var(--pp-blue)}
-.taskKind_practice{background:#ffb634;color:var(--pp-ink)}
+.taskKind_practice{background:var(--pp-yellow);color:var(--pp-ink)}
 .taskKind_quiz{background:var(--pp-mint);color:var(--pp-ink)}
 .taskText{display:flex;flex:1;min-width:0;flex-direction:column}
 .taskText strong{font-size:12px;font-weight:920;line-height:1.4;overflow-wrap:anywhere}

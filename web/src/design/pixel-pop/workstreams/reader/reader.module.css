@@ -9,27 +9,27 @@
 .lessonTitle{display:flex;align-items:center;gap:14px;font-size:clamp(26px,2.8vw,39px);letter-spacing:-.8px;line-height:1.25;font-weight:950;margin:0 0 20px;min-width:0}
 .lessonTitle>span:last-child{min-width:0;overflow-wrap:anywhere}
 .titleIndex{flex:none;display:inline-grid;place-items:center;color:white;background:var(--pp-blue);border:2px solid var(--pp-ink);border-radius:7px;box-shadow:3px 3px 0 var(--pp-ink);padding:5px 12px;font-size:.73em}
-.lessonFlow{width:min(100%,760px);margin:0 auto;overflow-wrap:anywhere}
-.lessonParagraph{margin:12px 0 18px;font-size:16px;line-height:1.9;letter-spacing:.005em;color:#212741;font-weight:440}
+.lessonFlow{width:min(100%,720px);margin:0 auto;overflow-wrap:anywhere}
+.lessonParagraph{margin:16px 0 23px;font-size:16.5px;line-height:1.95;letter-spacing:.005em;color:#212741;font-weight:440}
 .markyellow,.markblue,.markmint,.markstrong{font-weight:850;border-radius:3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;padding:1px 3px}
 .markyellow{background:var(--pp-yellow);color:var(--pp-ink)}
 .markblue{background:#dcecff;color:#0752cb}.markmint{background:#c9f8e8;color:#105e47}.markstrong{background:transparent;color:var(--pp-ink)}
 .citationTag{background:#edf4ff;color:#0057e7;border:1.5px solid #a9c9ff;border-radius:4px;padding:0 6px;min-width:22px;font-size:11px;line-height:20px;font-weight:900;margin:0 3px;vertical-align:super;box-shadow:1px 1px 0 #aac4ff}
 .citationTag[aria-pressed="true"]{background:var(--pp-blue);color:#fff}
-.lessonHeading{display:flex;align-items:center;gap:12px;margin:29px 0 12px;line-height:1.35;font-weight:950;font-size:clamp(20px,1.8vw,25px);scroll-margin-top:32px}
+.lessonHeading{display:flex;align-items:center;gap:12px;margin:36px 0 15px;line-height:1.35;font-weight:950;font-size:clamp(20px,1.8vw,25px);scroll-margin-top:32px}
 .lessonHeading>span{display:grid;place-items:center;min-width:36px;min-height:36px;flex:none;padding:1px 5px;background:var(--pp-purple);color:#fff;border:2px solid var(--pp-ink);border-radius:7px;box-shadow:2px 2px 0 var(--pp-ink)}
 .lessonHeading:focus{outline:0}.lessonHeading:focus-visible{outline:2px solid var(--pp-blue);outline-offset:4px}
-.figure{margin:18px 0 22px}.figureBody{min-height:170px;border:1.5px solid #bcd7ff;background:#e7f3ff;border-radius:8px;overflow:hidden;display:grid;place-items:center}
+.figure{margin:22px 0 29px}.figureBody{min-height:170px;border:1.5px solid #bcd7ff;background:#e7f3ff;border-radius:8px;overflow:hidden;display:grid;place-items:center}
 .figureBody img{display:block;max-width:100%;max-height:460px;object-fit:contain}.figureBody>*{max-width:100%}
 .figure figcaption{font-size:12px;line-height:1.65;text-align:center;color:var(--pp-quiet);padding:6px 0}
 .figureMissing{display:flex;align-items:center;gap:8px;color:var(--pp-quiet);font-size:12px;padding:30px}
-.codeBox{margin:17px 0;border:2px solid #27334e;border-radius:8px;background:#151d30;color:#eef4ff;overflow:hidden}
+.codeBox{margin:23px 0;border:2px solid #27334e;border-radius:8px;background:#151d30;color:#eef4ff;overflow:hidden}
 .codeHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 11px;background:#202b43;border-bottom:1px solid #475373;font-size:11px;color:#cbdaf3;font-weight:750}
 .codeHead :global(.pp-button){min-height:29px;background:#f8faff;box-shadow:1px 1px 0 #131929}
-.codeBox pre{margin:0;padding:15px 16px 18px;overflow-x:auto;font-size:12.5px;line-height:1.75;tab-size:4;white-space:pre;color:#eaf0ff}
+.codeBox pre{margin:0;padding:17px 18px 20px;overflow-x:auto;font-size:13.5px;line-height:1.8;tab-size:4;white-space:pre;color:#eaf0ff}
 .copyStatus{display:block;font-size:11px;color:#c5e4fd;padding:0 14px 9px}
-.keyPoints{display:grid;grid-template-columns:20px minmax(0,1fr);gap:5px 9px;padding:13px 15px;margin:19px 0;background:#e2f2ff;border-left:4px solid var(--pp-blue);border-radius:6px;font-size:12px;color:#154778}
-.keyPoints strong{font-size:13px}.keyPoints ul{grid-column:2;margin:0;padding-left:17px;line-height:1.9}
+.keyPoints{display:grid;grid-template-columns:20px minmax(0,1fr);gap:7px 11px;padding:16px 18px;margin:25px 0;background:#e2f2ff;border-left:4px solid var(--pp-blue);border-radius:6px;font-size:13px;color:#154778}
+.keyPoints strong{font-size:14px}.keyPoints ul{grid-column:2;margin:0;padding-left:17px;line-height:1.9}
 .activity{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px dashed #8da8ed;background:#f4f7ff;padding:13px;border-radius:8px;margin:17px 0;font-size:12px}
 .activity p{margin:3px 0}.activity>span{max-width:140px;color:var(--pp-quiet);text-align:right}
 .cardHeading{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #dde4f4;font-size:16px;line-height:1.35}
@@ -62,17 +62,17 @@
 .sourceNumber{display:grid;place-items:center;flex:none;min-width:25px;min-height:25px;background:var(--pp-blue);color:#fff;border-radius:4px;border:1px solid #0e52d7;font-weight:950;font-size:14px}
 .provenance{display:inline-block;margin-top:9px;border-radius:4px;background:#fff4cf;color:#745217;padding:2px 7px;font-size:10px;font-weight:850}
 .provenance[data-kind="private"]{background:#e9f0ff;color:#1e538c}.provenance[data-kind="demo"]{background:#fff1dd;color:#9c4f05}
-.citationDetail>p{font-size:12px;line-height:1.78;color:#3f4964;margin:11px 0}
+.citationDetail>p{font-size:13px;line-height:1.85;color:#3f4964;margin:11px 0}
 .sourceDocument{display:flex;align-items:center;gap:9px;background:#edf2ff;border-top:1px solid #d4defa;padding:9px 11px;margin:0 -11px}
 .sourceDocument svg{color:var(--pp-blue);flex:none}.sourceDocument div{min-width:0}
-.sourceDocument strong,.sourceDocument small{display:block;overflow-wrap:anywhere}.sourceDocument strong{font-size:11px}.sourceDocument small{font-size:10px;color:#5c6986;margin-top:3px}
+.sourceDocument strong,.sourceDocument small{display:block;overflow-wrap:anywhere}.sourceDocument strong{font-size:12px}.sourceDocument small{font-size:11px;color:#5c6986;margin-top:3px}
 .openSource{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:850;color:#0959d1!important;padding:10px 0}
 .noLink{font-size:11px;line-height:1.6;color:#6c738c;padding:9px 0}
 .sourceListPanel{margin-top:13px}.sourceList{padding:0;margin:6px 0 0;list-style:none}.sourceList li+li{border-top:1px solid #e5eafa}
 .sourceListButton{display:flex;gap:9px;width:100%;border:0;background:transparent;text-align:left;padding:11px 3px;border-radius:5px}
 .sourceListButton:hover,.sourceListButton:focus-visible{background:#f1f4ff}.sourceListButton[data-active="true"] strong{color:var(--pp-blue)}
 .sourceListButton>span:last-child{min-width:0}.sourceListButton strong,.sourceListButton small{display:block;overflow-wrap:anywhere}
-.sourceListButton strong{font-size:12px;line-height:1.55}.sourceListButton small{font-size:10px;color:#697490;line-height:1.55;margin-top:3px}
+.sourceListButton strong{font-size:12.5px;line-height:1.55}.sourceListButton small{font-size:11px;color:#697490;line-height:1.55;margin-top:3px}
 .emptyCitations{font-size:12px;color:#985126;line-height:1.65;background:#fff8e9;border-radius:6px;padding:12px}
 :global(.pp-root[data-density="minimal"]) .component :global(.pp-panel){padding:14px;box-shadow:3px 3px 0 var(--pp-ink)}
 :global(.pp-root[data-density="minimal"]) .lessonParagraph{line-height:1.8}
@@ -80,9 +80,9 @@
 :global(.pp-root[data-density="normal"]) .lessonParagraph{line-height:2}
 @media(max-width:1100px){.outlineScroll{max-height:470px}}
 @media(max-width:620px){.component :global(.pp-panel){padding:13px;border-width:2px;box-shadow:3px 3px 0 var(--pp-ink)}
- .lessonTitle{font-size:26px;gap:10px}.lessonParagraph{font-size:15px;line-height:1.85}
+ .lessonTitle{font-size:26px;gap:10px}.lessonParagraph{font-size:16px;line-height:1.9;margin:14px 0 22px}
  .lessonHeading{font-size:19px;margin-top:24px}.lessonHeading>span{min-width:31px;min-height:31px}
- .codeBox pre{font-size:11px}.outlineScroll{max-height:none}.activity{flex-wrap:wrap}}
+ .codeBox pre{font-size:13.5px;line-height:1.75;padding:15px 15px 17px}.codeHead{font-size:12px}.outlineScroll{max-height:none}.activity{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.progressTrack span{transition:none!important}}
 
 /* Demo-only styles do not leak into production components. */
@@ -111,18 +111,44 @@
 /* Session C real Next.js reader tweaks: calm content first, syntax distinctions second. */
 .syntaxkeyword{color:#B4A6FF}.syntaxcomment{color:#92ABC1}.syntaxstring{color:#FFDC93}.syntaxnumber{color:#70E5C1}
 .codeBox code{font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
-.demoPage[data-session-c-live="true"] .demoTop{background:linear-gradient(111deg,#7440FF,#246BFF 66%,#7440FF);
+.demoPage[data-session-c-live="true"] .demoTop{background:#FFFFFF;color:var(--pp-ink);
   border:3px solid var(--pp-ink);box-shadow:5px 5px 0 var(--pp-ink);border-radius:13px;
   padding:14px 19px;margin:0 0 12px}
-.demoPage[data-session-c-live="true"] .demoTop p,.demoPage[data-session-c-live="true"] .demoTop small{color:#fff}
-.demoPage[data-session-c-live="true"] .demoTop h1{color:#fff}
+.demoPage[data-session-c-live="true"] .demoTop p,.demoPage[data-session-c-live="true"] .demoTop small{color:var(--pp-quiet)}
+.demoPage[data-session-c-live="true"] .demoTop h1{color:var(--pp-ink)}
 .demoPage[data-session-c-live="true"] .demoGrid{background:#f5f7ff;gap:15px}
 .demoPage[data-session-c-live="true"] .demoColumn:first-child :global(.pp-panel){padding:clamp(16px,2.25vw,28px)}
-.demoPage[data-session-c-live="true"] .lessonFlow{width:min(100%,760px)}
+.demoPage[data-session-c-live="true"] .lessonFlow{width:min(100%,720px)}
 @media(max-width:680px){.demoPage[data-session-c-live="true"] .demoTop{padding:12px}
   .demoPage[data-session-c-live="true"] .demoGrid{padding:10px}}
 
 /* Keep navigation and provenance available while a long lesson scrolls on desktop. */
 @media(min-width:1181px){
   .demoPage[data-session-c-live="true"] .demoColumn:not(:first-child){position:sticky;top:14px;align-self:start}
+}
+
+/* Session C long-reading polish: illustration stays legible at phone width. */
+.diagramDesktop{display:block;width:100%;height:auto}
+.diagramMobile{display:none;width:100%;height:auto}
+.mobileReaderBar,.mobileSourceClose{display:none}
+.demoPage[data-session-c-live="true"]{background:#f5f7ff}
+.demoPage[data-session-c-live="true"] .demoTop{border-bottom:4px solid var(--pp-ink)}
+.demoPage[data-session-c-live="true"] .demoTop h1{font-size:clamp(22px,2.1vw,29px)}
+@media(min-width:1181px){
+  .demoPage[data-session-c-live="true"] .demoGrid{grid-template-columns:minmax(0,2.65fr) minmax(226px,.9fr) minmax(248px,.99fr)}
+}
+@media(max-width:680px){
+  .diagramDesktop{display:none}.diagramMobile{display:block}
+  .figureBody{min-height:0}.figureBody svg{width:100%;height:auto}
+  .mobileReaderBar{display:block;position:sticky;top:0;z-index:40;background:#fff;border:2px solid var(--pp-ink);border-radius:8px;box-shadow:3px 3px 0 var(--pp-ink);padding:7px;margin:0 0 6px}
+  .mobileReaderControls{display:flex;gap:8px;align-items:center;justify-content:space-between}
+  .mobileReaderControls button,.mobileSourceClose{font-size:13px;font-weight:850;color:var(--pp-ink);background:#fff;border:2px solid var(--pp-ink);border-radius:6px;padding:7px 11px;min-height:38px}
+  .mobileReaderControls button[aria-expanded="true"]{background:var(--pp-yellow)}
+  .mobileReaderControls strong{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mobileOutlinePanel{max-height:57vh;overflow-y:auto;margin-top:8px}
+  .mobileOutlinePanel .component :global(.pp-panel){box-shadow:none;border:1px solid #b7c4e8}
+  .desktopOutlineColumn,.mobileSourceColumn{display:none}
+  .mobileSourceColumn.mobileSourceOpen{display:block;position:fixed;z-index:70;left:10px;right:10px;top:12vh;bottom:10px;overflow-y:auto;overscroll-behavior:contain;background:#f5f7ff;padding:12px 12px 20px;border:3px solid var(--pp-ink);border-radius:13px;box-shadow:5px 5px 0 var(--pp-ink)}
+  .mobileSourceClose{display:block;margin:0 0 12px auto;background:var(--pp-yellow)}
+  .demoPage[data-session-c-live="true"] .demoGrid{gap:10px}
 }

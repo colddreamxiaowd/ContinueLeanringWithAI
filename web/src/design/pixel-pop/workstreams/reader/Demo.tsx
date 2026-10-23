@@ -83,8 +83,11 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const [density,setDensity]=useState<"minimal"|"balanced"|"normal">("balanced");
   const [sourceMode,setSourceMode]=useState<"editorial"|"coursepack">("editorial");
   const [selectedChapterId,setSelectedChapterId]=useState("ch3");
+  const [mobileOutlineOpen,setMobileOutlineOpen]=useState(false);
+  const [mobileCitationOpen,setMobileCitationOpen]=useState(false);
   const [jumpId,setJumpId]=useState<string|null>(null);
   function navigateTo(id:string){
+    setMobileOutlineOpen(false);
     setActiveSectionId(id);setJumpId(id);
     const targetChapter=chapters.find(c=>c.sections.some(section=>section.id===id));
     if(targetChapter&&sourceMode==="editorial"){setSelectedChapterId(targetChapter.id);if(targetChapter.id!=="ch3")setSelectedCitationId(null);}
@@ -105,6 +108,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const [selectedCitationId,setSelectedCitationId]=useState<string|null>("cite-1");
   useEffect(()=>{if(sourceMode==="coursepack"){setActiveSectionId("more");setSelectedCitationId("mock-12");}
     else {setSelectedChapterId("ch3");setActiveSectionId("s32");setSelectedCitationId("cite-1");}},[sourceMode]);
+  const selectCitation=(id:string)=>{setSelectedCitationId(id);if(typeof window!=="undefined"&&window.innerWidth<=680)setMobileCitationOpen(true);};
   return <div className={`pp-root ${s.demoPage}`} data-density={density} data-session-c-live={fullPage?"true":undefined}>
     <div className={s.demoFrame}>
       <header className={s.demoTop}><div><p>知序 Learning Hub · Pixel Pop / Session C</p>
@@ -118,12 +122,24 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
             onClick={()=>setDensity(mode)}>{({minimal:"极简",balanced:"较简",normal:"正常"})[mode]}</button>)}
         </fieldset></div></header>
       <main className={s.demoGrid}>
+        <div className={s.mobileReaderBar} aria-label="移动端阅读导航">
+          <div className={s.mobileReaderControls}>
+            <button type="button" aria-expanded={mobileOutlineOpen} aria-controls="session-c-mobile-outline"
+              onClick={()=>setMobileOutlineOpen(v=>!v)}>章节目录</button>
+            <strong>{currentLesson.title}</strong>
+            <button type="button" aria-expanded={mobileCitationOpen} onClick={()=>setMobileCitationOpen(true)}>查看来源</button>
+          </div>
+          {mobileOutlineOpen&&<div className={s.mobileOutlinePanel} id="session-c-mobile-outline">
+            <ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId}
+              onNavigate={navigateTo}/>
+          </div>}
+        </div>
         <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>01</span> LessonContent · Demo 说明</h2>}
-          <LessonContent lesson={currentLesson} activeCitationId={selectedCitationId} onCitationSelect={setSelectedCitationId}/></div>
-        <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>02</span> ChapterOutline · Demo 说明</h2>}
+          <LessonContent lesson={currentLesson} activeCitationId={selectedCitationId} onCitationSelect={selectCitation}/></div>
+        <div className={`${s.demoColumn} ${s.desktopOutlineColumn}`}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>02</span> ChapterOutline · Demo 说明</h2>}
           <ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId} onNavigate={navigateTo}
             learningGoals={[{label:"理解栈的基本概念",done:true},{label:"掌握 Push / Pop 操作",done:false},{label:"了解栈的应用场景",done:false}]}/></div>
-        <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>03</span> SourceCitation · Demo 说明</h2>}
+        <div className={`${s.demoColumn} ${s.mobileSourceColumn} ${mobileCitationOpen?s.mobileSourceOpen:""}`}>{mobileCitationOpen&&<button className={s.mobileSourceClose} type="button" onClick={()=>setMobileCitationOpen(false)}>关闭来源 ×</button>}{!fullPage&&<h2 className={s.demoBlockLabel}><span>03</span> SourceCitation · Demo 说明</h2>}
           <SourceCitation citations={currentCitations} selectedId={selectedCitationId} onSelect={setSelectedCitationId}/>
           <p className={s.demoNotice}>演示引用不会生成真实原文跳转。正式课程需要由资料库提供获授权的文件链接。</p>
         </div>

@@ -17,7 +17,7 @@ export default async function LibraryPage() {
       <div className="page-heading">
         <span className="section-kicker">MY PRIVATE LIBRARY</span>
         <h1>我的资料</h1>
-        <p>连接自己的飞书云空间，递归同步选定文件夹，并在线预览文本、图片和 PDF。</p>
+        <p>连接飞书、通过文件夹链接或目录递归同步资料，并在线阅读文本、图片、PDF、PPTX、DOCX 与 XLSX。</p>
       </div>
       <LibraryClient accountEmail={user.email || ""}/>
     </AppShell>

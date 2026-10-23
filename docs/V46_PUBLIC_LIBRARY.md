@@ -88,3 +88,11 @@ Each user authorizes their own Feishu account. The app requests read-only access
 - GitHub Pages is a legacy static preview and is no longer used for full-stack deployments. The public app requires Vercel (or another compatible Next.js server host) and Supabase.
 - GitHub Actions runs tests and builds only; it has no production secrets and never calls Feishu.
 - The current sync is user-triggered and resumable page by page; it is not a background scheduled sync.
+
+## V4.7 — Reading materials on the actual website
+
+- Users can paste an authorized Feishu folder URL (or opaque folder token) directly in /library to index nested folders without browsing Drive root first. The server checks read permission with that user's Feishu OAuth token.
+- Once synced, an authenticated user can open PPTX, DOCX or XLSX in /library. The Office reader extracts slide text, Word paragraphs and spreadsheet rows on demand from Feishu. The site renders these sections as readable original-source material, not an AI-generated summary. TXT/MD/CSV, images, PDF keep their original preview modes.
+- No course data are committed to the public repository and no source text is cached in the shared database. Server response uses private no-store, checks item ownership, and refuses documents larger than 15 MiB for the in-browser extractor.
+- Fallback: for complex Office features, scanned slides, original layout and files above the size bound, download the original file. Full PPT slide-faithful rendering and AI-generated lessons are future work.
+- Live acceptance still requires the deployed user's Feishu OAuth credentials and an actual folder: paste folder link → sync → open nested TXT/image/PPTX/DOCX/XLSX → verify original content is shown under the same login.

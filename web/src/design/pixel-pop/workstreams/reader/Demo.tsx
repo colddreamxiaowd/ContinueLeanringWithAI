@@ -72,17 +72,39 @@ const coursePackDemo={schemaVersion:"0.1",title:"数据结构 · 安静阅读样
     {id:"simulator",type:"stack-simulator",initial:[3,7],capacity:6},
     {id:"quiz",type:"quiz",prompt:"最后放入栈中的元素是否最先弹出？",options:["是","否"],answerIndex:0}]}]};
 
+function editorialLesson(chapterId:string):LessonData{
+  const split=(id:string)=>lesson.blocks.findIndex(x=>x.type==="heading"&&x.id===id);
+  const start=chapterId==="ch4"?split("s41"):chapterId==="ch5"?split("s51"):0;
+  const end=chapterId==="ch3"?split("s41"):chapterId==="ch4"?split("s51"):lesson.blocks.length;
+  const title=chapterId==="ch4"?"链表与节点":chapterId==="ch5"?"树与层级结构":lesson.title;
+  return {...lesson,title,breadcrumb:["数据结构",chapters.find(x=>x.id===chapterId)?.label||"课程内容"],blocks:lesson.blocks.slice(start,end)};
+}
 export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
   const [density,setDensity]=useState<"minimal"|"balanced"|"normal">("balanced");
+  const [selectedChapterId,setSelectedChapterId]=useState("ch3");
+  const [jumpId,setJumpId]=useState<string|null>(null);
+  function navigateTo(id:string){
+    setActiveSectionId(id);setJumpId(id);
+    const targetChapter=chapters.find(c=>c.sections.some(section=>section.id===id));
+    if(targetChapter&&sourceMode==="editorial")setSelectedChapterId(targetChapter.id);
+  }
+  useEffect(()=>{
+    if(!jumpId)return;
+    const frame=requestAnimationFrame(()=>{const node=document.getElementById(jumpId);
+      if(node){node.scrollIntoView({block:"start",behavior:"auto"});node.focus({preventScroll:true});}
+      setJumpId(null);
+    });
+    return ()=>cancelAnimationFrame(frame);
+  },[jumpId,selectedChapterId,sourceMode]);
   const [sourceMode,setSourceMode]=useState<"editorial"|"coursepack">("editorial");
   const mapped=adaptCoursePackV01(coursePackDemo,{mode:"demo",completedBlockIds:["concept"],activeBlockId:"more"});
-  const currentLesson=sourceMode==="editorial"?lesson:mapped.lesson as LessonData;
+  const currentLesson=sourceMode==="editorial"?editorialLesson(selectedChapterId):mapped.lesson as LessonData;
   const currentChapters=sourceMode==="editorial"?chapters:mapped.chapters as OutlineChapter[];
   const currentCitations=sourceMode==="editorial"?references:mapped.citations as CitationRecord[];
   const [activeSectionId,setActiveSectionId]=useState("s32");
   const [selectedCitationId,setSelectedCitationId]=useState<string|null>("cite-1");
   useEffect(()=>{if(sourceMode==="coursepack"){setActiveSectionId("more");setSelectedCitationId("mock-12");}
-    else {setActiveSectionId("s32");setSelectedCitationId("cite-1");}},[sourceMode]);
+    else {setSelectedChapterId("ch3");setActiveSectionId("s32");setSelectedCitationId("cite-1");}},[sourceMode]);
   return <div className={`pp-root ${s.demoPage}`} data-density={density} data-session-c-live={fullPage?"true":undefined}>
     <div className={s.demoFrame}>
       <header className={s.demoTop}><div><p>知序 Learning Hub · Pixel Pop / Session C</p>
@@ -99,7 +121,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
         <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>01</span> LessonContent · Demo 说明</h2>}
           <LessonContent lesson={currentLesson} activeCitationId={selectedCitationId} onCitationSelect={setSelectedCitationId}/></div>
         <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>02</span> ChapterOutline · Demo 说明</h2>}
-          <ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId} onNavigate={setActiveSectionId}
+          <ChapterOutline chapters={currentChapters} activeSectionId={activeSectionId} onNavigate={navigateTo}
             learningGoals={[{label:"理解栈的基本概念",done:true},{label:"掌握 Push / Pop 操作",done:false},{label:"了解栈的应用场景",done:false}]}/></div>
         <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>03</span> SourceCitation · Demo 说明</h2>}
           <SourceCitation citations={currentCitations} selectedId={selectedCitationId} onSelect={setSelectedCitationId}/>

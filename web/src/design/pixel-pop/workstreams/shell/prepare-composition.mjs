@@ -51,6 +51,7 @@ export function CompositionPage({surface}:{surface:Surface}){
  const crumbs=[{label:"首页",href:base+"/courses"},{label:"数据结构",href:base+"/courses"},
    {label:navigation[index].label}];
  return <ShellIntegrationFrame surface={surface} navigation={navigation} crumbs={crumbs}
+   presentation="app" back={{label:"返回课程",href:base+"/courses"}}
    previous={previous} next={next}>
    <div data-real-composition={surface} aria-label="真实跨组组件组合验收">
      {surface==="courses"&&<CourseProgressCard title="学习进度 · B 组真实组件" progressPercent={68}

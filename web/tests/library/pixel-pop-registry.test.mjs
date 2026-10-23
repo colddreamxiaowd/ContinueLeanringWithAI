@@ -24,7 +24,7 @@ test("every registered component actually exists as exported code",()=>{
 test("local demo UI is not accidentally described as shared export",()=>{
   const demo=readFileSync(resolve(root,"pixel-pop-home.tsx"),"utf8");
   for(const name of PIXEL_POP_COMPONENT_REGISTRY.demoOnly){
-    assert.match(demo,new RegExp("function "+name+"\\\\("));
-    assert.doesNotMatch(demo,new RegExp("export function "+name+"\\\\("));
+    assert.ok(demo.includes("function "+name+"("));
+    assert.ok(!demo.includes("export function "+name+"("));
   }
 });

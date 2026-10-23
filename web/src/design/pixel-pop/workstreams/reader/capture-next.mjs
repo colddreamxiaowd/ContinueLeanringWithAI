@@ -32,7 +32,7 @@ try{
  await wait("!!document.querySelector('[data-reader-block=lesson]')","lesson");
  await sleep(1000);
  for(const width of [1440,768,390]){
-   await page("Emulation.setDeviceMetricsOverride",{width,height:width===390?844:900,deviceScaleFactor:1,mobile:false});
+   await page("Emulation.setDeviceMetricsOverride",{width,height:width===390?844:width===768?1024:900,deviceScaleFactor:1,mobile:false});
    await sleep(320);
    const info=await evaluate("({scroll:document.documentElement.scrollWidth,client:window.innerWidth,title:document.querySelector('[data-reader-block=lesson] h1')?.textContent})");
    if(info.scroll>width+2)throw Error("Horizontal overflow: "+width+" => "+info.scroll);
@@ -65,6 +65,15 @@ try{
  await evaluate("([...document.querySelectorAll('button[aria-label^=\"查看引用\"]')][0]||{}).click?.()");
  await wait("!!document.querySelector('[data-citation-id]')","citation detail");
  results.checks.push("citation selection");
+ // Hovering a different source is temporary; pointer leave restores the clicked selection.
+ const at=await evaluate("(()=>{const b=[...document.querySelectorAll('[data-reader-block=citation] ol button')][1];const r=b.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()");
+ await page("Input.dispatchMouseEvent",{type:"mouseMoved",x:at.x,y:at.y});
+ await wait("document.querySelector('[data-citation-id]')?.getAttribute('data-citation-id')==='cite-2'","temporary source hover");
+ const hoverShot=await page("Page.captureScreenshot",{format:"png",captureBeyondViewport:false});
+ await writeFile(root+"/nextjs-session-c-1440-citation-hover.png",Buffer.from(hoverShot.data,"base64"));
+ await page("Input.dispatchMouseEvent",{type:"mouseMoved",x:6,y:6});
+ await wait("document.querySelector('[data-citation-id]')?.getAttribute('data-citation-id')==='cite-1'","return to selected citation");
+ results.checks.push("source hover is temporary and restores selected citation");
  await evaluate("([...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='正常')||{}).click?.()");
  await wait("document.querySelector('.pp-root')?.getAttribute('data-density')==='normal'","density");
  results.checks.push("density mode");

@@ -16,7 +16,7 @@ test("Xiaozhi has single invariant character geometry and palette",()=>{
 test("Xiaozhi exposes supported mood and pose vocabulary",()=>{
   for(const mood of ["idle","happy","thinking","curious","focused","encourage","celebrate","surprised"])
     assert.ok(mascot.includes('"'+mood+'"'));
-  assert.match(mascot,/pose\?:"full"/); // verify readable pose vocabulary
+  assert.match(mascot,/pose="full"/); // verify default pose
   assert.match(mascot,/export function PixelCat/);
 });
 test("Legacy PixelCat is the canonical Xiaozhi alias",()=>{

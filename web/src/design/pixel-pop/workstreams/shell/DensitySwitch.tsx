@@ -9,14 +9,14 @@ export type PixelPopDensity = "minimal"|"balanced"|"normal";
 export const DENSITY_OPTIONS: readonly {
   value:PixelPopDensity;label:string;description:string
 }[] = [
-  {value:"minimal",label:"舒适",description:"留白更宽 · 装饰更少"},
-  {value:"balanced",label:"标准",description:"内容与间距均衡"},
-  {value:"normal",label:"紧凑",description:"缩小间距 · 一屏展示更多"}
+  {value:"minimal",label:"极简",description:"留白更宽 · 装饰更少"},
+  {value:"balanced",label:"较简",description:"内容与间距均衡"},
+  {value:"normal",label:"正常",description:"缩小间距 · 一屏展示更多"}
 ];
 
 /**
  * Controlled density selector. Parent owns persistence and data-density on .pp-root.
- * Minimal=舒适 (roomy), balanced=标准, normal=紧凑 (compact).\n * IDs intentionally remain identical to PIXEL_POP_MODES in spec.mjs.
+ * Minimal=极简（装饰收敛，阅读留白）, balanced=较简（默认）, normal=正常（更多内容）.\n * IDs intentionally remain identical to PIXEL_POP_MODES in spec.mjs.
  */
 export function DensitySwitch({
   value,onChange,disabled=false,className=""

@@ -92,7 +92,7 @@ try{
    if(!collapsed)throw Error("Collapse interaction failed");
    await capture(`session-a-${size}-collapsed`,width,height);
   }else{
-   await evaluate(`document.querySelector('button[aria-label="打开侧边导航"]')?.click()`);
+   await evaluate(`(()=>{const b=document.querySelector('button[aria-label="打开侧边导航"]');b?.focus();b?.click()})()`);
    await sleep(150);
    const mobileOpen=await evaluate(`!!document.querySelector('[data-mobile-open="true"]')`);
    if(!mobileOpen)throw Error("Mobile drawer open failed");

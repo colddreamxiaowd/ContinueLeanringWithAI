@@ -109,7 +109,7 @@ try{
    await capture("session-a-mobile-selected",width,height);
   }
   const changed=await evaluate(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent.includes("测试长中文标题"));b?.click();
-   return document.querySelector('[aria-current="page"]')?.textContent})()`);
+   return document.querySelector('nav[aria-label="面包屑导航"] [aria-current="page"]')?.textContent})()`);
   if(!changed?.includes("长中文"))throw Error("Long Chinese breadcrumb state not updated: "+changed);
   await sleep(150);await capture(`session-a-${size}-long-chinese`,width,height);
   results.push({size,width,height,initial,modeMeasures,changedTitle:changed});

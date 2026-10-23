@@ -6,6 +6,7 @@ import {StackPlayground} from "./StackPlayground";
 import {QuizCard} from "./QuizCard";
 import type {QuizQuestion} from "./QuizCard";
 import {AnswerFeedback} from "./AnswerFeedback";
+import {StackAnswerIllustration} from "./StackAnswerIllustration";
 import "../../pixel-pop.css";
 import styles from "./learning.module.css";
 
@@ -70,7 +71,8 @@ export function LearningDemo(){
           <p>题干、选项、即时判题、解析与下一题</p></div></div>
         <QuizCard key={EXAMPLE_QUESTIONS[questionIndex].id} question={EXAMPLE_QUESTIONS[questionIndex]}
           questionIndex={questionIndex+1} questionCount={EXAMPLE_QUESTIONS.length}
-          onAnswer={(_,correct)=>setNotice(correct?"回答正确，解析已展开。":"回答错误，解析已展开，可重新选择。")}
+          onAnswer={(_,correct)=>setNotice(correct?"首次成绩：回答正确。":"首次成绩：回答错误。后续重试不重复计分。")}
+          onAttempt={(_,correct,n)=>setNotice("第 "+n+" 次尝试："+(correct?"正确":"错误")+"；当前题只记录一次成绩。")}
           onNext={advance} onOpenLab={showLab} onReview={()=>setNotice("复习提示：栈遵循后进先出（LIFO）。")}/>
         <div className={styles.demoNote}>💡 本区域显示模拟练习题，不写入真实课程成绩。</div>
       </section>
@@ -97,12 +99,14 @@ export function LearningDemo(){
         <h2>AnswerFeedback · 答题反馈组件</h2>
         <p>三个独立可复用状态：正确、错误、重试；动作由调用方提供</p></div></div>
       <div className={styles.demoGrid}>
-        <AnswerFeedback status="correct" illustratedStack={[1,2,4]} correctAnswer="4"
+        <AnswerFeedback status="correct" visual={<StackAnswerIllustration stack={[1,2,4]}/>}
+          description="你已正确模拟 Push / Pop 后的栈顶变化。" correctAnswer="4"
           explanation={EXAMPLE_QUESTIONS[0].explanation} onNext={advance}/>
-        <AnswerFeedback status="incorrect" illustratedStack={[1,2,4]} selectedAnswer="3" correctAnswer="4"
+        <AnswerFeedback status="incorrect" visual={<StackAnswerIllustration stack={[1,2,4]}/>}
+          description="试着按操作顺序重新追踪栈顶。" selectedAnswer="3" correctAnswer="4"
           explanation={EXAMPLE_QUESTIONS[0].explanation}
           onRetry={()=>setNotice("已触发重新作答。可在上方单选题中重新选择。")} onNext={advance}/>
-        <AnswerFeedback status="retry" onOpenLab={showLab}
+        <AnswerFeedback status="retry" onOpenPractice={showLab} practiceLabel="打开实验区"
           onReview={()=>setNotice("知识点：栈的入栈、出栈操作均发生在栈顶。")}
           onRetry={()=>setNotice("已触发重新练习，请返回上方单选题。")}/>
       </div>

@@ -22,6 +22,8 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: web/package-lock.json
+      - name: Syntax-check screenshot runner
+        run: node --check web/scripts/capture-zhixu-unified.mjs
       - name: Install dependencies
         working-directory: web
         run: npm ci

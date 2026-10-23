@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {useEffect} from "react";
+import {useEffect,useRef} from "react";
 import {
   BookOpen, Bookmark, CalendarDays, ChevronRight, FileText, FolderOpen,
   Home, Menu, Settings, Star, Trash2, UserRound, X
@@ -53,12 +53,25 @@ export function SidebarNav({
   accountItems=DEFAULT_SHELL_ACCOUNT_ITEMS,collapsed=false,
   mobileOpen=false,onMobileClose,onNavigate,className=""
 }:Props){
+  const asideRef=useRef<HTMLElement>(null);
+  const closeRef=useRef(onMobileClose);
+  useEffect(()=>{closeRef.current=onMobileClose;},[onMobileClose]);
   useEffect(()=>{
-    if(!mobileOpen)return;
-    const key=(event:KeyboardEvent)=>{if(event.key==="Escape")onMobileClose?.();};
+    if(!mobileOpen||!window.matchMedia("(max-width: 720px)").matches)return;
+    const previous=document.activeElement instanceof HTMLElement?document.activeElement:null;
+    const nodes=()=>Array.from(asideRef.current?.querySelectorAll<HTMLElement>("a[href],button:not([disabled])")??[]);
+    nodes()[0]?.focus();
+    const key=(event:KeyboardEvent)=>{
+      if(event.key==="Escape"){event.preventDefault();closeRef.current?.();return;}
+      if(event.key!=="Tab")return;
+      const options=nodes(),first=options[0],last=options[options.length-1];
+      if(!first||!last)return;
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+    };
     window.addEventListener("keydown",key);
-    return ()=>window.removeEventListener("keydown",key);
-  },[mobileOpen,onMobileClose]);
+    return ()=>{window.removeEventListener("keydown",key);previous?.focus();};
+  },[mobileOpen]);
 
   function links(items:readonly ShellNavItem[]){
     return items.map(item=>{
@@ -89,7 +102,7 @@ export function SidebarNav({
     data-collapsed={collapsed?"true":"false"} data-mobile-open={mobileOpen?"true":"false"}>
     {mobileOpen&&<button type="button" className={styles.scrim} aria-label="关闭侧边导航"
       onClick={onMobileClose}/>}
-    <aside className={styles.sidebar} aria-label="学习中心侧边导航">
+    <aside ref={asideRef} className={styles.sidebar} aria-label="学习中心侧边导航">
       <div className={styles.mobileHeading}>
         <strong>知序 <span>Learning Hub</span></strong>
         <button type="button" aria-label="关闭导航菜单" onClick={onMobileClose}><X size={22}/></button>

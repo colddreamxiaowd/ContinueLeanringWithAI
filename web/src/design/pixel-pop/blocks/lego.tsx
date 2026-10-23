@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {Bell,Search,Star,Play,ArrowRight} from "lucide-react";
-import {PixelCat} from "../primitives";
+import {Xiaozhi} from "../primitives";
 import styles from "./lego.module.css";
 
 /** Pixel Pop / LEGO 01 — shared identity bar, zero page-specific colors. */
@@ -20,7 +20,7 @@ export function BrandHeader(){
     </Link>
     <div className={styles.account}>
       <Bell size={24} aria-label="通知" role="img"/>
-      <div className={styles.profile}><span className={styles.avatar}><PixelCat size={32}/></span><b>小知</b><span aria-hidden="true">⌄</span></div>
+      <div className={styles.profile}><span className={styles.avatar}><Xiaozhi size={32} pose="avatar" mood="idle"/></span><b>小知</b><span aria-hidden="true">⌄</span></div>
     </div>
   </header>;
 }
@@ -81,7 +81,7 @@ export function CourseHero({
     <div className={styles.art}>
       <StackMonument className={styles.stackSvg}/>
       <span className={styles.bubble}>后进先出<br/>LIFO</span>
-      <span className={styles.cat}><PixelCat size={70}/></span>
+      <span className={styles.cat}><Xiaozhi size={70} mood="curious" motion="idle"/></span>
       <span className={styles.spark} aria-hidden="true">✦</span>
     </div>
   </section>;

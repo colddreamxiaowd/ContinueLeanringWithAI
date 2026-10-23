@@ -1,0 +1,31 @@
+.frame{
+  --xz-size:112px;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  width:var(--xz-size);
+  height:var(--xz-size);
+  flex:none;
+  isolation:isolate;
+  vertical-align:middle;
+  transform-origin:50% 75%;
+}
+.art{display:block;width:100%;height:100%;overflow:visible}
+.hat{transform-origin:50% 43%}
+.accent{pointer-events:none}
+.frame[data-motion="idle"]:hover{animation:xz-hello 650ms steps(4,end) 1}
+.frame[data-motion="wave"]{animation:xz-hello 950ms steps(5,end) infinite}
+.frame[data-motion="bounce"]{animation:xz-hop 1000ms steps(4,end) infinite}
+.frame[data-pose="avatar"]{border-radius:50%;overflow:hidden}
+@keyframes xz-hello{
+  0%,100%{transform:rotate(0deg)}
+  30%,65%{transform:rotate(-7deg)}
+  50%,85%{transform:rotate(6deg)}
+}
+@keyframes xz-hop{
+  0%,100%{transform:translateY(0)}
+  35%,70%{transform:translateY(-7%)}
+}
+@media(prefers-reduced-motion:reduce){
+  .frame,.frame:hover{animation:none!important;transform:none!important}
+}

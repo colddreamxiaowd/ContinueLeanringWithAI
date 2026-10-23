@@ -8,7 +8,7 @@ import {
   Home,LibraryBig,ListChecks,Menu,Play,RefreshCcw,Search,Settings2,
   Sparkles,Star,Trophy,X
 } from "lucide-react";
-import {PopButton,PopPanel,PixelCat,ProgressRing} from "@/design/pixel-pop/primitives";
+import {PopButton,PopPanel,PixelCat,Xiaozhi,ProgressRing} from "@/design/pixel-pop/primitives";
 import "./pixel-pop.css";
 
 type Density="minimal"|"balanced"|"normal";
@@ -90,7 +90,7 @@ function QuizCard({compact=false}:{compact?:boolean}){
       </button>)}
     </div>
     {selected!==null&&<div className={"pp-feedback "+(selected===1?"pp-feedback--good":"pp-feedback--retry")} role="status">
-      <PixelCat size={50} cheer={selected===1}/>
+      <Xiaozhi size={50} mood={selected===1?"celebrate":"encourage"}/>
       <span><strong>{selected===1?"答对了！":"再想一下"}</strong>
       栈遵循后进先出（LIFO）；最后入栈的元素最先出栈。这是演示练习，尚不保存到账号。</span>
     </div>}
@@ -277,7 +277,7 @@ export default function PixelPopHome(){
         </div>
         <div className="pp-top-right">
           <span className="pp-demo-label">UI PREVIEW v1</span>
-          <div className="pp-avatar"><PixelCat size={42}/><span>小知</span></div>
+          <div className="pp-avatar"><Xiaozhi size={42} pose="avatar" mood="idle"/><span>小知</span></div>
           <button type="button" className="pp-mobile-menu" aria-label={menuOpen?"关闭导航":"打开导航"} onClick={()=>setMenuOpen(!menuOpen)}>
             {menuOpen?<X size={21}/>:<Menu size={21}/>}
           </button>

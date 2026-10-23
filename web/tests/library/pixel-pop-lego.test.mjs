@@ -7,7 +7,7 @@ test("LEGO 01 exposes three independent, reusable visual blocks",()=>{
  const src=readFileSync(resolve(root,"lego.tsx"),"utf8");
  for (const name of ["BrandHeader","StackMonument","CourseHero"])
    assert.match(src,new RegExp("export function "+name+"\\("));
- assert.match(src,/import \{PixelCat\}/);
+ assert.match(src,/import \{Xiaozhi\}/);
  assert.match(src,/course=/);
 });
 test("LEGO 01 styles remain isolated for reusable composition",()=>{

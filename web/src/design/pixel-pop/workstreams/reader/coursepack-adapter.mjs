@@ -6,6 +6,10 @@
 const blockName={explanation:"概念讲解",code:"源码阅读",quiz:"理解检测","stack-simulator":"互动实验"};
 const hasId=x=>typeof x==="string"&&/^[a-zA-Z0-9_-]+$/.test(x);
 
+/**
+ * @param {any} pack Validated CoursePack v0.1 object (not a schema validator)
+ * @param {{chapterId?:string,completedBlockIds?:string[],activeBlockId?:string,sourceLinks?:Record<string,string>,mode?:"private"|"demo"}} [options]
+ */
 export function adaptCoursePackV01(pack,{chapterId,completedBlockIds=[],activeBlockId,sourceLinks={},mode="private"}={}){
   if(!pack||pack.schemaVersion!=="0.1"||!Array.isArray(pack.chapters)||!Array.isArray(pack.sourceRefs))
     throw new Error("需要经过 CoursePack v0.1 校验的数据");

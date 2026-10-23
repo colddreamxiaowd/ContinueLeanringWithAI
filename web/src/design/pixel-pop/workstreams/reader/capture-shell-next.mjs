@@ -49,6 +49,21 @@ try{
    await writeFile(root+"/integrated-"+width+"-full.png",Buffer.from(full.data,"base64"));
    results.captures.push({width,height,...metrics});
  }
+ // The A sidebar takes width at 768px: the C container must expose reachable compact navigation.
+ await page("Emulation.setDeviceMetricsOverride",{width:768,height:1024,deviceScaleFactor:1,mobile:false});
+ await sleep(180);
+ const tablet=await evaluate("(()=>{const nav=document.querySelector('[data-session-c-embedded] [aria-controls=session-c-mobile-outline]');const desktop=document.querySelector('[data-integrated-reader-sidebar]');const mobileSvg=document.querySelector('[data-reader-block=lesson] figure svg:nth-of-type(2)');return {navVisible:!!nav&&getComputedStyle(nav).display!=='none'&&nav.getBoundingClientRect().height>20,desktopHidden:getComputedStyle(desktop).display==='none',svgVisible:!!mobileSvg&&getComputedStyle(mobileSvg).display!=='none'}})()");
+ if(!tablet.navVisible||!tablet.desktopHidden||!tablet.svgVisible)throw Error("Tablet source/outline or narrow SVG inaccessible "+JSON.stringify(tablet));
+ results.tablet=tablet;
+ await evaluate("document.querySelector('[aria-controls=session-c-mobile-outline]')?.click()");
+ await wait("document.querySelector('[aria-controls=session-c-mobile-outline]')?.getAttribute('aria-expanded')==='true'","tablet outline");
+ await capture("integrated-768-outline.png");
+ await evaluate("document.querySelector('[aria-controls=session-c-mobile-outline]')?.click()");
+ await evaluate("([...document.querySelectorAll('button')].find(b=>b.textContent==='查看来源')||{}).click?.()");
+ await wait("document.querySelector('[data-integrated-reader-sidebar]')?.getBoundingClientRect().width>200","tablet source panel");
+ await capture("integrated-768-citation.png");
+ await evaluate("([...document.querySelectorAll('button')].find(b=>b.textContent.includes('关闭来源'))||{}).click?.()");
+ results.checks.push("768px narrow A slot retains direct outline/source access and readable diagram");
  await page("Emulation.setDeviceMetricsOverride",{width:1440,height:900,deviceScaleFactor:1,mobile:false});
  await evaluate("window.scrollTo({top:Math.min(840,document.documentElement.scrollHeight-innerHeight-200),behavior:'instant'})");
  await sleep(340);

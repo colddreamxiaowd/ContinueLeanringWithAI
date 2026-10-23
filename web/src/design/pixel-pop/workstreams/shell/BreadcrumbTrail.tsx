@@ -42,7 +42,7 @@ export function BreadcrumbTrail({items,back,previous,next,className=""}:Props){
           return <li key={item.href??item.label+index} className={[styles.trailItem,last?styles.trailCurrent:""].filter(Boolean).join(" ")}>
             {index>0&&<ChevronRight size={15} className={styles.trailSeparator} aria-hidden="true"/>}
             {clipped&&index===1&&<span className={styles.trailEllipsis} aria-label="已省略中间层级"
-              title="省略 "+(length-3)+" 层"><MoreHorizontal size={17} aria-hidden="true"/></span>}
+              title={"省略 "+(length-3)+" 层"}><MoreHorizontal size={17} aria-hidden="true"/></span>}
             {isHome&&<Home size={19} className={styles.trailHome} aria-hidden="true"/>}
             {last?<span aria-current="page" title={item.label}>{item.label}</span>:
              item.href?<Link href={item.href} title={item.label}>{item.label}</Link>:

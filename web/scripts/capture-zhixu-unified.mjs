@@ -64,8 +64,10 @@ try{
  async function view(id){
   await until("(location.pathname.endsWith('/')?location.pathname.slice(0,-1):location.pathname)==="+JSON.stringify(prefix+id)+"&&!!document.querySelector('[data-integrated-page=\""+id+"\"]')","page "+id);
   await sleep(210);
-  const metrics=await js("(function(){return {path:(location.pathname.endsWith('/')?location.pathname.slice(0,-1):location.pathname),page:document.querySelector('[data-integrated-page]')?.dataset.integratedPage,brand:document.querySelectorAll('header a[aria-label=\"知序 Learning Hub 首页\"]').length,roots:document.querySelectorAll('.pp-root').length,nav:document.querySelectorAll('aside[aria-label=\"学习中心侧边导航\"] nav a[href]').length,density:document.querySelector('.pp-root')?.dataset.density,scrollWidth:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,devLabels:/SidebarNav|QuizCard|StackPlayground/.test(document.querySelector('main')?.textContent||'')}})()");
-  if(metrics.path!==prefix+id||metrics.page!==id||metrics.brand!==1||metrics.roots!==1||metrics.nav!==3||metrics.devLabels||metrics.scrollWidth>metrics.viewport+3)
+  const metrics=await js("(function(){return {path:(location.pathname.endsWith('/')?location.pathname.slice(0,-1):location.pathname),page:document.querySelector('[data-integrated-page]')?.dataset.integratedPage,brand:document.querySelectorAll('header a[aria-label=\"知序 Learning Hub 首页\"]').length,roots:document.querySelectorAll('.pp-root').length,nav:document.querySelectorAll('aside[aria-label=\"学习中心侧边导航\"] nav a[href]').length,density:document.querySelector('.pp-root')?.dataset.density,
+    active:document.querySelector('aside[aria-label="学习中心侧边导航"] [aria-current="page"]')?.getAttribute('href'),
+    heading:document.querySelector('main[aria-label] header h1')?.textContent,scrollWidth:document.documentElement.scrollWidth,viewport:document.documentElement.clientWidth,devLabels:/SidebarNav|QuizCard|StackPlayground/.test(document.querySelector('main')?.textContent||'')}})()");
+  if(metrics.path!==prefix+id||metrics.page!==id||metrics.brand!==1||metrics.roots!==1||metrics.nav!==3||!metrics.active?.startsWith(prefix+id)||metrics.heading!==({home:"学习首页",reader:"深度阅读",practice:"互动练习"})[id]||metrics.devLabels||metrics.scrollWidth>metrics.viewport+3)
    throw Error("Visual shell gate "+id+": "+JSON.stringify(metrics));
   return metrics;
  }

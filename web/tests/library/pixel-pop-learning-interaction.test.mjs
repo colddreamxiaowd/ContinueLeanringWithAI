@@ -182,3 +182,23 @@ test("mobile component lab shows one selectable feedback state and expandable ma
  assert.match(css,/\.feedbackGalleryItem:not\(\.feedbackGalleryActive\)\{display:none\}/);
  assert.match(css,/\.progressTasks:not\(\.goalsExpanded\),\.progressEncourage:not\(\.goalsExpanded\)\{display:none\}/);
 });
+
+
+test("A shell classroom composition exposes learning names, not developer component labels",()=>{
+ const component=source("LearningPractice.tsx");
+ assert.match(component,/export function LearningPractice/);
+ assert.match(component,/questions:readonly QuizQuestion\[\]/);
+ assert.match(component,/StackPlayground/);
+ assert.match(component,/QuizCard/);
+ assert.match(component,/reported\.current\.has\(current\.id\)/);
+ assert.match(component,/reported\.current\.add\(current\.id\)/);
+ assert.match(component,/onFirstAnswer\?\./);
+ assert.match(component,/返回第一题/);
+ assert.match(component,/data-learning-practice/);
+ assert.doesNotMatch(component,/>StackPlayground</);
+ assert.doesNotMatch(component,/>QuizCard</);
+ assert.doesNotMatch(component,/>AnswerFeedback</);
+ const css=source("learning.module.css");
+ assert.match(css,/@media\(max-width:720px\)/);
+ assert.match(css,/\.practiceGrid\{display:grid;grid-template-columns:minmax\(0,1fr\)/);
+});

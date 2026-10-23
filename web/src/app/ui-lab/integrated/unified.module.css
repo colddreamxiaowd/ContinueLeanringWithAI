@@ -1,3 +1,4 @@
+.heroWrap{min-width:0}
 .page{min-width:0;width:100%;container-type:inline-size}
 .demoBand{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
   padding:10px 13px;margin-bottom:17px;border:2px solid var(--pp-ink);
@@ -25,3 +26,10 @@
 @media(max-width:680px){.demoBand{padding:9px 10px;margin-bottom:12px}
  .sectionHeading{margin:19px 0 12px}.bottomLink{align-items:stretch;flex-direction:column}
  .bottomLink a{justify-content:center}}
+
+/* The original CourseHero illustration overlaps its text at 390px;
+ * preserve the full vector on desktop/tablet, show the readable copy only on mobile. */
+@media(max-width:680px){
+ .heroWrap>section>div:last-child{display:none!important}
+ .heroWrap>section{min-height:0!important}
+}

@@ -6,3 +6,6 @@ export {AnswerFeedback} from "./AnswerFeedback";
 export type {AnswerFeedbackStatus,AnswerFeedbackProps} from "./AnswerFeedback";
 
 export {StackAnswerIllustration} from "./StackAnswerIllustration";
+
+export {LearningPractice} from "./LearningPractice";
+export type {LearningPracticeProps} from "./LearningPractice";

@@ -92,7 +92,23 @@ export function LearningDemo(){
             </div>)}
           </div>
         </div>
-        <div className={styles.demoNote}>10 道示例题 · 7 道正确 · 3 道待巩固。演示数字，与 CoursePack 进度无关。</div>
+        <div className={styles.progressTasks}>
+          <strong>本节学习目标 · 演示</strong>
+          <div><span className={styles.taskDone}>✓</span>理解栈的后进先出原则 <b>已掌握</b></div>
+          <div><span className={styles.taskDone}>✓</span>能操作 Push 和 Pop <b>已掌握</b></div>
+          <div><span className={styles.taskCurrent}>▶</span>独立分析栈顶变化 <b>练习中</b></div>
+          <div><span className={styles.taskTodo}>○</span>完成综合应用测验 <b>待完成</b></div>
+        </div>
+        <div className={styles.progressSummary}>
+          <div><b>10</b><span>已做题</span></div>
+          <div><b>7</b><span>正确</span></div>
+          <div><b>3</b><span>待巩固</span></div>
+        </div>
+        <div className={styles.progressEncourage}>
+          <Xiaozhi size={72} mood="encourage" decorative/>
+          <div><strong>继续加油！</strong><p>已经了解基本操作，接下来挑战综合练习。</p></div>
+        </div>
+        <div className={styles.demoNote}>💡 全部为演示数字，既不计算真实掌握度，也不写入 CoursePack 学习记录。</div>
       </section>
     <section className={styles.demoSection+" "+styles.demoFeedbackPanel}>
       <div className={styles.demoSectionTitle}><b>3</b><div>

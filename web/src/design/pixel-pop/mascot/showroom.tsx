@@ -21,7 +21,7 @@ export default function XiaozhiShowroom(){
  const [mood,setMood]=useState<XiaozhiMood>("idle");
  const [motion,setMotion]=useState<XiaozhiMotion>("idle");
  const [theme,setTheme]=useState<"light"|"dark">("light");
- const [art,setArt]=useState<"reference"|"vector">("reference");
+ const [art,setArt]=useState<"trace"|"reference"|"vector">("trace");
  return <div className={styles.page}>
   <header className={styles.header}>
     <div><span className={styles.overline}>PIXEL POP / CHARACTER SYSTEM / V1</span>
@@ -56,12 +56,14 @@ export default function XiaozhiShowroom(){
           className={motion===m.id?styles.activeSegment:""} aria-pressed={motion===m.id}
           onClick={()=>setMotion(m.id)}>{m.title}</button>)}
       </div>
-      <h2>03 / 原图与矢量对照</h2>
+      <h2>03 / 三种制作方法的真实对照</h2>
       <div className={styles.segmented}>
+       <button type="button" onClick={()=>setArt("trace")} aria-pressed={art==="trace"}
+         className={art==="trace"?styles.activeSegment:""}>25 色真实路径版（默认）</button>
        <button type="button" onClick={()=>setArt("reference")} aria-pressed={art==="reference"}
-         className={art==="reference"?styles.activeSegment:""}>参考图轮廓（默认）</button>
+         className={art==="reference"?styles.activeSegment:""}>PNG 嵌入 SVG 的参考版</button>
        <button type="button" onClick={()=>setArt("vector")} aria-pressed={art==="vector"}
-         className={art==="vector"?styles.activeSegment:""}>可编辑矢量版</button>
+         className={art==="vector"?styles.activeSegment:""}>以前的手工多边形版</button>
       </div>
       <h2>04 / 对比场景</h2>
       <div className={styles.segmented}>
@@ -70,7 +72,7 @@ export default function XiaozhiShowroom(){
         <button type="button" onClick={()=>setTheme("dark")} aria-pressed={theme==="dark"}
           className={theme==="dark"?styles.activeSegment:""}>深色背景</button>
       </div>
-      <p className={styles.footnote}>动画遵循系统的“减少动态效果”设置。选择表情不会改变学习数据。</p>
+      <p className={styles.footnote}>真实路径版由 25 色、1,579 个合并区域构成；可以编辑颜色与路径，但尚未按眼睛、嘴巴、帽子等部位建立语义动画图层。当前非默认情绪只是状态符号，并非真正的面部表情重绘。动画遵循“减少动态效果”设置。</p>
     </aside>
   </div>
   <section className={styles.specimens}>

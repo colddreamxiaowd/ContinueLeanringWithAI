@@ -20,7 +20,7 @@ const questions:QuizQuestion[]=[
 ];
 /** Integration QA surface. I owns this route; A owns ShellIntegrationFrame; D owns LearningPractice. */
 export default function SessionDLearning(){
-  return <ShellIntegrationFrame surface="practice"
+  return <ShellIntegrationFrame surface="practice" presentation="app"
     navigation={[
       {id:"courses",label:"学习中心",href:"/",icon:"courses"},
       {id:"practice",label:"实验与练习",href:"/ui-lab/session-d/learning",icon:"plan"}

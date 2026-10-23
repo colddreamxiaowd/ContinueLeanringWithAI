@@ -9,7 +9,7 @@
 .modes button{border:2px solid var(--pp-ink);padding:5px 10px;border-radius:6px;background:#fff;font-size:12px;font-weight:850}
 .modes button[aria-pressed="true"]{background:var(--pp-purple);color:white;box-shadow:2px 2px 0 var(--pp-ink)}
 .sectionHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:28px 1px 16px}
-.sectionHeader h2{font-size:clamp(20px,2.2vw,30px);line-height:1.25;letter-spacing:-.6px;margin:4px 0 0;font-weight:950}
+.sectionHeader h2{color:var(--pp-paper);font-size:clamp(20px,2.2vw,30px);line-height:1.25;letter-spacing:-.6px;margin:4px 0 0;font-weight:950}
 .overline{font-size:10px;letter-spacing:1.2px;font-weight:900;color:var(--pp-yellow)}
 .version{font-weight:900;font-size:11px;color:var(--pp-paper);white-space:nowrap}
 .cards{display:grid;grid-template-columns:minmax(280px,.91fr) minmax(330px,1.16fr) minmax(285px,.93fr);
@@ -31,3 +31,12 @@
  .version{display:none}
  .sectionHeader{margin-top:20px}}
 @media(prefers-reduced-motion:reduce){.notice,.utility{transition:none!important}}
+
+/* In integration preview the shared course hero keeps its art direction,
+ * but its visual is hidden on narrow screens rather than overlapping text. */
+.heroWrap{min-width:0}
+@media(max-width:680px){
+ .heroWrap>section>div:last-child{display:none!important}
+ .heroWrap>section{min-height:0!important}
+ .sectionHeader h2{font-size:22px}
+}

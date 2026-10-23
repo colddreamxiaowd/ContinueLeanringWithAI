@@ -1,6 +1,8 @@
 "use client";
 import type {CSSProperties} from "react";
 import style from "./xiaozhi.module.css";
+import {XiaozhiLayers} from "./XiaozhiLayers";
+import type {XiaozhiPart} from "./XiaozhiLayers";
 
 /**
  * 小知 / Xiaozhi — canonical, self-contained pixel mascot.
@@ -27,7 +29,7 @@ const moodNames:Record<XiaozhiMood,string>={
 
 export function Xiaozhi({
   size=112,mood="idle",pose="full",motion="none",art="trace",
-  label,decorative=false,className=""
+  label,decorative=false,className="",inspectPart=null
 }:{
   size?:number;
   mood?:XiaozhiMood;
@@ -37,11 +39,13 @@ export function Xiaozhi({
   label?:string;
   decorative?:boolean;
   className?:string;
+  inspectPart?:XiaozhiPart|null;
 }){
   const bounded=Math.max(24,Math.min(480,size));
   const isPortrait=pose==="avatar";
   const referenceArt=art==="reference";
   const traceArt=art==="trace";
+  const opticalAvatar=traceArt&&isPortrait&&bounded<=32;
   const state=({
     "--xz-size":bounded+"px",
   }) as CSSProperties;
@@ -50,13 +54,14 @@ export function Xiaozhi({
   const worried=mood==="surprised";
   const focused=mood==="focused";
   return <span className={style.frame+" "+className} data-mood={mood} data-pose={pose} data-motion={motion} style={state}>
-    <svg className={style.art} width={bounded} height={bounded}
+    {opticalAvatar ? <img className={style.optical} src={bounded<=24?"/pixel-pop/xiaozhi-avatar-24.svg":"/pixel-pop/xiaozhi-avatar-32.svg"}
+      width={bounded} height={bounded} alt={decorative?"":(label||"小知，学士帽像素猫头像")} aria-hidden={decorative?"true":undefined}/>
+    : <svg className={style.art} width={bounded} height={bounded}
       viewBox={traceArt?(isPortrait?"55 0 460 460":"0 0 573 573"):referenceArt?(isPortrait?"0 0 125 125":"0 0 125 164"):(isPortrait?"8 27 112 112":"0 0 128 176")}
       role={decorative?undefined:"img"} aria-hidden={decorative?"true":undefined}
       aria-label={decorative?undefined:(label||"小知，"+moodNames[mood]+"表情的学士帽像素小猫")}
       shapeRendering="crispEdges" focusable="false">
-      {traceArt&&<image x={0} y={0} width={573} height={573}
-        href="/pixel-pop/xiaozhi-traced-master.svg" preserveAspectRatio="xMidYMid meet"/>}
+      {traceArt&&<XiaozhiLayers inspectPart={inspectPart}/>} 
       {referenceArt&&<image x={0} y={0} width={125} height={164}
         href="/pixel-pop/xiaozhi-reference.svg" preserveAspectRatio="xMidYMid meet"/>}
       {!referenceArt&&!traceArt&&<>
@@ -128,7 +133,7 @@ export function Xiaozhi({
             celebrate:"★",surprised:"!"
           } as Record<Exclude<XiaozhiMood,"idle">,string>)[mood as Exclude<XiaozhiMood,"idle">]}</text>
       </g>}
-    </svg>
+    </svg>}
   </span>;
 }
 

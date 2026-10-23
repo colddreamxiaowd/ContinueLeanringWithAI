@@ -1,0 +1,82 @@
+name: Pixel Pop A — real Next.js Chromium screenshot proof
+on:
+  push:
+    branches:
+      - feat/pixel-pop-shell-session-a-20261023
+    paths:
+      - "web/src/design/pixel-pop/workstreams/shell/**"
+      - "web/src/app/ui-lab/session-a/**"
+      - "web/tests/library/pixel-pop-shell-a.test.mjs"
+      - ".github/workflows/pixel-pop-a-preview.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install Next.js dependencies
+        working-directory: web
+        run: npm ci
+      - name: Validate Session A components
+        working-directory: web
+        run: |
+          npm run test:library
+          npm run typecheck
+          npm run build
+      - name: Launch actual Next.js server
+        working-directory: web
+        run: |
+          npx next start --hostname 127.0.0.1 --port 3001 > /tmp/pixel-pop-a-next.log 2>&1 &
+          echo $! > /tmp/pixel-pop-a-next.pid
+          for attempt in {1..45}; do
+            if curl -fsS http://127.0.0.1:3001/ui-lab/session-a -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/pixel-pop-a-next.log
+          exit 1
+      - name: Prepare real Chromium and readable Chinese fonts
+        run: |
+          which google-chrome || which google-chrome-stable || which chromium
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+          fc-cache -f
+          fc-match "Noto Sans CJK SC"
+      - name: Screenshot and exercise real controls
+        working-directory: web
+        env:
+          PREVIEW_OUT: ../ui-preview-a
+          PREVIEW_URL: http://127.0.0.1:3001/ui-lab/session-a
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" node src/design/pixel-pop/workstreams/shell/capture-session-a.mjs
+      - name: Upload three-size screenshot artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pixel-pop-session-a-nextjs-chromium
+          path: ui-preview-a/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Publish only three approved evidence screenshots to Session A directory
+        if: success() && github.event_name == 'push'
+        continue-on-error: true
+        run: |
+          mkdir -p web/src/design/pixel-pop/workstreams/shell/evidence
+          cp ui-preview-a/session-a-desktop-1440.png web/src/design/pixel-pop/workstreams/shell/evidence/desktop-1440.png
+          cp ui-preview-a/session-a-tablet-768.png web/src/design/pixel-pop/workstreams/shell/evidence/tablet-768.png
+          cp ui-preview-a/session-a-mobile-390.png web/src/design/pixel-pop/workstreams/shell/evidence/mobile-390.png
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/src/design/pixel-pop/workstreams/shell/evidence/
+          if ! git diff --cached --quiet; then
+            git commit -m "test(session-a): archive actual Chromium screenshots [skip ci]"
+            git push origin HEAD:refs/heads/feat/pixel-pop-shell-session-a-20261023
+          fi

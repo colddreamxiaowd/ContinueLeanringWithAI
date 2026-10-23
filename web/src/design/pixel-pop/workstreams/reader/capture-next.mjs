@@ -103,7 +103,14 @@ try{
  await wait("document.querySelector('[aria-controls=session-c-mobile-outline]')?.getAttribute('aria-expanded')==='true'","mobile outline");
  await captureViewport("nextjs-session-c-390-outline.png");
  results.checks.push("mobile outline opens at reading top");
- await evaluate("document.querySelector('[aria-controls=session-c-mobile-outline]')?.click()");
+ await evaluate("([...document.querySelectorAll('#session-c-mobile-outline button')].find(b=>b.textContent.includes('3.3'))||{}).click?.()");
+ await wait("document.activeElement?.id==='s33'","mobile chapter target focus");
+ await sleep(180);
+ const mobileAnchorTop=await evaluate("document.getElementById('s33')?.getBoundingClientRect().top");
+ if(mobileAnchorTop<70||mobileAnchorTop>200)throw Error("Mobile anchor hidden by sticky toolbar: "+mobileAnchorTop);
+ results.mobileAnchorTop=mobileAnchorTop;
+ await captureViewport("nextjs-session-c-390-chapter-focus.png");
+ results.checks.push("mobile chapter scrolls to visible focus below sticky controls");
  await evaluate("document.querySelector('[data-reader-block=lesson] button[aria-label^=\"查看引用\"]')?.click()");
  await wait("!![...document.querySelectorAll('button')].find(b=>b.textContent.includes('关闭来源'))","mobile citation panel");
  await captureViewport("nextjs-session-c-390-citation.png");

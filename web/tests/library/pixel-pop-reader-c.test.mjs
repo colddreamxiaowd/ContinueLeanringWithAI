@@ -59,7 +59,7 @@ test("Outline positioning, copy failure handling and hover-only previews are exp
   assert.match(component,/useId\(/);
 });
 test("Reader retains quiet body, three density modes and responsive/reduced motion",()=>{
-  for(const token of ["--pp-blue","--pp-mint","line-height:1.9","width:min(100%,760px)",
+  for(const token of ["--pp-blue","--pp-mint","line-height:1.9","width:min(100%,720px)",
     '[data-density="minimal"]','[data-density="normal"]',"@media(max-width:620px)","prefers-reduced-motion"])
     assert.ok(css.includes(token),`Missing reader style ${token}`);
   assert.match(demo,/CoursePack v0.1 映射/);

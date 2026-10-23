@@ -121,8 +121,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
           {(["minimal","balanced","normal"] as const).map(mode=><button type="button" key={mode} aria-pressed={density===mode}
             onClick={()=>setDensity(mode)}>{({minimal:"极简",balanced:"较简",normal:"正常"})[mode]}</button>)}
         </fieldset></div></header>
-      <main className={s.demoGrid}>
-        <div className={s.mobileReaderBar} aria-label="移动端阅读导航">
+      <div className={s.mobileReaderBar} aria-label="移动端阅读导航">
           <div className={s.mobileReaderControls}>
             <button type="button" aria-expanded={mobileOutlineOpen} aria-controls="session-c-mobile-outline"
               onClick={()=>setMobileOutlineOpen(v=>!v)}>章节目录</button>
@@ -134,6 +133,7 @@ export function ReaderDemo({fullPage=false}:{fullPage?:boolean}={}){
               onNavigate={navigateTo}/>
           </div>}
         </div>
+      <main className={s.demoGrid}>
         <div className={s.demoColumn}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>01</span> LessonContent · Demo 说明</h2>}
           <LessonContent lesson={currentLesson} activeCitationId={selectedCitationId} onCitationSelect={selectCitation}/></div>
         <div className={`${s.demoColumn} ${s.desktopOutlineColumn}`}>{!fullPage&&<h2 className={s.demoBlockLabel}><span>02</span> ChapterOutline · Demo 说明</h2>}

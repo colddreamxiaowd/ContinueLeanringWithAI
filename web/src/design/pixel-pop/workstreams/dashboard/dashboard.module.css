@@ -301,3 +301,64 @@ button.chapterItem:active,button.fileOpen:active,button.taskAction:active{transf
   .taskDate{display:none}
 }
 @media(prefers-reduced-motion:reduce){.taskRow,.syncTrack span{transition:none}}
+
+
+/* Session B v3 · screenshot-informed adjustments (PR #32, 1440/768/390).
+   SVG Fidelity: keep Lucide native vectors (no embedded bitmaps, halo or redraw). */
+.kind_pptx {
+  background:color-mix(in srgb,var(--pp-coral) 58%,var(--pp-yellow));
+  color:var(--pp-paper);
+}
+.kind_pdf {background:color-mix(in srgb,var(--pp-coral) 88%,var(--pp-ink));color:var(--pp-paper)}
+.kind_markdown {background:var(--pp-quiet);color:var(--pp-paper)}
+.kind_feishu {background:var(--pp-purple);color:var(--pp-paper)}
+.fileIcon :global(svg) {stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;filter:none}
+.headingIcon :global(svg),.taskIcon :global(svg) {stroke-linejoin:round;filter:none}
+.finishMessage svg {color:var(--pp-ink);fill:var(--pp-yellow);stroke-width:2.3}
+/* Don't crush core instructional information at regular desktop card widths. */
+.cardHeading h2 {font-size:clamp(17px,1.4vw,21px);line-height:1.2}
+.progressCount {font-size:14px;line-height:1.35}
+.progressExplanation {font-size:11px;line-height:1.45}
+.chapterItem {font-size:13px;min-height:29px;font-weight:780}
+.chapterCurrent {box-shadow:inset 3px 0 0 var(--pp-blue)}
+.chapterCurrent .chapterLabel {font-weight:950}
+.chapterMarker {border-color:var(--pp-quiet)}
+.markerDone {background:var(--pp-mint);border-color:var(--pp-ink)}
+.markerCurrent {border-color:var(--pp-blue)}
+.fileText strong {font-size:13px;line-height:1.35}
+.fileText small {font-size:11px}
+.outcomeTag {font-size:11px}
+.fileOpen {min-height:58px}
+.fileList,.taskList {border-width:2px}
+.taskText strong {font-size:13px;line-height:1.4;font-weight:950}
+.taskText small {font-size:11px;line-height:1.5}
+.taskAction {min-height:49px}
+.taskKind_quiz :global(svg) {stroke-width:2.6}
+.taskState_in-progress {box-shadow:inset 4px 0 0 var(--pp-blue)}
+.taskState_completed .taskCompleted {background:var(--pp-mint)}
+/* Balanced and normal reveal full information without sacrificing touch targets. */
+:global(.pp-root[data-density="minimal"]) .fileOpen {min-height:48px}
+:global(.pp-root[data-density="normal"]) .fileOpen {min-height:64px}
+:global(.pp-root[data-density="normal"]) .taskAction {min-height:55px}
+:global(.pp-root[data-density="minimal"]) .taskAction {min-height:44px}
+@container (max-width: 370px) {
+  .progressBody :global(.pp-progress-ring) {width:120px;height:120px}
+  .progressBody :global(.pp-progress-core) {width:92px;height:92px}
+  .progressBody :global(.pp-progress-core strong) {font-size:27px}
+  .progressBody :global(.pp-progress-core span) {font-size:10px;max-width:68px}
+  .progressCount {font-size:12px}
+  .chapterItem {font-size:12px;min-height:28px}
+  .fileOpen {min-height:52px}
+  .fileText strong {font-size:12px}
+  .fileText small {font-size:10px}
+  .outcomeTag {font-size:10px}
+  .taskText strong {font-size:13px}
+}
+@container (max-width: 280px) {
+  .progressBody {flex-direction:column;align-items:stretch}
+  .progressBody :global(.pp-progress-ring) {align-self:center}
+  .progressDetails {width:100%}
+}
+@media (prefers-reduced-motion:reduce) {
+  .chapterItem,.fileOpen,.taskAction {transition:none}
+}

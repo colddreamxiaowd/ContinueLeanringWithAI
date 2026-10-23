@@ -316,7 +316,7 @@ try{
       }
       document.body.appendChild(fixture);
       return {found:true,hadImage,width};
-    })`);
+    })()`);
     if(!mascot.found||mascot.hadImage||mascot.width<36)
       throw Error("Canonical inline small-size Xiaozhi SVG missing or embedded bitmap: "+JSON.stringify(mascot));
     await delay(80);

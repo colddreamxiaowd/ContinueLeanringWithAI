@@ -113,3 +113,16 @@ test("CI-only B/C/D composite is real Next.js and never committed across workstr
   assert.match(proof,/compose-mobile-drawer-open/);
   assert.match(proof,/compose-mobile-drawer-closed/);
 });
+
+test("Production integration: no lab strings, explicit back path and no duplicate shared header",()=>{
+ const s=source("IntegrationFrame.tsx");
+ assert.match(s,/IntegrationSurface = "home"/);
+ assert.match(s,/presentation\?:"demo"\|"app"/);
+ assert.match(s,/showBrandHeader\?:boolean/);
+ assert.match(s,/showBrandHeader&&<BrandHeader\/>/);
+ assert.match(s,/presentation==="demo"&&<span className=\{styles\.eyebrow\}/);
+ assert.match(s,/presentation==="demo"&&<p>/);
+ assert.match(s,/back=\{back\?\?/);
+ assert.match(s,/presentation==="demo"\?\{label:"返回课程"/);
+ assert.match(s,/icon:ShellNavIcon/);
+});

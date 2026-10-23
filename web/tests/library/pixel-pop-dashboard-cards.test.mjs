@@ -130,3 +130,13 @@ test("PR32 visual-feedback regression: legible card density without changing con
   ]) assert.ok(css.includes(token),token);
   assert.equal((css.match(/#[0-9a-fA-F]{3,8}/g) ?? []).length, 0, "CSS should not hardcode color values");
 });
+
+
+test("integrator home does not force B cards to match 330px minimum height",()=>{
+  const css=load("dashboard.module.css");
+  assert.match(css,/Session B v4/);
+  assert.match(css,/\.progressCard:global\(\.pp-panel\),\s*\.sourceCard:global\(\.pp-panel\),\s*\.taskCard:global\(\.pp-panel\)\s*\{\s*height:auto;\s*min-height:0;\s*align-self:start;/);
+  assert.ok(css.includes(".progressCard .chapterList {gap:4px}"));
+  assert.ok(css.includes(".taskCard .taskText small {font-size:12px"));
+  assert.ok(css.includes("@container (max-width: 370px)"));
+});

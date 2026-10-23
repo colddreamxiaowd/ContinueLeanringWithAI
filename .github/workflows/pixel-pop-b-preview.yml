@@ -55,6 +55,13 @@ jobs:
           PREVIEW_URL: http://127.0.0.1:3001/ui-lab/session-b
         run: |
           CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" node scripts/capture-pixel-pop-session-b.mjs
+      - name: Capture actual homepage composition with B cards
+        working-directory: web
+        env:
+          PREVIEW_OUT: ../ui-preview-b/overview
+          PREVIEW_URL: http://127.0.0.1:3001/ui-lab/session-b/overview
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" node scripts/capture-pixel-pop-session-b.mjs
       - name: Upload browser screenshots and validation
         uses: actions/upload-artifact@v4
         if: always()

@@ -8,7 +8,7 @@ const css=readFileSync(resolve(base,"mascot/xiaozhi.module.css"),"utf8");
 const primitives=readFileSync(resolve(base,"primitives.tsx"),"utf8");
 
 test("Xiaozhi has single invariant character geometry and palette",()=>{
-  assert.match(mascot,/viewBox=\{isPortrait\?"8 27 112 112":"0 0 128 176"\}/);
+  assert.match(mascot,/referenceArt\?\(isPortrait\?/);
   for(const color of ["#12121D","#246BFF","#FF9FAE","#FFC935","#FFB2C0"])
     assert.ok(mascot.includes(color),color);
   assert.match(mascot,/role=\{decorative\?undefined:"img"\}/);
@@ -26,4 +26,14 @@ test("Legacy PixelCat is the canonical Xiaozhi alias",()=>{
 test("Xiaozhi has motion and reduced-motion acceptance",()=>{
   for(const x of ['prefers-reduced-motion:reduce','data-motion="bounce"','@keyframes xz-hop'])
     assert.ok(css.includes(x),x);
+});
+
+test("reference master is a valid, source-matched embedded image",()=>{
+ const s=readFileSync(resolve(base,"../../../public/pixel-pop/xiaozhi-reference.svg"),"utf8");
+ const payload=s.match(/base64,([^"]+)/)?.[1];
+ assert.ok(payload,"master image must be embedded");
+ const bytes=Buffer.from(payload,"base64");
+ assert.equal(bytes.subarray(0,8).toString("hex"),"89504e470d0a1a0a");
+ assert.equal(bytes.readUInt32BE(16),125);
+ assert.equal(bytes.readUInt32BE(20),164);
 });

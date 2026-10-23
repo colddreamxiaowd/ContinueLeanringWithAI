@@ -162,3 +162,12 @@ test("A shell compressed content uses container-aware B card layouts without cha
   assert.equal(summary.percent,68);
   assert.equal(summary.fullyComplete,false);
 });
+
+test("all compact gallery variants stretch to their grid track at mobile widths",()=>{
+  const css=load("demo.module.css");
+  for(const token of [".variantCase {width:100%",".variantCase > :global(.pp-panel) {width:100%",
+    ".compactExamples > .variantCase {min-width:0;width:100%",
+    ".taskExamples>.variantCase{grid-column:1/-1;width:100%"]) {
+    assert.ok(css.includes(token),token);
+  }
+});

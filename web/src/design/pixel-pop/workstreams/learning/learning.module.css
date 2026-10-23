@@ -430,3 +430,10 @@
 @media(prefers-reduced-motion:reduce){
  .practiceJump a{scroll-behavior:auto}
 }
+
+/* 40px canonical Xiaozhi avatar in the inline quiz feedback: no added halo/shadow. */
+.feedbackCompact .feedbackIntro{align-items:center}
+.feedbackCompact .feedbackIntro>div{flex:1;min-width:0}
+.compactMascot{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;overflow:visible}
+.compactMascot>span{overflow:visible}
+@media(max-width:450px){.feedbackCompact .feedbackIntro{gap:7px}}

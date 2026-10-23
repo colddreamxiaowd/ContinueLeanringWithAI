@@ -1,42 +1,42 @@
-.container{width:min(1540px,100%);margin:0 auto;padding:25px clamp(14px,2.1vw,34px) 60px}
-.utility{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin:0 0 18px;
- border:3px solid var(--pp-ink);background:#fff;padding:9px 14px;box-shadow:4px 4px 0 var(--pp-ink);border-radius:9px}
-.utilityCopy{display:flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.6px;font-weight:900}
-.dot{height:11px;width:11px;background:var(--pp-mint);border:2px solid var(--pp-ink)}
-.demoTag{background:var(--pp-yellow);padding:2px 8px;border:1px solid var(--pp-ink);border-radius:3px;letter-spacing:0}
-.modes{display:flex;align-items:center;gap:6px;margin:0;padding:0;border:0}
-.modes legend{font-size:10px;font-weight:900;padding-right:4px}
-.modes button{border:2px solid var(--pp-ink);padding:5px 10px;border-radius:6px;background:#fff;font-size:12px;font-weight:850}
-.modes button[aria-pressed="true"]{background:var(--pp-purple);color:white;box-shadow:2px 2px 0 var(--pp-ink)}
-.sectionHeader{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:28px 1px 16px}
-.sectionHeader h2{color:var(--pp-paper);font-size:clamp(20px,2.2vw,30px);line-height:1.25;letter-spacing:-.6px;margin:4px 0 0;font-weight:950}
-.overline{font-size:10px;letter-spacing:1.2px;font-weight:900;color:var(--pp-yellow)}
-.version{font-weight:900;font-size:11px;color:var(--pp-paper);white-space:nowrap}
-.cards{display:grid;grid-template-columns:minmax(280px,.91fr) minmax(330px,1.16fr) minmax(285px,.93fr);
- gap:var(--pp-gap);align-items:start}
-.cards>section{height:100%;min-height:330px}
-.notice{display:flex;align-items:center;gap:10px;min-height:47px;margin-top:23px;padding:12px 17px;
- background:var(--pp-yellow);color:var(--pp-ink);font-weight:840;font-size:12px;
- border:3px solid var(--pp-ink);box-shadow:4px 4px 0 var(--pp-ink);border-radius:8px}
-.notice span{font-size:21px;color:var(--pp-purple)}
-.foot{color:#e2e4ff;font-size:11px;line-height:1.7;margin:20px 3px 0;max-width:930px}
-@media(max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}
- .cards>section:last-child{grid-column:1/-1}
- .cards>section{min-height:auto}}
-@media(max-width:680px){.container{padding:14px 10px 40px}
- .cards{grid-template-columns:1fr}
- .cards>section:last-child{grid-column:auto}
- .utility{align-items:flex-start}
- .utilityCopy{flex-wrap:wrap}
- .version{display:none}
- .sectionHeader{margin-top:20px}}
-@media(prefers-reduced-motion:reduce){.notice,.utility{transition:none!important}}
-
-/* In integration preview the shared course hero keeps its art direction,
- * but its visual is hidden on narrow screens rather than overlapping text. */
+/* Integrator-only proposed A×B full-home staging geometry.
+   A frame retains ownership of BrandHeader/SidebarNav/DensitySwitch/Breadcrumb.
+   B component modules and shared tokens are unchanged. */
+.container{width:100%;min-width:0;container-type:inline-size;color:var(--pp-ink)}
+.utility{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;
+  min-height:42px;margin-bottom:14px;padding:8px 11px;
+  background:var(--pp-paper);border:2px solid var(--pp-ink);border-radius:7px;
+  box-shadow:3px 3px 0 var(--pp-ink);font-size:12px;font-weight:900}
+.demoTag{background:var(--pp-yellow);border:1px solid var(--pp-ink);padding:3px 8px;
+  border-radius:4px;font-size:10px;white-space:normal}
 .heroWrap{min-width:0}
+.sectionHeader{display:flex;justify-content:space-between;align-items:end;gap:8px;
+  margin:17px 0 13px}
+.sectionHeader h2{margin:3px 0 0;color:var(--pp-ink);font-size:clamp(20px,2.2vw,27px);
+  font-weight:950;line-height:1.25}
+.overline{font-size:10px;font-weight:900;letter-spacing:1px;color:var(--pp-purple)}
+.version{font-size:10px;font-weight:900;color:var(--pp-quiet)}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;
+  align-items:start;min-width:0}
+.cards>section{min-width:0;min-height:0;height:auto;align-self:start}
+.notice{margin-top:18px;padding:12px 13px;border:2px solid var(--pp-ink);
+  border-radius:7px;box-shadow:3px 3px 0 var(--pp-ink);background:var(--pp-yellow);
+  font-size:12px;font-weight:850;line-height:1.5}
+.foot{font-size:11px;line-height:1.6;color:var(--pp-quiet);margin:15px 0 0}
+/* Responsive to the usable learning desk AFTER subtracting A sidebar.
+   This is not equivalent to viewport-width media queries. */
+@container (max-width: 1020px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+  .cards>section:last-child{grid-column:1/-1}
+}
+@container (max-width: 690px){
+  .cards{grid-template-columns:minmax(0,1fr);gap:15px}
+  .cards>section:last-child{grid-column:auto}
+  .sectionHeader{flex-wrap:wrap}
+  .version{display:none}
+}
 @media(max-width:680px){
- .heroWrap>section>div:last-child{display:none!important}
- .heroWrap>section{min-height:0!important}
- .sectionHeader h2{font-size:22px}
+  .heroWrap>section>div:last-child{display:none!important}
+  .heroWrap>section{min-height:0!important}
+  .utility{padding:7px 10px}
+  .sectionHeader{margin-top:17px}
 }

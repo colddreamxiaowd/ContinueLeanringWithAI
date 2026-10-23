@@ -30,7 +30,26 @@ export const PIXEL_POP_MODES = Object.freeze(["minimal","balanced","normal"]);
 export function normalizePixelPopMode(mode) {
   return PIXEL_POP_MODES.includes(mode) ? mode : "balanced";
 }
+/**
+ * Checked against actual named exports. PixelCat is an alias, not a second cat.
+ * "public" here means importable from this feature branch, NOT production-ready.
+ */
+export const PIXEL_POP_COMPONENT_REGISTRY = Object.freeze({
+  reusable: Object.freeze([
+    Object.freeze({name:"PopPanel",file:"primitives.tsx",gate:"css-coupled"}),
+    Object.freeze({name:"PopButton",file:"primitives.tsx",gate:"css-coupled"}),
+    Object.freeze({name:"ProgressRing",file:"primitives.tsx",gate:"css-coupled"}),
+    Object.freeze({name:"Xiaozhi",file:"mascot/Xiaozhi.tsx",gate:"identity-locked"}),
+    Object.freeze({name:"XiaozhiLayers",file:"mascot/XiaozhiLayers.tsx",gate:"internal-identity-locked"}),
+    Object.freeze({name:"BrandHeader",file:"blocks/lego.tsx",gate:"visual-review"}),
+    Object.freeze({name:"StackMonument",file:"blocks/lego.tsx",gate:"visual-review"}),
+    Object.freeze({name:"CourseHero",file:"blocks/lego.tsx",gate:"visual-review"}),
+  ]),
+  aliases:Object.freeze(["PixelCat"]),
+  demoOnly:Object.freeze(["MiniBadge","StackPlayground","QuizCard"]),
+  pageCompositions:Object.freeze(["DashboardContent","ReaderContent","LabContent","QuizContent","PixelPopHome"]),
+});
 export const PIXEL_POP_COMPONENTS = Object.freeze([
-  "PopShell","PopPanel","PopButton","PixelCat","ProgressRing",
-  "StackPlayground","QuizCard",
+  ...PIXEL_POP_COMPONENT_REGISTRY.reusable.map(x=>x.name),
+  ...PIXEL_POP_COMPONENT_REGISTRY.aliases,
 ]);

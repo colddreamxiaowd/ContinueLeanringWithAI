@@ -2,6 +2,7 @@
 
 import {useEffect,useState,type ReactNode} from "react";
 import {BrandHeader} from "../../blocks/lego";
+import "../../pixel-pop.css";
 import {SidebarMenuTrigger,SidebarNav,type ShellNavItem} from "./SidebarNav";
 import {DensitySwitch,type PixelPopDensity} from "./DensitySwitch";
 import {BreadcrumbTrail,type BreadcrumbItem,type BreadcrumbAction} from "./BreadcrumbTrail";

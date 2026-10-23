@@ -140,3 +140,34 @@ test("integrator home does not force B cards to match 330px minimum height",()=>
   assert.ok(css.includes(".taskCard .taskText small {font-size:12px"));
   assert.ok(css.includes("@container (max-width: 370px)"));
 });
+
+
+test("A shell compressed content uses container-aware B card layouts without changing data",()=>{
+  const css=load("dashboard.module.css");
+  const course=load("CourseProgressCard.tsx");
+  const sources=load("SourceFileCard.tsx");
+  const tasks=load("StudyTaskCard.tsx");
+  assert.ok(css.includes("@container (max-width: 330px)"));
+  assert.ok(css.includes("@container (max-width: 300px)"));
+  assert.ok(css.includes("flex:1 1 calc(100% - 50px)"));
+  assert.ok(css.includes(".sourceCard .syncTrack"));
+  assert.ok(css.includes("max-width:100%"));
+  assert.ok(css.includes("text-overflow:ellipsis"));
+  assert.ok(css.includes("prefers-reduced-motion"));
+  for(const src of [course,sources,tasks])assert.ok(!src.includes("localStorage"));
+  const summary=courseProgressSummary(68,[
+    {id:"a",status:"completed"},{id:"b",status:"completed"},{id:"c",status:"completed"},
+    {id:"d",status:"current"},{id:"e",status:"available"}]);
+  assert.equal(summary.completed,3);
+  assert.equal(summary.percent,68);
+  assert.equal(summary.fullyComplete,false);
+});
+
+test("all compact gallery variants stretch to their grid track at mobile widths",()=>{
+  const css=load("demo.module.css");
+  for(const token of [".variantCase {width:100%",".variantCase > :global(.pp-panel) {width:100%",
+    ".compactExamples > .variantCase {min-width:0;width:100%",
+    ".taskExamples>.variantCase{grid-column:1/-1;width:100%"]) {
+    assert.ok(css.includes(token),token);
+  }
+});

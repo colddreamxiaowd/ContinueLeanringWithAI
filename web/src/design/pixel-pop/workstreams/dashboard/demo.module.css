@@ -38,3 +38,15 @@
   .taskExamples>:last-child{grid-column:auto}
   .sectionHead h2{font-size:16px}
 }
+
+/* A/B real Chromium gallery QA: avoid intrinsic inline-size containment
+   shrinking compact/empty/long-name variant panels to a 40px strip. */
+.progressExamples > *,.sourceExamples > *,.taskExamples > * {min-width:0}
+.variantCase {width:100%;min-width:0;align-self:stretch}
+.variantCase > :global(.pp-panel) {width:100%;min-width:0;align-self:stretch}
+.compactExamples {min-width:0;width:100%}
+.compactExamples > .variantCase {min-width:0;width:100%}
+@media(max-width:700px){
+  .progressExamples,.sourceExamples,.taskExamples{width:100%;min-width:0}
+  .taskExamples>.variantCase{grid-column:1/-1;width:100%}
+}

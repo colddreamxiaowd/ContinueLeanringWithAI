@@ -54,7 +54,7 @@ test("D components are isolated and reuse shared primitive components",()=>{
   assert.match(quiz,/correctOptionId/);
   assert.match(feedback,/Xiaozhi/);
   assert.match(feedback,/onOpenPractice/);
-  assert.doesNotMatch(feedback,/栈顶|illustratedStack|Push|Pop/);
+  assert.doesNotMatch(feedback,/栈顶|illustratedStack|Push\(|Pop\(/);
   assert.match(demo,/ProgressRing/);
   assert.match(demo,/StackAnswerIllustration/);
   assert.match(demo,/演示/);

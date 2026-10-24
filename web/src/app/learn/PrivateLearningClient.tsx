@@ -223,7 +223,7 @@ export default function PrivateLearningClient(){
                   {block.type==="stack-simulator"&&<div>
                     <h3>栈的 Push / Pop 实验</h3>
                     <StackPlayground key={selected.id+":"+block.id} initialStack={progress.simStacks[block.id]??block.initial??[]}
-                      capacity={block.capacity??6}
+                      capacity={block.capacity??6} resetStack={block.initial??[]}
                       onOperation={event=>saveProgress(old=>({
                         ...old,simStacks:{...old.simStacks,[block.id]:event.stack},
                         completedBlockIds:old.completedBlockIds.includes(block.id)?old.completedBlockIds:[...old.completedBlockIds,block.id]

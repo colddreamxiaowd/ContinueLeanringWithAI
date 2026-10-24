@@ -71,6 +71,10 @@ result+='</g>}\n';
 result+='export function XiaozhiPawRest(){return <g data-xz-paw-frame="rest" stroke="none" shapeRendering="crispEdges">\n';
 for(const p of paths(selected))result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;
 result+='</g>}\n';
+result+='export function XiaozhiPawBodyBacking(){return <g data-xz-paw-backing="source-fur-outline" stroke="none" shapeRendering="crispEdges">\n';
+for(const p of paths(new Map([...selected].filter(([k,c])=>c==="#08080C"||c==="#F8F8F9"))))
+ result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;
+result+='</g>}\n';
 result+='export function XiaozhiPawFrame({pose}:{pose:XiaozhiPawPose}){return pose==="up" ? <g data-xz-paw-frame="up" stroke="none" shapeRendering="crispEdges">\n';
 for(const p of paths(warp(.35)))result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;
 result+='</g> : <g data-xz-paw-frame="wave" stroke="none" shapeRendering="crispEdges">\n';

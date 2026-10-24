@@ -38,11 +38,25 @@ jobs:
           npm --version | tee -a vinext-check.log
           echo '=== vinext compatibility check ===' | tee -a vinext-check.log
           npx --yes vinext check 2>&1 | tee -a vinext-check.log
+      - name: Initialize official Cloudflare vinext configuration (runner only)
+        env:
+          CI: 'true'
+        run: |
+          npx --yes vinext init --platform=cloudflare --name=zhixu-learning-hub-preview --data-cache=none --image-optimization=none --cdn-cache=workers-cache 2>&1 | tee vinext-init.log
+          echo '--- generated files ---'
+          git status --short
+      - name: Build full-stack Workers target with vinext
+        run: npm run build:vinext 2>&1 | tee vinext-build.log
       - name: Upload actual compatibility log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cloudflare-vinext-check-log
-          path: web/vinext-check.log
+          name: cloudflare-vinext-investigation
+          path: |
+            web/vinext-check.log
+            web/vinext-init.log
+            web/vinext-build.log
+            web/vite.config.ts
+            web/cloudflare.config.ts
           if-no-files-found: warn
           retention-days: 14

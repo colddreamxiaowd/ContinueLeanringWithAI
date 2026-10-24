@@ -122,5 +122,10 @@ test("hand-shaped raised pose is a distinct, source-palette-only experimental la
  const sourcePalette=new Set([...canonical.matchAll(/fill="(#[0-9A-F]{6})"/g)].map(m=>m[1]));
  for(const match of gesture.matchAll(/fill="(#[0-9A-F]{6})"/g))
    assert.ok(sourcePalette.has(match[1]),"not an approved source palette colour "+match[1]);
- assert.match(gesture,/data-paw-connector="resting-shoulder"/);
+ assert.match(gesture,/data-gesture-geometry="connected-single-silhouette"/);
+ assert.match(gesture,/data-paw-arm-outline="single"/);
+ assert.match(gesture,/data-paw-arm-fur="continuous"/);
+ assert.match(gesture,/data-paw-palm="source-palette-new-artwork"/);
+ assert.match(gesture,/translate\\(-12 2\\)/);
+ assert.doesNotMatch(gesture,/strokeWidth|<line|rotate\\(/);
 });

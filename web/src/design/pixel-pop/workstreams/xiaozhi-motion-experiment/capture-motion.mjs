@@ -102,6 +102,17 @@ try{
     if(action==="tail"&&(poseRead.tailOriginal>.01||poseRead.tailUp<.99||poseRead.tailDown>.01))
       throw Error("Native up-tail frame swap contract failed "+name+": "+JSON.stringify(poseRead));
     await capture("xiaozhi-"+name+"-"+width+"-"+action,width);
+    if(action==="tail"){
+      await sleep(205);
+      const down=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');
+        const opacity=selector=>Number(getComputedStyle(r.querySelector(selector)).opacity);
+        return {original:opacity('[data-xz-part="tail"]'),up:opacity('[data-tail-swap="up"]'),
+          down:opacity('[data-tail-swap="down"]')};})()`);
+      if(down.original>.01||down.up>.01||down.down<.99)
+        throw Error("Native down-tail pose missing: "+name+" "+JSON.stringify(down));
+      await capture("xiaozhi-"+name+"-"+width+"-tail-down",width);
+      state.tailDownVerified=down;
+    }
     if(name==="desktop"&&action==="hop"){
       await capture("hop-real-frame-350",width);
       await sleep(190);await capture("hop-real-frame-540",width);

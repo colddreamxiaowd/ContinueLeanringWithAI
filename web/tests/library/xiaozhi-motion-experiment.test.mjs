@@ -130,6 +130,6 @@ test("hand-shaped raised pose is a distinct, source-palette-only experimental la
  assert.ok(gesture.includes("translate(-9 0)"),"Compact integer paw swing");
  assert.match(gesture,/data-gesture-proportion="compact-kitten-paw"/);
  assert.match(gesture,/data-paw-wrist-link="fur-join"/);
- assert.doesNotMatch(gesture,/sourceGridRibbon|ARM_JOINTS|rotate\\(/);
+ assert.ok(!gesture.includes("sourceGridRibbon")&&!gesture.includes("ARM_JOINTS")&&!gesture.includes("rotate("),"No human-scale arm or rotation");
  assert.ok(!gesture.includes("strokeWidth")&&!gesture.includes("<line")&&!gesture.includes("rotate("),"No stroke interpolation or rotation");
 });

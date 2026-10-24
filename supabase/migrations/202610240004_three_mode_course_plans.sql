@@ -3,7 +3,7 @@
 create table if not exists public.course_plan_families (
  id uuid primary key default gen_random_uuid(),
  user_id uuid not null references auth.users(id) on delete cascade,
- library_item_id uuid not null references public.library_items(id) on delete cascade,
+ library_item_id uuid references public.library_items(id) on delete set null,
  source_sha256 text not null check (source_sha256 ~ '^[0-9a-f]{64}$'),
  planner_version text not null check (char_length(planner_version) between 1 and 80),
  source_name text not null,

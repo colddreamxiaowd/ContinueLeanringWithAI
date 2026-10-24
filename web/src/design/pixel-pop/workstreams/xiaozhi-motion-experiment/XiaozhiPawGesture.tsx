@@ -1,39 +1,54 @@
-/** Experimental, HAND-DESIGNED native SVG pose over a canonical cut-out.
+/** Experimental, separately editable PIXEL-ART paw pose.
+ * Approved Xiaozhi master is never changed. The static source arm is cut out
+ * by XiaozhiPawRemoval and remains exactly recoverable via XiaozhiPawRest.
  *
- * This is intentionally distinct from the generated source-exact Rest frame:
- * one can reshape a limb without pretending it existed in the source bitmap.
- * Coordinates are integer source pixels; fills occur in the frozen source's
- * exact 25-colour palette. NOT approved for the production Xiaozhi master.
+ * Unlike the earlier "beads on a wire" forearm, each pose contains a SINGLE
+ * contiguous orthogonal dark silhouette + continuous fur interior.
+ * Palm is a deliberately new experiment in the canonical palette, not a
+ * claimed pixel-exact limb existing in the approved mother SVG.
  */
 export type PawGesturePose="up"|"wave";
-const STEM_BLACK=
-  "M149 397h17v17h-17Z M137 384h23v23h-23Z M126 371h23v22h-23Z "+
-  "M115 358h23v22h-23Z M103 345h23v21h-23Z M96 336h23v18h-23Z";
-const STEM_WHITE=
-  "M153 400h8v9h-8Z M142 389h10v14h-10Z M131 375h10v14h-10Z "+
-  "M120 363h10v13h-10Z M108 350h10v13h-10Z M101 338h10v15h-10Z";
-const UP_PALM_BLACK="M94 292h21v5h8v7h7v33h-7v9h-37v-9h-6v-30h6v-9h8Z";
-const UP_PALM_FUR="M94 301h24v5h6v31h-33v-31h3Z";
-const UP_PALM_ACCENT="M95 323h6v9h-6Z M110 321h7v9h-7Z";
-const WAVE_PALM_BLACK="M88 287h24v6h8v6h6v32h-6v8h-40v-8h-6v-30h6v-8h8Z";
-const WAVE_PALM_FUR="M87 296h26v6h7v28h-34v-28h1Z";
-const WAVE_PALM_ACCENT="M89 317h6v9h-6Z M103 314h7v10h-7Z";
 
-/** 220px body size gives ~3 source pixels per screen pixel.
- * All strokes are filled closed SVG paths, no CSS rotation/anti-aliased lines.
+/** One closed eight-direction-free staircase from visible wrist to shoulder.
+ * The connector overlaps source-backed shoulder around (153,405), so no
+ * detached glove or dark gaps appear during motion.
+ */
+const ARM_OUTER=
+  "M76 326h26v9h12v15h12v14h12v13h13v15h14v8h11v18h-30v-8h-12v-14h-12v-13h-12v-12H98v-15H86v-13H76Z";
+const ARM_FUR=
+  "M84 335h13v8h11v13h12v13h12v14h13v15h13v6h9v8h-13v-8h-13v-14h-13v-13h-12v-12h-12v-15H92v-9h-8Z";
+
+/** A chubby kitten paw, with three stepped knuckle bumps instead of a
+ * rectangle mitten. All corners and pads use whole source coordinates.
+ */
+const PALM_OUTER=
+  "M78 279h12v-5h12v-6h14v5h10v8h9v12h6v25h-5v10h-9v8H76v-6h-9v-9h-7v-33h6v-9h12Z";
+const PALM_FUR=
+  "M80 289h27v-7h12v7h7v10h6v20h-6v9H78v-7h-8v-20h5v-12h5Z";
+const TOE_PADS=
+  "M83 301h10v8H83Z M101 297h10v8h-10Z M118 302h9v8h-9Z";
+const CENTER_PAD="M96 315h18v11H96Z";
+const PAD_GLINT="M101 318h5v3h-5Z";
+
+/** Geometry intentionally has no CSS rotation or non-integer scaling:
+ * every color remains an editable, crisp native SVG path.
+ * The 2nd frame moves the full palm 12 source pixels outward and 2 down,
+ * while maintaining an 8+ source-pixel wrist/arm overlap.
  */
 export function XiaozhiPawGesture({pose}:{pose:PawGesturePose}){
-  const isWave=pose==="wave";
-  return <g data-experimental-paw-gesture={pose} shapeRendering="crispEdges" stroke="none">
-    <g data-paw-connector="resting-shoulder" fill="#08080C">
-      <path d={STEM_BLACK}/>
-    </g>
-    <g fill="#F8F8F9" data-paw-connector-fur="true"><path d={STEM_WHITE}/></g>
-    <g transform={isWave?"translate(-5 -5)":undefined}>
-      <path d={isWave?WAVE_PALM_BLACK:UP_PALM_BLACK} fill="#08080C"/>
-      <path d={isWave?WAVE_PALM_FUR:UP_PALM_FUR} fill="#F8F8F9"/>
-      <path d={isWave?WAVE_PALM_ACCENT:UP_PALM_ACCENT} fill="#FA9C9E"/>
-      <path d={isWave?"M94 306h4v4h-4Z":"M102 310h4v4h-4Z"} fill="#BDC5DC"/>
-    </g>
-  </g>;
+ const waving=pose==="wave";
+ return <g data-experimental-paw-gesture={pose}
+   data-gesture-geometry="connected-single-silhouette"
+   stroke="none" shapeRendering="crispEdges">
+   <path data-paw-arm-outline="single" fill="#08080C" d={ARM_OUTER}/>
+   <path data-paw-arm-fur="continuous" fill="#F8F8F9" d={ARM_FUR}/>
+   <g data-paw-palm="source-palette-new-artwork"
+      transform={waving?"translate(-12 2)":undefined}>
+     <path d={PALM_OUTER} fill="#08080C"/>
+     <path d={PALM_FUR} fill="#F8F8F9"/>
+     <path d={TOE_PADS} fill="#FA9C9E"/>
+     <path d={CENTER_PAD} fill="#FB7A83"/>
+     <path d={PAD_GLINT} fill="#F8F8F9"/>
+   </g>
+ </g>;
 }

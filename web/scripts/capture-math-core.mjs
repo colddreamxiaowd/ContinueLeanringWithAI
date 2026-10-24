@@ -54,7 +54,7 @@ try{
    await until("!!document.querySelector('[data-math-workbench]')&&document.querySelector('[data-shell-ready]')?.dataset.shellReady==='true'");
    const initial=await js("({h:document.querySelector('[data-math-workbench] h2')?.textContent,scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth})");
    if(initial.scroll>initial.width+3)throw Error("Math horizontal overflow: "+JSON.stringify(initial));
-   await click('button[aria-pressed="false"][type="button"]'); // select guided mode (first unpressed)
+   await button("01 · 不放回抽取"); // reset test topic after localStorage restores previous viewport\n   await click('button[aria-pressed="false"][type="button"]'); // select guided mode (first unpressed)
    await button("独立挑战");
    await type("#math-probability-answer","1/3");
    await button("验证我的答案");

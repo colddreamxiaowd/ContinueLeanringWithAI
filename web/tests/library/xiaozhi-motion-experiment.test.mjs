@@ -127,5 +127,5 @@ test("hand-shaped raised pose is a distinct, source-palette-only experimental la
  assert.match(gesture,/data-paw-arm-fur="continuous"/);
  assert.match(gesture,/data-paw-palm="source-palette-new-artwork"/);
  assert.match(gesture,/translate\\(-12 2\\)/);
- assert.doesNotMatch(gesture,/strokeWidth|<line|rotate\\(/);
+ assert.ok(!gesture.includes("strokeWidth")&&!gesture.includes("<line")&&!gesture.includes("rotate("),"No stroke interpolation or rotation");
 });

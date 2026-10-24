@@ -93,3 +93,21 @@ test("tail's two native path frames are fully regenerable and preserve source co
  assert.match(css,/@keyframes tailDownSwap/);
  assert.doesNotMatch(css,/tailWag|rotate\(10deg\)/);
 });
+
+test("independent front paw uses a canonical 4525-pixel exact reassembly, not torso rotation",()=>{
+ const builder=resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/build-paw-frames.mjs");
+ const frame=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiPawFrames.tsx"),"utf8");
+ assert.doesNotThrow(()=>execFileSync(process.execPath,[builder,"--check"],{stdio:"pipe"}));
+ assert.match(frame,/Original source pixels: 4525/);
+ for(const pose of ["rest","up","wave"])assert.ok(frame.includes('data-xz-paw-frame="'+pose+'"'));
+ assert.match(frame,/data-xz-paw-removal="source-region"/);
+ assert.match(moduleSource,/XiaozhiPawRemoval/);
+ assert.match(moduleSource,/maskUnits="userSpaceOnUse"/);
+ assert.match(moduleSource,/data-rig-paw-mask=\{pawMotion\?"source-cutout":undefined\}/);
+ assert.match(css,/@keyframes pawRestHide/);
+ assert.match(css,/@keyframes pawLiftShow/);
+ assert.match(css,/@keyframes pawWaveUp/);
+ assert.match(css,/@keyframes pawWaveOut/);
+ assert.doesNotMatch(css,/pawWag.*rotate|pawLift.*rotate/);
+ for(const action of ["paw","wave"])assert.ok(moduleSource.includes('"'+action+'"'));
+});

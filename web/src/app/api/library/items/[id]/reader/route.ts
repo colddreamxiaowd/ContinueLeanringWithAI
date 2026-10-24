@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/lib/public-auth";
 import { downloadFeishuFile } from "@/lib/feishu";
 import { dbSelectOne } from "@/lib/supabase-rest";
 import { extractOfficeSections } from "@/lib/office-reader.mjs";
+import {officeSourceChunks,sha256Office} from "@/lib/source-chunks.mjs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ const MAX_BYTES = 15 * 1024 * 1024;
 type PrivateFile = { name: string; source_token: string; item_type: string };
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
   const user = await getCurrentUser();
@@ -51,7 +52,19 @@ export async function GET(
     } finally {
       reader.releaseLock();
     }
-    const result = extractOfficeSections(Buffer.concat(chunks), item.name);
+    const original=Buffer.concat(chunks);
+    const result=extractOfficeSections(original, item.name);
+    // Opt-in internal material extraction. Both modes already checked the
+    // authenticated owner and Feishu access; neither is publicly cached.
+    if(new URL(request.url).searchParams.get("format")==="chunks"){
+      const sourceChunks=officeSourceChunks(result,{
+        ownerId:user.id,libraryItemId:id,fileName:item.name,
+        mimeType:"application/vnd.openxmlformats-officedocument",
+        originalHash:sha256Office(original)
+      });
+      return NextResponse.json({sourceChunks,sourceCount:sourceChunks.length},
+        {headers:{"Cache-Control":"private, no-store"}});
+    }
     return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
   } catch (error) {
     const code = error instanceof Error ? error.message : "OFFICE_READ_FAILED";

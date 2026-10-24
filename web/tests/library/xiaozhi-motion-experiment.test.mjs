@@ -29,8 +29,10 @@ test("blink preserves canonical eye geometry and only moves their own semantic g
  assert.match(moduleSource,/M188 246h45v64h-45Z M338 244h45v66h-45Z/);
  assert.match(moduleSource,/data-motion-eye-backing="true"/);
  assert.doesNotMatch(moduleSource,/blinkOverlay|ORIGINAL_EYE_PIXEL_MASKS/);
- assert.match(css,/@keyframes eyeClose/);
- assert.ok(css.includes("transform:scaleY(.13)"));
+ assert.match(css,/@keyframes eyeDisappear/);
+ assert.match(css,/@keyframes eyeLidsAppear/);
+ assert.match(moduleSource,/data-motion-eyelids="two-pixel-paths"/);
+ assert.match(moduleSource,/M194 278h32v6h-32Z/);
 });
 test("four core moves and greeting are one-shot and reduced motion safe",()=>{
  for(const action of ["blink","nod","hop","tail","hello"]){

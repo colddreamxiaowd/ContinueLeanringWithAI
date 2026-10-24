@@ -1,10 +1,11 @@
 "use client";
 
-import {useState} from "react";
+import {useId,useState} from "react";
 import type {CSSProperties} from "react";
 import {XiaozhiLayers} from "../../mascot/XiaozhiLayers";
 import {Xiaozhi} from "../../mascot/Xiaozhi";
 import {XiaozhiTailFrame} from "./XiaozhiTailFrames";
+import {XiaozhiPawFrame,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
 import styles from "./motion.module.css";
 
 /**
@@ -14,11 +15,12 @@ import styles from "./motion.module.css";
  * eye groups and shows two separately editable black eyelid paths above a
  * behind-rig fur backing; no whites painted over black antialias edges.
  */
-export const MOTION_ACTIONS=["none","blink","nod","hop","tail","hello"] as const;
+export const MOTION_ACTIONS=["none","blink","nod","hop","tail","hello","paw","wave"] as const;
 export type XiaozhiExperimentalAction=typeof MOTION_ACTIONS[number];
 export const MOTION_LABELS:Record<XiaozhiExperimentalAction,string>={
   none:"原版静止",blink:"眨眼",nod:"轻轻点头",hop:"小跳跃",
-  tail:"摇尾巴（逐像素帧）",hello:"打招呼（组合）"
+  tail:"摇尾巴（逐像素帧）",hello:"打招呼（组合）",
+  paw:"独立抬爪（试验）",wave:"挥爪招手（试验）"
 };
 
 /* Static backing is drawn UNDER the source-exact rig, fully covered at rest.
@@ -39,6 +41,8 @@ export function XiaozhiMotionPrototype({
   action?:XiaozhiExperimentalAction;size?:number;replay?:number;decorative?:boolean;
 }){
   const safeSize=Math.max(24,Math.min(450,size));
+  const maskId=useId().replace(/:/g,"")+"-experimental-paw-hole";
+  const pawMotion=action==="paw"||action==="wave";
   const vars={"--xz-motion-size":safeSize+"px"} as CSSProperties;
   return <span className={styles.motionFrame} data-action={action} data-replay={replay}
     style={vars} aria-label={decorative?undefined:"小知动作实验："+MOTION_LABELS[action]}>
@@ -47,6 +51,13 @@ export function XiaozhiMotionPrototype({
       aria-hidden={decorative?"true":undefined}
       aria-label={decorative?undefined:"小知，"+MOTION_LABELS[action]}
       shapeRendering="crispEdges" focusable="false" xmlns="http://www.w3.org/2000/svg">
+      {pawMotion&&<defs>
+        <mask id={maskId} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"
+          x="0" y="0" width="573" height="573">
+          <rect width="573" height="573" fill="#fff"/>
+          <XiaozhiPawRemoval/>
+        </mask>
+      </defs>}
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
         <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
         {/* Native, source-derived tail alternatives render behind face and torso.
@@ -57,7 +68,14 @@ export function XiaozhiMotionPrototype({
         <g className={styles.tailDownPose} data-tail-swap="down">
           <XiaozhiTailFrame pose="down"/>
         </g>
-        <XiaozhiLayers/>
+        <g mask={pawMotion?`url(#${maskId})`:undefined} data-rig-paw-mask={pawMotion?"source-cutout":undefined}>
+          <XiaozhiLayers/>
+        </g>
+        {pawMotion&&<g data-paw-articulation="left-front-source-pixels">
+          <g className={styles.pawRestPose} data-paw-layer="rest"><XiaozhiPawRest/></g>
+          <g className={styles.pawUpPose} data-paw-layer="up"><XiaozhiPawFrame pose="up"/></g>
+          <g className={styles.pawWavePose} data-paw-layer="wave"><XiaozhiPawFrame pose="wave"/></g>
+        </g>}
         <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none"
           shapeRendering="crispEdges">
           <path d={FACE_EYE_SHADE_FIX} fill="#F8F8F9" data-motion-eye-shade-fix="source-grey-fur-guard"/>
@@ -104,7 +122,7 @@ export function XiaozhiMotionLab(){
           {actions.map(id=><button type="button" key={id}
              className={styles.actionButton} data-selected={action===id}
              aria-pressed={action===id} onClick={()=>select(id)}>
-            <span aria-hidden="true" className={styles.actionMark}>{id==="none"?"·":id==="blink"?"◡":id==="nod"?"↘":id==="hop"?"↑":id==="tail"?"〰":"✦"}</span>
+            <span aria-hidden="true" className={styles.actionMark}>{id==="none"?"·":id==="blink"?"◡":id==="nod"?"↘":id==="hop"?"↑":id==="tail"?"〰":id==="paw"?"↗":id==="wave"?"♧":"✦"}</span>
             <strong>{MOTION_LABELS[id]}</strong>
           </button>)}
         </div>
@@ -129,7 +147,7 @@ export function XiaozhiMotionLab(){
         </div>
       </section>
       <div className={styles.note}>
-        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；尾巴采用「尾根不动、末端逐像素位移」的两个原生 SVG 帧，衔接仍需实际浏览器验收。此处不宣称已实现完整骨骼、挥爪或所有表情。
+        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；尾巴采用「尾根不动、末端逐像素位移」的两个原生 SVG 帧，衔接仍需实际浏览器验收。新增抬爪/挥爪是左前爪 4,525 个原色像素的可撤销分离实验；肩部接缝仍需人工验收，不代表母版已具有可复用的完整骨骼。
       </div>
     </div>
   </div>;

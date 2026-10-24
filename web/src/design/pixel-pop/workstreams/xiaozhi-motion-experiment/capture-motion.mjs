@@ -96,7 +96,7 @@ try{
         tailUp:op(base?.querySelector('[data-tail-swap="up"]')),
         tailDown:op(base?.querySelector('[data-tail-swap="down"]')),
         faceShadeRects:base?.querySelector('[data-motion-eye-shade-fix]')?.getAttribute('d')?.match(/M\\d+ \\d+h\\d+v\\d+h-\\d+Z/g)?.length??0};})()`);
-    if(action==="blink"&&(poseRead.faceShadeRects!==17||poseRead.leftEye>0.01||
+    if(action==="blink"&&(poseRead.faceShadeRects!==36||poseRead.leftEye>0.01||
        poseRead.rightEye>0.01||poseRead.eyelids<.99))
       throw Error("Blink closed-frame contract failed "+name+": "+JSON.stringify(poseRead));
     if(action==="tail"&&(poseRead.tailOriginal>.01||poseRead.tailUp<.99||poseRead.tailDown>.01))

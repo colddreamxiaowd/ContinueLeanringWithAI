@@ -18,11 +18,15 @@ export type StackPlaygroundProps = {
   initialStack?:number[];
   capacity?:number;
   onOperation?:(operation:StackAction)=>void;
+  /** Optional persistence bridge; reports the stack restored by Reset. */
+  onReset?:(stack:number[])=>void;
+  /** For persisted sessions, reset to the authored CoursePack initial stack. */
+  resetStack?:number[];
   className?:string;
 };
 
 export function StackPlayground({
-  initialStack=[],capacity=6,onOperation,className=""
+  initialStack=[],capacity=6,onOperation,onReset,resetStack,className=""
 }:StackPlaygroundProps){
   const limit=normalizeCapacity(capacity);
   const initial=initialStack.slice(0,limit).filter(Number.isSafeInteger);
@@ -53,12 +57,14 @@ export function StackPlayground({
     onOperation?.(record);
   };
   const reset=()=>{
-    setStack(start.current.slice());
+    const restored=(resetStack??start.current).slice(0,limit).filter(Number.isSafeInteger);
+    setStack(restored);
     setHistory([]);
     setMessage("实验已重置，可重新进行 Push / Pop。");
     setLastKind(null);
     setPopVisual(null);
     setDetailsOpen(false);
+    onReset?.(restored.slice());
   };
   const padded=stackTimeline(start.current,stack,history);
   return <section className={styles.playground+" "+className} aria-label="可交互的栈操作实验">

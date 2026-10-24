@@ -19,9 +19,11 @@ export async function POST(request:Request,context:{params:Promise<{id:string}>}
  try{
   // A current login may update only concepts inside this user's private family.
   // The DB function ALSO enforces existence and performs an atomic max(level).
-  const owner=await dbSelectOne("course_plan_families",new URLSearchParams({
-   select:"id",id:"eq."+id,user_id:"eq."+user.id,limit:"1"}));
+  const owner=await dbSelectOne<{id:string;bundle:{topics?:Array<{id:string}>}}>("course_plan_families",new URLSearchParams({
+   select:"id,bundle",id:"eq."+id,user_id:"eq."+user.id,limit:"1"}));
   if(!owner)return NextResponse.json({error:"PLAN_NOT_FOUND"},{status:404});
+  if(!owner.bundle?.topics?.some(topic=>topic.id===input.conceptId))
+   return NextResponse.json({error:"CONCEPT_NOT_IN_FAMILY"},{status:400});
   const rows=await dbRequest<Array<{saved_level:number}>>("rpc/record_course_concept_mastery",{
    method:"POST",body:JSON.stringify({p_user_id:user.id,p_family_id:id,
     p_concept_id:input.conceptId,p_level:input.level})

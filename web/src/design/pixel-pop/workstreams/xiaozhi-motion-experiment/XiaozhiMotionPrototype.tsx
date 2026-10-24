@@ -5,7 +5,8 @@ import type {CSSProperties} from "react";
 import {XiaozhiLayers} from "../../mascot/XiaozhiLayers";
 import {Xiaozhi} from "../../mascot/Xiaozhi";
 import {XiaozhiTailFrame} from "./XiaozhiTailFrames";
-import {XiaozhiPawBodyBacking,XiaozhiPawFrame,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
+import {XiaozhiPawBodyBacking,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
+import {XiaozhiPawGesture} from "./XiaozhiPawGesture";
 import styles from "./motion.module.css";
 
 /**
@@ -74,8 +75,8 @@ export function XiaozhiMotionPrototype({
         {pawMotion&&<g data-paw-articulation="left-front-source-pixels">
           <XiaozhiPawBodyBacking/>
           <g className={styles.pawRestPose} data-paw-layer="rest"><XiaozhiPawRest/></g>
-          <g className={styles.pawUpPose} data-paw-layer="up"><XiaozhiPawFrame pose="up"/></g>
-          <g className={styles.pawWavePose} data-paw-layer="wave"><XiaozhiPawFrame pose="wave"/></g>
+          <g className={styles.pawUpPose} data-paw-layer="up"><XiaozhiPawGesture pose="up"/></g>
+          <g className={styles.pawWavePose} data-paw-layer="wave"><XiaozhiPawGesture pose="wave"/></g>
         </g>}
         <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none"
           shapeRendering="crispEdges">
@@ -148,7 +149,7 @@ export function XiaozhiMotionLab(){
         </div>
       </section>
       <div className={styles.note}>
-        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；尾巴采用「尾根不动、末端逐像素位移」的两个原生 SVG 帧，衔接仍需实际浏览器验收。新增抬爪/挥爪是左前爪 4,525 个原色像素的可撤销分离实验；肩部接缝仍需人工验收，不代表母版已具有可复用的完整骨骼。
+        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；尾巴采用「尾根不动、末端逐像素位移」的两个原生 SVG 帧，衔接仍需实际浏览器验收。新增抬爪/挥爪先用 4,525 个原色像素重组静止前爪，运动姿势则是原色板上的手绘 SVG 阶梯路径；连接方式及整体比例需实际截图验收，不能视为源图已有的关节骨骼。
       </div>
     </div>
   </div>;

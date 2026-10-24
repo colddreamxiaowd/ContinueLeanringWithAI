@@ -83,6 +83,10 @@ try{
  check(Object.keys(detail.family.bundle.plans).length===3,"source family missing three modes");
  check(detail.family.bundle.topics.length===2,"shared concepts missing");
  check((await call("/api/course-plans/"+familyId,"fake-b")).status===404,"B read A detail");
+ const originalPath="/api/library/items/44444444-4444-4444-8444-444444444444/original";
+ check((await call(originalPath,null)).status===401,"anonymous original file must be denied");
+ check((await call(originalPath,"fake-b")).status===404,"B cannot download unowned original");
+
  const conceptId=bundle.topics[0].id;
  const masteryPath="/api/course-plans/"+familyId+"/mastery";
  check((await call(masteryPath,"fake-b","POST",{conceptId,level:2})).status===404,"B wrote A mastery");

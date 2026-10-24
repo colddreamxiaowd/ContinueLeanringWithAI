@@ -5,7 +5,7 @@ import type {CSSProperties} from "react";
 import {XiaozhiLayers} from "../../mascot/XiaozhiLayers";
 import {Xiaozhi} from "../../mascot/Xiaozhi";
 import {XiaozhiTailFrame} from "./XiaozhiTailFrames";
-import {XiaozhiPawFrame,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
+import {XiaozhiPawBodyBacking,XiaozhiPawFrame,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
 import styles from "./motion.module.css";
 
 /**
@@ -72,6 +72,7 @@ export function XiaozhiMotionPrototype({
           <XiaozhiLayers/>
         </g>
         {pawMotion&&<g data-paw-articulation="left-front-source-pixels">
+          <XiaozhiPawBodyBacking/>
           <g className={styles.pawRestPose} data-paw-layer="rest"><XiaozhiPawRest/></g>
           <g className={styles.pawUpPose} data-paw-layer="up"><XiaozhiPawFrame pose="up"/></g>
           <g className={styles.pawWavePose} data-paw-layer="wave"><XiaozhiPawFrame pose="wave"/></g>

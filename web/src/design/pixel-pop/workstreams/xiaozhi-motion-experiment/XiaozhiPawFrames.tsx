@@ -3,8 +3,9 @@
  * source pixel and per-colour histogram. Static source is not modified.
  */
 export type XiaozhiPawPose="up"|"wave";
+export const XIAOZHI_PAW_CUTOUT_D="M160 397h8v8h-8Z M156 405h12v10h-12Z M149 415h19v4h-19Z M146 419h22v13h-22Z M132 432h36v3h-36Z M132 435h70v43h-70Z M135 478h67v3h-67Z M142 481h60v11h-60Z";
 export function XiaozhiPawRemoval(){return <g data-xz-paw-removal="source-region" fill="black" stroke="none" shapeRendering="crispEdges">
-<path d="M160 397h8v8h-8Z M156 405h12v10h-12Z M149 415h19v4h-19Z M146 419h22v13h-22Z M132 432h36v3h-36Z M132 435h70v43h-70Z M135 478h67v3h-67Z M142 481h60v11h-60Z"/>
+<path d={XIAOZHI_PAW_CUTOUT_D}/>
 </g>}
 export function XiaozhiPawRest(){return <g data-xz-paw-frame="rest" stroke="none" shapeRendering="crispEdges">
 <path fill="#08080C" d="M163 397h5v4h-5Z M160 401h8v4h-8Z M156 405h12v3h-12Z M160 408h8v4h-8Z M156 412h12v3h-12Z M149 415h19v11h-19Z M146 426h22v6h-22Z M135 432h25v4h-25Z M135 436h21v10h-21Z M132 446h21v25h-21Z M135 471h18v10h-18Z M146 481h21v11h-21Z M177 488h14v4h-14Z"/>

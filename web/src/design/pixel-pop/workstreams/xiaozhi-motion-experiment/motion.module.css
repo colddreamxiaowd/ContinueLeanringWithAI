@@ -47,6 +47,17 @@
 .motionFrame[data-action="hello"] [data-xz-part="tail"]{animation:sourceTailSwap 1.25s steps(1,end) 1}
 .motionFrame[data-action="hello"] .tailUpPose{animation:tailUpSwap 1.25s steps(1,end) 1}
 .motionFrame[data-action="hello"] .tailDownPose{animation:tailDownSwap 1.25s steps(1,end) 1}
+/* The uncompromised original full master is always the REST compositor.
+   The clipped rig and experimental paw are rendered only for the raised
+   keyframes; 100% returns to source-exact original paths, no clipping pass. */
+.pawMasterRest{opacity:1}
+.pawArticulatedSource,.pawArticulatedOverlay{opacity:0;pointer-events:none}
+.motionFrame[data-action="paw"] .pawMasterRest{animation:pawRestHide 1.05s steps(1,end) 1}
+.motionFrame[data-action="paw"] .pawArticulatedSource,
+.motionFrame[data-action="paw"] .pawArticulatedOverlay{animation:pawLiftShow 1.05s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawMasterRest{animation:pawRestHide 1.4s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawArticulatedSource,
+.motionFrame[data-action="wave"] .pawArticulatedOverlay{animation:pawLiftShow 1.4s steps(1,end) 1}
 /* Experimental left forepaw: resting source is reproduced pixel-exactly;
    two alternative vector frames are stepped with no antialiased rotation. */
 .pawRestPose{opacity:1;pointer-events:none}
@@ -108,6 +119,10 @@
   .motionFrame .closedLids,.motionFrame .tailUpPose,.motionFrame .tailDownPose,
   .motionFrame .pawUpPose,.motionFrame .pawWavePose{opacity:0!important}
   .motionFrame .pawRestPose{opacity:1!important}
-  .motionFrame .pawRestPose,.motionFrame .pawUpPose,.motionFrame .pawWavePose{animation:none!important}
+  .motionFrame .pawRestPose,.motionFrame .pawUpPose,.motionFrame .pawWavePose,
+  .motionFrame .pawMasterRest,.motionFrame .pawArticulatedSource,
+  .motionFrame .pawArticulatedOverlay{animation:none!important}
+  .motionFrame .pawMasterRest{opacity:1!important}
+  .motionFrame .pawArticulatedSource,.motionFrame .pawArticulatedOverlay{opacity:0!important}
   .actionButton,.catStage{transition:none}
 }

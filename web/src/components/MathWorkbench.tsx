@@ -13,13 +13,14 @@ type Attempt={stage:Kind;result:string;answer:string;at:string};
 type Discovery={stage:Kind;body:string;at:string;verification:string};
 type MathState={version:string;mode:Mode;stage:Kind;params:Params;answers:Record<Kind,string>;
  notes:Record<Kind,string>;reveal:number;attempts:Attempt[];discoveries:Discovery[];feedback:null|{status:string;message:string}};
-const storeKey="zhixu_math_conditional_v1";
+const storePrefix="zhixu_math_conditional_v1";
 const make=():MathState=>INITIAL_MATH_SESSION() as MathState;
 function newEventId(){return typeof crypto!=="undefined"&&"randomUUID" in crypto?crypto.randomUUID():
  "math-"+Date.now()+"-"+Math.random().toString(36).slice(2);}
 function resultPercent(n:number,d:number){return (100*n/d).toFixed(1)+"%";}
 
-export default function MathWorkbench({accountMode=false}:{accountMode?:boolean}){
+export default function MathWorkbench({accountMode=false,ownerId=""}:{accountMode?:boolean;ownerId?:string}){
+  const storeKey=accountMode?storePrefix+"_user_"+ownerId:storePrefix+"_public";
   const [state,setState]=useState<MathState>(make);
   const [hydrated,setHydrated]=useState(false);
   const [syncStatus,setSyncStatus]=useState("正在加载学习草稿…");
@@ -33,7 +34,7 @@ export default function MathWorkbench({accountMode=false}:{accountMode?:boolean}
       setSyncStatus("本机草稿可自动恢复。");
     }catch{setSyncStatus("浏览器存储不可用；可通过导出保留解题过程。");}
     setHydrated(true);
-  },[]);
+  },[storeKey]);
   useEffect(()=>{
     if(!hydrated)return;
     try{localStorage.setItem(storeKey,JSON.stringify({...state,feedback:null}));
@@ -232,7 +233,17 @@ export default function MathWorkbench({accountMode=false}:{accountMode?:boolean}
             <strong>未验证个人思路 · {d.stage==="draw"?"抽球":"诊断题"}</strong>
             <p>{d.body}</p></article>)}
         </div>}
-        {accountMode&&<p>账号历史事件已加载 {remoteEvents.length} 条；在本机记录之外单独保留，服务器确认后才视为落库。<Link href="/learn">返回课程</Link></p>}
+        {accountMode&&<div className={s.timeline}>
+          <strong>账号私有学习事件（服务器返回 {remoteEvents.length} 条）</strong>
+          {remoteEvents.slice(-25).reverse().map((event,i)=><div key={i}>
+            <strong>{event.kind==="note-saved"?"个人未验证思路":"提交尝试"}</strong>
+            <span>{event.kind==="note-saved"?
+              String(event.payload.body||"").slice(0,200):
+              String(event.payload.answer||"")+" · "+String(event.payload.result||"")}
+              {" · "+new Date(event.created_at).toLocaleString("zh-CN")}</span>
+          </div>)}
+          <p>当前账号与公开演示的本机草稿互相隔离。<Link href="/learn">返回课程</Link></p>
+        </div>}
       </section>
     </article>
   </ShellIntegrationFrame>;

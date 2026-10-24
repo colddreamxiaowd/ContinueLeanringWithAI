@@ -35,7 +35,7 @@ const mock=createServer(async(req,res)=>{
 });
 const delay=ms=>new Promise(r=>setTimeout(r,ms));
 await new Promise(resolve=>mock.listen(supabasePort,host,resolve));
-const server=spawn("npx",["next","start","--hostname",host,"--port","3001"],{
+const server=spawn(process.execPath,["node_modules/next/dist/bin/next","start","--hostname",host,"--port","3001"],{
  cwd:process.cwd(),env:{...process.env,NEXT_PUBLIC_SUPABASE_URL:"http://127.0.0.1:3456",
  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:"synthetic-publishable-key",
  SUPABASE_SECRET_KEY:"sb_secret_synthetic_only"},stdio:["ignore","pipe","pipe"]});
@@ -85,5 +85,5 @@ try{
    ownedEventsA:saved.events.length,ownedEventsB:b.events.length,
    authoritativeRegrade:a.events[0].payload.result,privatePageHTTP:privatePage.status}));
 }finally{
- server.kill("SIGTERM");mock.close();await delay(350);
+ server.kill("SIGTERM");mock.closeAllConnections();mock.close();await delay(350);
 }

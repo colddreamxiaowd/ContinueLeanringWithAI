@@ -133,3 +133,41 @@ test("hand-shaped raised pose is a distinct, source-palette-only experimental la
  assert.ok(!gesture.includes("sourceGridRibbon")&&!gesture.includes("ARM_JOINTS")&&!gesture.includes("rotate("),"No human-scale arm or rotation");
  assert.ok(!gesture.includes("strokeWidth")&&!gesture.includes("<line")&&!gesture.includes("rotate("),"No stroke interpolation or rotation");
 });
+
+test("compact kitten paw stays near cheek and never grows an elongated forearm",()=>{
+ const gesture=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiPawGesture.tsx"),"utf8");
+ const paths=["ARM_OUTER","PALM_OUTER"].map(name=>{
+   const marker=new RegExp("const "+name+"\\\\s*=\\\\s*\\\"([^\\\"]+)\\\"");
+   const m=gesture.match(marker);
+   assert.ok(m,"Missing "+name+" path");
+   return m[1];
+ });
+ function bounds(path){
+   const ops=path.match(/[A-Za-z]|-?\\d+/g);
+   let x=0,y=0,startX=0,startY=0;
+   const xs=[],ys=[];
+   for(let i=0;i<ops.length;){
+     const op=ops[i++];
+     switch(op){
+      case "M":x=Number(ops[i++]);y=Number(ops[i++]);startX=x;startY=y;break;
+      case "h":x+=Number(ops[i++]);break;
+      case "v":y+=Number(ops[i++]);break;
+      case "H":x=Number(ops[i++]);break;
+      case "V":y=Number(ops[i++]);break;
+      case "Z":x=startX;y=startY;break;
+      default:throw new Error("Non-pixel path command "+op);
+     }
+     xs.push(x);ys.push(y);
+   }
+   return {minX:Math.min(...xs),maxX:Math.max(...xs),minY:Math.min(...ys),maxY:Math.max(...ys)};
+ }
+ const bb=paths.map(bounds);
+ const envelope={
+  minX:Math.min(...bb.map(x=>x.minX)),maxX:Math.max(...bb.map(x=>x.maxX)),
+  minY:Math.min(...bb.map(x=>x.minY)),maxY:Math.max(...bb.map(x=>x.maxY))
+ };
+ assert.ok(envelope.minX>=120&&envelope.maxX<=185,"Paw must stay beside lower cheek");
+ assert.ok(envelope.minY>=343&&envelope.maxY<=420,"No hand above eye or below shoulder");
+ assert.ok(envelope.maxX-envelope.minX<=65&&envelope.maxY-envelope.minY<=78,
+   "A long human-like diagonal forearm is forbidden");
+});

@@ -5,6 +5,7 @@ import Link from "next/link";
 import {ShellIntegrationFrame} from "@/design/pixel-pop/workstreams/shell/IntegrationFrame";
 import {demoPlanBundle,taskFor,normalizeMastery,upgradeMastery,MASTERY_LEVELS,MODE_NAMES} from "@/lib/course-plan-view.mjs";
 import s from "./course-plan-studio.module.css";
+import ChatGptCourseHandoff from "./ChatGptCourseHandoff";
 
 type Mode="deep"|"faithful"|"exam";
 type Level=0|1|2;
@@ -246,6 +247,8 @@ export default function CoursePlanStudio({demo=false,ownerId=""}:{demo?:boolean;
      </article>}
     </section>
    </div>}
+   {current&&<ChatGptCourseHandoff bundle={current} familyId={familyId} mastery={mastery}
+    mode={mode} demo={demo}/>}
    {!demo&&!current&&ready&&!busy&&<p className={s.empty}>选择一份已同步的 Office 文件并点击生成，或打开已有的私人课程方案。</p>}
   </main>
  </ShellIntegrationFrame>;

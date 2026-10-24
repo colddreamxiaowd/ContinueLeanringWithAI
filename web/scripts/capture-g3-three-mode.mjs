@@ -68,6 +68,13 @@ try{
   await until("document.querySelector('[data-plan-mode]')?.dataset.planMode==='faithful'");
   const shared=await js("document.querySelectorAll('[aria-label=\"知识点目录\"] button')[0]?.textContent.includes('自评能够复述')");
   if(!shared)throw Error("Mode switch lost concept-level mastery");
+  // ChatGPT bridge must be real interactive UI, not a decorative CTA.
+  await until("document.querySelector('[data-chatgpt-handoff]')!==null");
+  await click("生成并下载交接包");
+  await until("document.querySelector('textarea[aria-label=\\\"ChatGPT 制课指令\\\"]')?.value.includes('CoursePack v0.1')");
+  const handoffActions=await js("(()=>{const r=document.querySelector('[data-chatgpt-handoff]');return {source:r?.textContent.includes('交接包已下载'),fixedChat:r?.textContent.includes('固定会话'),import:r?.textContent.includes('导入 GPT 生成的 CoursePack')};})()");
+  if(!handoffActions.source||!handoffActions.fixedChat||!handoffActions.import)
+   throw Error("GPT course handoff not fully interactive "+JSON.stringify(handoffActions));
   await click("展开资料原文并核对");
   await until("!!document.querySelector('[class*=sourceExcerpt]')");
   const before=await js("({scroll:document.documentElement.scrollWidth,width:document.documentElement.clientWidth})");

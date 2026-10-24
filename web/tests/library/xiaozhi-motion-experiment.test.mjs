@@ -54,17 +54,28 @@ test("approved optical avatars and original full master remain imported, never o
  assert.match(css,/\[data-background="yellow"\]/);
 });
 
-test("closed eyes cover exactly the grey source pixels not owned by eye groups",()=>{
- const mask=moduleSource.match(/const FACE_EYE_SHADE_FIX=\[([\s\S]*?)\]\.join\(" "\);/);
- assert.ok(mask,"explicit non-destructive source eye shade patch");
- const maskRects=[...mask[1].matchAll(/M\d+ \d+h\d+v\d+h-\d+Z/g)].map(m=>m[0]);
- assert.equal(maskRects.length,17,"17 source-grey face rectangles are intentionally covered");
- const face=canonical.split('data-xz-part="face"')[1].split('</g>')[0];
- const sourceGrey=[...face.matchAll(/<path fill="(#[0-9A-F]{6})" d="([^"]+)"/g)]
-  .filter(m=>["#5A5A62","#A0A1A9","#BDC5DC"].includes(m[1]))
-  .flatMap(m=>[...m[2].matchAll(/M\d+ \d+h\d+v\d+h-\d+Z/g)].map(z=>z[0]));
- for(const r of maskRects)assert.ok(sourceGrey.includes(r),"mask paint must follow approved face pixel: "+r);
- assert.match(moduleSource,/data-motion-eye-shade-fix="source-17-rects"/);
+test("closed eyes patch 403 source-grey pixels plus only their original fur halo",()=>{
+ const mask=moduleSource.match(/const FACE_EYE_SHADE_FIX=\s*"([^"]+)";/);
+ assert.ok(mask,"expanded anti-alias guard from approved face pixels");
+ const faceColors=new Map();
+ for(const p of canonical.matchAll(/<path fill="(#[0-9A-F]{6})" d="([^"]+)"/g)){
+  for(const r of p[2].matchAll(/M(\d+) (\d+)h(\d+)v(\d+)h-(\d+)Z/g)){
+   const [x,y,w,h]=r.slice(1,5).map(Number);
+   for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++)faceColors.set(j*573+i,p[1]);
+  }
+ }
+ const accepted=new Set(["#F8F8F9","#5A5A62","#A0A1A9","#BDC5DC"]);
+ const masked=new Set();
+ for(const r of mask[1].matchAll(/M(\d+) (\d+)h(\d+)v(\d+)h-(\d+)Z/g)){
+  const [x,y,w,h]=r.slice(1,5).map(Number);
+  for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++){
+   const k=j*573+i,color=faceColors.get(k);
+   assert.ok(accepted.has(color),"No cheek/hat/eye paint may be erased at "+i+","+j+": "+color);
+   assert.ok(!masked.has(k));masked.add(k);
+  }
+ }
+ assert.equal(masked.size,1409);
+ assert.match(moduleSource,/data-motion-eye-shade-fix="source-grey-fur-guard"/);
  assert.match(moduleSource,/shapeRendering="crispEdges"/);
 });
 test("tail's two native path frames are fully regenerable and preserve source colours",()=>{

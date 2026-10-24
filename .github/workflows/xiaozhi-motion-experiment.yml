@@ -1,0 +1,62 @@
+name: Xiaozhi native SVG motion experiment — Chromium proof
+on:
+  push:
+    branches:
+      - experiment/xiaozhi-motion-lab-20261024
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+      - name: Frozen source and new rig contract tests
+        working-directory: web
+        run: |
+          npm run test:library
+          npm run typecheck
+          npm run build
+      - name: Start actual Next.js route
+        working-directory: web
+        run: |
+          npx next start --hostname 127.0.0.1 --port 3006 >/tmp/xiaozhi-motion-next.log 2>&1 &
+          for attempt in {1..45}; do
+            if curl -fsS http://127.0.0.1:3006/ui-lab/xiaozhi-motion -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/xiaozhi-motion-next.log
+          exit 1
+      - name: Ensure real Chinese glyphs in screenshots
+        run: |
+          command -v google-chrome || command -v google-chrome-stable || command -v chromium
+          if ! fc-list :lang=zh | grep -q .; then
+            sudo timeout 120s apt-get install -y --no-install-recommends fonts-wqy-microhei
+          fi
+          fc-list :lang=zh | grep -q .
+          fc-match -f '%{family}\n' ":lang=zh" | head -1
+      - name: Capture 1440, 768, 390 real static and animation frames
+        working-directory: web
+        env:
+          PREVIEW_URL: http://127.0.0.1:3006/ui-lab/xiaozhi-motion
+          PREVIEW_OUT: ../xiaozhi-motion-proof
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium)" node src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/capture-motion.mjs
+      - name: Upload actual screenshots and reproducible measurements
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xiaozhi-svg-motion-experiment-real-chromium
+          path: xiaozhi-motion-proof/
+          retention-days: 14
+          if-no-files-found: warn

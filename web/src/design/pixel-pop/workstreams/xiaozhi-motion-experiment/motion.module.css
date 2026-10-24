@@ -1,0 +1,128 @@
+/* Experimental component scope only — no original mascot CSS or tokens changed. */
+.lab{--paper:#fff;--ink:#12121d;--violet:#7440ff;--blue:#246bff;--yellow:#ffe342;
+  min-height:100vh;color:var(--ink);background:radial-gradient(circle at 12% 10%,#d8d0ff 0,transparent 32%),linear-gradient(155deg,#f5f7ff,#ecf0ff);
+  font-family:Inter,"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:14px;padding:24px 20px 58px}
+.lab *{box-sizing:border-box}
+.page{max-width:1180px;margin:auto}
+.titleBar{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:26px}
+.titleCopy{max-width:790px}.kicker{display:inline-block;font-size:11px;letter-spacing:1.6px;color:#5331ae;font-weight:950}
+.titleBar h1{font-size:clamp(30px,4.4vw,54px);line-height:1.1;letter-spacing:-1.9px;margin:11px 0}
+.titleBar h1 span{display:inline-block;background:var(--yellow);border:3px solid var(--ink);padding:5px 11px;box-shadow:4px 4px 0 var(--ink);font-size:23px;vertical-align:middle;letter-spacing:0}
+.titleBar p{max-width:620px;line-height:1.75;color:#58627b;margin:0}
+.status{font-size:12px;font-weight:950;white-space:nowrap;background:var(--yellow);border:2px solid var(--ink);padding:9px 12px;box-shadow:3px 3px 0 var(--ink);transform:rotate(2deg)}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+.stage{min-width:0;background:white;border:3px solid var(--ink);border-radius:13px;box-shadow:6px 6px 0 var(--ink);overflow:hidden}
+.stageHeading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 17px;border-bottom:3px solid var(--ink)}
+.stageHeading strong{font-weight:1000;font-size:16px}.stageHeading small{color:#554e76;font-weight:850}
+.catStage{min-height:300px;display:grid;place-items:center;position:relative;isolation:isolate;overflow:hidden;
+  background:#f8fbff;transition:background .2s}
+.catStage::before{content:"";position:absolute;inset:14px;border:1px dashed #8892ba;opacity:.52;pointer-events:none}
+.catStage[data-background="dark"]{background:#18223b}.catStage[data-background="dark"]::before{border-color:#7180b0}
+.catStage[data-background="violet"]{background:#cfbdff}.catStage[data-background="yellow"]{background:#ffe342}
+.motionFrame{display:inline-flex;width:var(--xz-motion-size);height:var(--xz-motion-size);
+  justify-content:center;align-items:center;position:relative;isolation:isolate;outline:none;filter:none;box-shadow:none;
+  background:transparent;flex:none}
+.motionSvg{display:block;width:100%;height:100%;overflow:visible;background:transparent;outline:none;filter:none}
+.bodyRig{transform-box:view-box;transform-origin:50% 76%;will-change:transform}
+.motionFrame [data-xz-part="eye-left"],.motionFrame [data-xz-part="eye-right"]{
+  transform-box:view-box;will-change:transform
+}
+.motionFrame [data-xz-part="eye-left"]{transform-origin:37% 48.6%}
+.motionFrame [data-xz-part="eye-right"]{transform-origin:62.8% 48.5%}
+.closedLids{opacity:0;pointer-events:none}
+.motionFrame[data-action="blink"] [data-xz-part^="eye-"]{animation:eyeDisappear .7s steps(1,end) 1}
+.motionFrame[data-action="blink"] .closedLids{animation:eyeLidsAppear .7s steps(1,end) 1}
+.motionFrame[data-action="nod"] .bodyRig{animation:headBow .95s steps(5,end) 1}
+.motionFrame[data-action="hop"] .bodyRig{animation:gentleHop 1.05s steps(6,end) 1}
+/* Native source-pixel poses, not continuous rotations of a disconnected RLE group.
+   All three tail frames are mutually exclusive; the canonical frame returns
+   automatically at 100%. Original fixed hinge spans x<=430 source pixels. */
+.tailUpPose,.tailDownPose{opacity:0;pointer-events:none}
+.motionFrame[data-action="tail"] [data-xz-part="tail"]{animation:sourceTailSwap .95s steps(1,end) 1}
+.motionFrame[data-action="tail"] .tailUpPose{animation:tailUpSwap .95s steps(1,end) 1}
+.motionFrame[data-action="tail"] .tailDownPose{animation:tailDownSwap .95s steps(1,end) 1}
+.motionFrame[data-action="hello"] .bodyRig{animation:helloTilt 1.25s steps(5,end) 1}
+.motionFrame[data-action="hello"] [data-xz-part^="eye-"]{animation:eyeDisappear 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] .closedLids{animation:eyeLidsAppear 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] [data-xz-part="tail"]{animation:sourceTailSwap 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] .tailUpPose{animation:tailUpSwap 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] .tailDownPose{animation:tailDownSwap 1.25s steps(1,end) 1}
+/* The uncompromised original full master is always the REST compositor.
+   The clipped rig and experimental paw are rendered only for the raised
+   keyframes; 100% returns to source-exact original paths, no clipping pass. */
+.pawMasterRest{opacity:1}
+.pawArticulatedSource,.pawArticulatedOverlay{opacity:0;pointer-events:none}
+.motionFrame[data-action="paw"] .pawMasterRest{animation:pawRestHide 1.05s steps(1,end) 1}
+.motionFrame[data-action="paw"] .pawArticulatedSource,
+.motionFrame[data-action="paw"] .pawArticulatedOverlay{animation:pawLiftShow 1.05s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawMasterRest{animation:pawRestHide 1.4s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawArticulatedSource,
+.motionFrame[data-action="wave"] .pawArticulatedOverlay{animation:pawLiftShow 1.4s steps(1,end) 1}
+/* Experimental left forepaw: resting source is reproduced pixel-exactly;
+   two alternative vector frames are stepped with no antialiased rotation. */
+.pawRestPose{opacity:1;pointer-events:none}
+.pawUpPose,.pawWavePose{opacity:0;pointer-events:none}
+.motionFrame[data-action="paw"] .pawRestPose{animation:pawRestHide 1.05s steps(1,end) 1}
+.motionFrame[data-action="paw"] .pawUpPose{animation:pawLiftShow 1.05s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawRestPose{animation:pawRestHide 1.4s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawUpPose{animation:pawWaveUp 1.4s steps(1,end) 1}
+.motionFrame[data-action="wave"] .pawWavePose{animation:pawWaveOut 1.4s steps(1,end) 1}
+@keyframes pawRestHide{0%,18%,83%,100%{opacity:1}19%,82%{opacity:0}}
+@keyframes pawLiftShow{0%,18%,83%,100%{opacity:0}19%,82%{opacity:1}}
+@keyframes pawWaveUp{0%,18%,44%,60%,83%,100%{opacity:0}19%,43%,61%,82%{opacity:1}}
+@keyframes pawWaveOut{0%,43%,61%,100%{opacity:0}44%,60%{opacity:1}}
+@keyframes eyeDisappear{0%,25%,55%,100%{opacity:1}32%,48%{opacity:0}}
+@keyframes eyeLidsAppear{0%,25%,55%,100%{opacity:0}32%,48%{opacity:1}}
+@keyframes headBow{0%,100%{transform:rotate(0deg)}28%{transform:rotate(-4deg) translateY(2px)}52%{transform:rotate(5deg) translateY(7px)}74%{transform:rotate(-2deg)}}
+@keyframes gentleHop{0%,100%{transform:translateY(0) scale(1,1)}13%{transform:translateY(7px) scale(1.035,.96)}35%,50%{transform:translateY(-27px) scale(.985,1.025)}75%{transform:translateY(1px) scale(1.02,.985)}}
+@keyframes sourceTailSwap{0%,19%,48%,78%,100%{opacity:1}20%,47%,49%,77%{opacity:0}}
+@keyframes tailUpSwap{0%,19%,48%,100%{opacity:0}20%,47%{opacity:1}}
+@keyframes tailDownSwap{0%,48%,78%,100%{opacity:0}49%,77%{opacity:1}}
+@keyframes helloTilt{0%,100%{transform:rotate(0)}20%,55%{transform:rotate(-5deg)}39%,73%{transform:rotate(6deg)}}
+.controls,.optical,.note{background:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:5px 5px 0 var(--ink);padding:18px 19px;margin-bottom:22px}
+.sectionIntro h2{font-size:20px;line-height:1.2;margin:0 0 4px;font-weight:950}
+.sectionIntro p{margin:0;color:#58627b;line-height:1.6;font-size:12px}
+.actionGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:18px 0}
+.actionButton{min-width:0;min-height:68px;display:flex;align-items:center;gap:12px;border:2px solid var(--ink);
+  border-radius:8px;background:#fff;color:var(--ink);padding:12px;cursor:pointer;text-align:left;
+  font-family:inherit;box-shadow:3px 3px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+.actionButton:hover{background:#efe9ff;transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.actionButton[data-selected="true"]{background:#7440ff;color:#fff}
+.actionButton strong{font-size:13px;line-height:1.35}
+.actionMark{display:grid;place-items:center;flex:none;width:34px;height:34px;background:#ffe342;border:2px solid var(--ink);
+  color:#12121d;border-radius:6px;font-size:20px;font-weight:900}
+.lowerControls{display:flex;align-items:center;gap:20px;justify-content:space-between;flex-wrap:wrap}
+.replay{background:#246bff;color:white;border:2px solid var(--ink);padding:11px 15px;border-radius:6px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;font-weight:900}
+.themes{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0;padding:0;border:0}
+.themes legend{font-weight:900;font-size:12px;margin-bottom:6px}
+.themeOption{background:#fff;border:2px solid #a6aec8;border-radius:5px;padding:7px 12px;cursor:pointer;font-weight:800}
+.themeOption[aria-pressed="true"]{border-color:#12121d;box-shadow:2px 2px 0 #12121d;background:#efe9ff}
+.opticalRow{display:flex;align-items:center;flex-wrap:wrap;gap:19px;margin-top:16px}
+.opticalRow>div{display:flex;align-items:center;gap:12px;padding:12px 16px;border:1px solid #c8cee0;border-radius:7px;background:#f5f7ff}
+.opticalRow span{font-size:12px;font-weight:750}
+.note{font-size:12px;line-height:1.75;background:#fff3be;box-shadow:3px 3px 0 var(--ink)}
+.lab :is(button):focus-visible{outline:3px solid #246bff;outline-offset:3px}
+@media(max-width:700px){.lab{padding:16px 12px 44px}.titleBar{display:block}.status{display:inline-block;margin-top:14px}
+ .compare{gap:13px}.stageHeading{display:block;padding:10px}.stageHeading strong,.stageHeading small{display:block}
+ .catStage{min-height:220px}.catStage .motionFrame{width:min(100%,175px);height:auto;aspect-ratio:1}
+ .actionGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls,.optical,.note{padding:15px}}
+@media(max-width:420px){.catStage{min-height:177px}.catStage .motionFrame{width:min(100%,140px)}
+ .stageHeading strong{font-size:13px}.stageHeading small{font-size:10px}
+ .actionButton{min-height:57px;gap:8px;padding:9px}.actionButton strong{font-size:12px}.actionMark{width:28px;height:28px;font-size:16px}
+ .titleBar h1{font-size:30px}.opticalRow{gap:8px}.opticalRow>div{padding:10px 8px}}
+@media(prefers-reduced-motion:reduce){
+  .bodyRig,.closedLids,.tailUpPose,.tailDownPose,
+  .motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{
+    animation:none!important;transform:none!important
+  }
+  .motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{opacity:1!important}
+  .motionFrame .closedLids,.motionFrame .tailUpPose,.motionFrame .tailDownPose,
+  .motionFrame .pawUpPose,.motionFrame .pawWavePose{opacity:0!important}
+  .motionFrame .pawRestPose{opacity:1!important}
+  .motionFrame .pawRestPose,.motionFrame .pawUpPose,.motionFrame .pawWavePose,
+  .motionFrame .pawMasterRest,.motionFrame .pawArticulatedSource,
+  .motionFrame .pawArticulatedOverlay{animation:none!important}
+  .motionFrame .pawMasterRest{opacity:1!important}
+  .motionFrame .pawArticulatedSource,.motionFrame .pawArticulatedOverlay{opacity:0!important}
+  .actionButton,.catStage{transition:none}
+}

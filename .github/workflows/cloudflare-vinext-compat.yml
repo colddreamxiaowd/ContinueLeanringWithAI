@@ -32,6 +32,10 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - name: Install existing locked dependencies
         run: npm ci
+      - name: Confirm original Next.js production build still works
+        run: npm run build
+      - name: Confirm original TypeScript check still works
+        run: npm run typecheck
       - name: Record runtime and check vinext compatibility
         run: |
           node --version | tee vinext-check.log
@@ -39,6 +43,7 @@ jobs:
           echo '=== vinext compatibility check ===' | tee -a vinext-check.log
           npx --yes vinext check 2>&1 | tee -a vinext-check.log
       - name: Initialize official Cloudflare vinext configuration (runner only)
+        if: hashFiles('web/vite.config.ts') == ''
         env:
           CI: 'true'
         run: |

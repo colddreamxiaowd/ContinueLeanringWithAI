@@ -71,10 +71,22 @@ export function XiaozhiMotionPrototype({
         <g className={styles.tailDownPose} data-tail-swap="down">
           <XiaozhiTailFrame pose="down"/>
         </g>
-        <g clipPath={pawMotion?`url(#${clipId})`:undefined} data-rig-paw-clip={pawMotion?"source-exact-vector-hole":undefined}>
+        {/* Source-only rest group: no clip, opacity mask, blending, or arm
+            regeneration. It is exactly the same canonical component as 'none'.
+            This stays visible before and after the gesture. */}
+        {pawMotion&&<g className={styles.pawMasterRest} data-paw-master-rest="source-exact">
+          <XiaozhiLayers/>
+        </g>}
+        {/* Only while the paw is actually up do we reveal the articulated
+            compositor. Keeping this hidden at rest prevents subpixel halos
+            from SVG clipPath processing on the character's other edges. */}
+        <g className={pawMotion?styles.pawArticulatedSource:undefined}
+           clipPath={pawMotion?`url(#${clipId})`:undefined}
+           data-rig-paw-clip={pawMotion?"source-exact-vector-hole":undefined}>
           <XiaozhiLayers/>
         </g>
-        {pawMotion&&<g data-paw-articulation="left-front-source-pixels">
+        {pawMotion&&<g className={styles.pawArticulatedOverlay}
+            data-paw-articulation="left-front-source-pixels">
           <XiaozhiPawBodyBacking/>
           <g className={styles.pawRestPose} data-paw-layer="rest"><XiaozhiPawRest/></g>
           <g className={styles.pawUpPose} data-paw-layer="up"><XiaozhiPawGesture pose="up"/></g>

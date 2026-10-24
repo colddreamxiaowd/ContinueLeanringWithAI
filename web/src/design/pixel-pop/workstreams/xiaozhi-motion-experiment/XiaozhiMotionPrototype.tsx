@@ -9,8 +9,8 @@ import styles from "./motion.module.css";
 /**
  * ISOLATED EXPERIMENT. Never changes XiaozhiLayers, Xiaozhi or the approved
  * 573px, 25-colour native SVG master. Motion is only applied to reusable
- * source-exact <g data-xz-part> groups. Eyelid frames are original-eye-pixel
- * masks plus two deliberate, separately inspectable black eyelid paths.
+ * source-exact <g data-xz-part> groups. Blink compresses the original black-eye
+ * groups against a source-colour fur backing, avoiding white-repaint fringe.
  */
 export const MOTION_ACTIONS=["none","blink","nod","hop","tail","hello"] as const;
 export type XiaozhiExperimentalAction=typeof MOTION_ACTIONS[number];
@@ -19,14 +19,10 @@ export const MOTION_LABELS:Record<XiaozhiExperimentalAction,string>={
   tail:"摇尾巴（风险实验）",hello:"打招呼（组合）"
 };
 
-/* Original source EXACT black-eye pixel masks from XiaozhiLayers.tsx.
- * Only these pixels are recoloured to existing #F8F8F9 fur during blink.
- * The master remains untouched, and no new character outline is invented. */
-const ORIGINAL_EYE_PIXEL_MASKS=
-  "M202 251h20v4h-20Z M198 255h24v3h-24Z M195 258h31v4h-31Z "+
-  "M191 262h38v34h-38Z M191 296h35v4h-35Z M198 300h24v3h-24Z M198 303h21v4h-21Z "+
-  "M352 248h17v3h-17Z M348 251h24v7h-24Z M345 258h34v4h-34Z "+
-  "M341 262h38v34h-38Z M345 296h34v4h-34Z M348 300h24v7h-24Z";
+/* Static backing is drawn UNDER the source-exact rig, fully covered at rest.
+ * It becomes visible only when the existing eye groups compress to a blink.
+ * Same canonical #F8F8F9 fur, no repainting or antialias overlay fringe. */
+const EYE_FUR_BACKING="M188 246h45v64h-45Z M338 244h45v66h-45Z";
 
 export function XiaozhiMotionPrototype({
   action="none",size=200,replay=0,decorative=false
@@ -43,14 +39,8 @@ export function XiaozhiMotionPrototype({
       aria-label={decorative?undefined:"小知，"+MOTION_LABELS[action]}
       shapeRendering="crispEdges" focusable="false" xmlns="http://www.w3.org/2000/svg">
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
+        <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
         <XiaozhiLayers/>
-        {/* The blink overlay is normally invisible. It is not an altered master. */}
-        <g className={styles.blinkOverlay} data-motion-overlay="eyelids" stroke="none"
-          shapeRendering="crispEdges">
-          <path d={ORIGINAL_EYE_PIXEL_MASKS} fill="#F8F8F9"/>
-          <path d="M194 277h32v5h-32Z M343 277h33v5h-33Z"
-            fill="#08080C"/>
-        </g>
       </g>
     </svg>
   </span>;
@@ -117,7 +107,7 @@ export function XiaozhiMotionLab(){
         </div>
       </section>
       <div className={styles.note}>
-        **技术边界**：点头/跳跃是完整结构变换；眨眼是独立像素眼帧；摇尾巴会移动原「tail」区域，尾根遮挡需人工检查。此处不宣称已实现新的骨骼、挥爪或全部表情。
+        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；摇尾巴会移动「tail」区域，尾根遮挡需人工检查。此处不宣称已实现完整骨骼、挥爪或所有表情。
       </div>
     </div>
   </div>;

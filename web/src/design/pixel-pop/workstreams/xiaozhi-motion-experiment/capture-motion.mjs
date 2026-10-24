@@ -87,13 +87,27 @@ try{
       throw Error("Motion did not run: "+JSON.stringify({name,action,state}));
     if(name==="desktop"&&action==="hop")await capture("hop-real-frame-070",width);
     await sleep(Math.max(0,delay-70));
+    const poseRead=await evalJs(`(()=>{const base=document.querySelector('[data-active-action] [data-action]');
+      const part=name=>base?.querySelector('[data-xz-part="'+name+'"]');
+      const op=element=>element?Number(getComputedStyle(element).opacity):null;
+      return {leftEye:op(part("eye-left")),rightEye:op(part("eye-right")),
+        eyelids:op(base?.querySelector('[data-motion-eyelids]')),
+        tailOriginal:op(part("tail")),
+        tailUp:op(base?.querySelector('[data-tail-swap="up"]')),
+        tailDown:op(base?.querySelector('[data-tail-swap="down"]')),
+        faceShadeRects:base?.querySelector('[data-motion-eye-shade-fix]')?.getAttribute('d')?.match(/M\\d+ \\d+h\\d+v\\d+h-\\d+Z/g)?.length??0};})()`);
+    if(action==="blink"&&(poseRead.faceShadeRects!==17||poseRead.leftEye>0.01||
+       poseRead.rightEye>0.01||poseRead.eyelids<.99))
+      throw Error("Blink closed-frame contract failed "+name+": "+JSON.stringify(poseRead));
+    if(action==="tail"&&(poseRead.tailOriginal>.01||poseRead.tailUp<.99||poseRead.tailDown>.01))
+      throw Error("Native up-tail frame swap contract failed "+name+": "+JSON.stringify(poseRead));
     await capture("xiaozhi-"+name+"-"+width+"-"+action,width);
     if(name==="desktop"&&action==="hop"){
       await capture("hop-real-frame-350",width);
       await sleep(190);await capture("hop-real-frame-540",width);
       await sleep(250);await capture("hop-real-frame-790",width);
     }
-    actions.push({action,...state});
+    actions.push({action,...state,poseRead});
   }
   const switched=await evalJs(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('深色'));b?.click();
      return !!b;})()`);

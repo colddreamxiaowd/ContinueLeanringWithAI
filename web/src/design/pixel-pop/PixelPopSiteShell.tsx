@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {useEffect,useState,type ReactNode} from "react";
+import {useEffect,useRef,useState,type ReactNode} from "react";
 import {BookOpen,FlaskConical,FolderOpen,GraduationCap,Home,LibraryBig,Menu,Moon,Search,Settings2,Sun,X} from "lucide-react";
 import {PixelCat,PopButton} from "./primitives";
 import "./pixel-pop.css";
@@ -29,6 +29,8 @@ export function PixelPopSiteShell({children,title="个人学习空间",toolbar,d
  const [storedDensity,setStoredDensity]=useState<PixelDensity>("balanced");
  const [menuOpen,setMenuOpen]=useState(false);
  const [query,setQuery]=useState("");
+ const [mobileSearchOpen,setMobileSearchOpen]=useState(false);
+ const searchInput=useRef<HTMLInputElement>(null);
  const [dark,setDark]=useState(false);
  const [hydrated,setHydrated]=useState(false);
  const currentDensity=density??storedDensity;
@@ -42,6 +44,7 @@ export function PixelPopSiteShell({children,title="个人学习空间",toolbar,d
   }catch{}
   setHydrated(true);
  },[]);
+ useEffect(()=>{if(mobileSearchOpen)searchInput.current?.focus();},[mobileSearchOpen]);
  function switchDensity(value:PixelDensity){
   setStoredDensity(value);onDensityChange?.(value);
   try{localStorage.setItem("zhixu_pixel_pop_density",value)}catch{}
@@ -66,9 +69,11 @@ export function PixelPopSiteShell({children,title="个人学习空间",toolbar,d
      <div className="pp-brand-icon"><GraduationCap size={25}/></div>
      <strong>知序 <span>Learning Hub</span></strong>
     </Link>
-    <form className="pp-search" action="/courses" role="search">
+    <button type="button" className="pp-site-search-toggle" aria-label={mobileSearchOpen?"收起搜索":"展开课程搜索"} aria-expanded={mobileSearchOpen}
+      onClick={()=>setMobileSearchOpen(x=>!x)}><Search size={18}/></button>
+    <form className={"pp-search pp-site-search"+(mobileSearchOpen?" pp-site-search--open":"")} action="/courses" role="search">
      <Search size={19}/>
-     <input name="q" type="search" aria-label="搜索课程" placeholder="搜索课程或知识点…"
+     <input ref={searchInput} name="q" type="search" aria-label="搜索课程" placeholder="搜索课程或知识点…"
       value={query} onChange={e=>setQuery(e.target.value)}/>
      <kbd>↵</kbd>
     </form>

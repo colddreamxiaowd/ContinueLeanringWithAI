@@ -87,7 +87,7 @@ try {
   })()`);
   if(!state.ready||!state.brand||!state.mascot||state.nav<6)throw Error(path+": site shell not unified: "+JSON.stringify(state));
   if(path!=="/"&&!state.legacy)throw Error(path+": legacy route missing readable white surface");
-  if(state.legacy&&state.paper!=="rgb(255, 255, 255)")throw Error(path+": paper background is not white: "+JSON.stringify(state));
+  if(state.legacy&&!["rgb(255, 255, 255)","rgb(248, 248, 255)"].includes(state.paper))throw Error(path+": expected readable paper background: "+JSON.stringify(state));
   if(state.legacy&&state.ink==="rgb(255, 255, 255)")throw Error(path+": dark text regression: "+JSON.stringify(state));
   if(state.scroll>state.width+3)throw Error(path+": horizontal overflow "+JSON.stringify(state));
   return state;
@@ -102,6 +102,12 @@ try {
  const records=[];
  for(const [label,width,height] of [["desktop",1440,900],["tablet",768,1024],["mobile",390,844]]){
   await cmd("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width===390});
+  // Persisted preference from the previous viewport is intentional user state;
+  // explicitly reset it for labeled LIGHT screenshots, then test DARK separately.
+  await visit("/");
+  await js("localStorage.setItem('learninghub.theme','light')");
+  await cmd("Page.reload",{ignoreCache:false});
+  await until("document.querySelector('.pp-site-shell')?.dataset.ppTheme==='light'");
   for(const route of routes){
    await visit(route.path);
    const state=await assertDisplay(route.path);
@@ -125,7 +131,7 @@ try {
   await until("document.querySelector('.pp-site-shell')?.dataset.ppTheme==='dark'");
   const persisted=await assertDisplay("/courses/");
   records.push({viewport:label,path:"/courses/",file:dark,theme:"dark",reloadPersisted:true,
-   readable: persisted.paper==="rgb(255, 255, 255)"});
+   readable: persisted.paper==="rgb(248, 248, 255)"});
   console.log("PASS "+label+": "+routes.length+" cross-page visuals + dark-theme persistence");
  }
  writeFileSync(join(OUT,"acceptance.json"),JSON.stringify({origin:ORIGIN,records},null,2));

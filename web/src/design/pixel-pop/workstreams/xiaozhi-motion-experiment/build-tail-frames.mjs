@@ -6,7 +6,7 @@
  */
 import {readFileSync,writeFileSync} from "node:fs";
 import {resolve} from "node:path";
-import {createHash} from "node:crypto";
+
 
 const web=resolve(import.meta.dirname,"../../../../..");
 const rig=readFileSync(resolve(web,"src/design/pixel-pop/mascot/XiaozhiLayers.tsx"),"utf8");
@@ -67,7 +67,7 @@ function toSvgPaths(pixels){
 const poses=[["up",frame(-1)],["down",frame(1)]];
 let code="/** AUTO-GENERATED source-pixel-preserving tail frames. DO NOT hand-edit.\n"+
  " * Input: approved XiaozhiLayers tail group; hinge fixed x<=430, max 10px displacement.\n"+
- " * sha256 of canonical rig: "+createHash("sha256").update(rig).digest("hex")+"\n"+
+ " * source identity: canonical semantic rig; reproducible by --check\n"+
  " * source tail pixels: "+source.size+" ; each frame contains the same colour histogram.\n"+
  " */\nexport type XiaozhiTailPose = \"up\"|\"down\";\n"+
  "export function XiaozhiTailFrame({pose}:{pose:XiaozhiTailPose}){\n"+

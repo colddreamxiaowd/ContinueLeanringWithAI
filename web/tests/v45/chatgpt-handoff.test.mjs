@@ -81,8 +81,8 @@ test("continuation preserves mode/source metadata and explicitly rejects imagina
 test("reject oversized extracted handoffs rather than silently omitting part of real file",()=>{
  const b=demoPlanBundle();
  const big="z".repeat(19_000);
- const reader={sections:Array.from({length:250},(_,i)=>({
-  label:"part"+i,paragraphs:Array.from({length:32},()=>big)
+ const reader={sections:Array.from({length:50},(_,i)=>({
+  label:"part"+i,paragraphs:Array.from({length:20},()=>big)
  }))};
  assert.throws(()=>makeCourseHandoff({bundle:b,reader}),/HANDOFF_TEXT_TOO_LARGE/);
 });

@@ -5,7 +5,7 @@ import type {CSSProperties} from "react";
 import {XiaozhiLayers} from "../../mascot/XiaozhiLayers";
 import {Xiaozhi} from "../../mascot/Xiaozhi";
 import {XiaozhiTailFrame} from "./XiaozhiTailFrames";
-import {XiaozhiPawBodyBacking,XiaozhiPawRemoval,XiaozhiPawRest} from "./XiaozhiPawFrames";
+import {XiaozhiPawBodyBacking,XiaozhiPawRest,XIAOZHI_PAW_CUTOUT_D} from "./XiaozhiPawFrames";
 import {XiaozhiPawGesture} from "./XiaozhiPawGesture";
 import styles from "./motion.module.css";
 
@@ -42,7 +42,7 @@ export function XiaozhiMotionPrototype({
   action?:XiaozhiExperimentalAction;size?:number;replay?:number;decorative?:boolean;
 }){
   const safeSize=Math.max(24,Math.min(450,size));
-  const maskId=useId().replace(/:/g,"")+"-experimental-paw-hole";
+  const clipId=useId().replace(/:/g,"")+"-experimental-paw-clip";
   const pawMotion=action==="paw"||action==="wave";
   const vars={"--xz-motion-size":safeSize+"px"} as CSSProperties;
   return <span className={styles.motionFrame} data-action={action} data-replay={replay}
@@ -53,11 +53,13 @@ export function XiaozhiMotionPrototype({
       aria-label={decorative?undefined:"小知，"+MOTION_LABELS[action]}
       shapeRendering="crispEdges" focusable="false" xmlns="http://www.w3.org/2000/svg">
       {pawMotion&&<defs>
-        <mask id={maskId} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"
-          x="0" y="0" width="573" height="573">
-          <rect width="573" height="573" fill="#fff"/>
-          <XiaozhiPawRemoval/>
-        </mask>
+        {/* An even-odd native vector clip keeps every pixel OUTSIDE the 4525px
+            paw source region on the original compositor path. No alpha-mask
+            pass over the whole mascot; the 8 RLE holes are source-exact. */}
+        <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
+          <path d={`M0 0h573v573h-573Z ${XIAOZHI_PAW_CUTOUT_D}`}
+            clipRule="evenodd" fillRule="evenodd"/>
+        </clipPath>
       </defs>}
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
         <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
@@ -69,7 +71,7 @@ export function XiaozhiMotionPrototype({
         <g className={styles.tailDownPose} data-tail-swap="down">
           <XiaozhiTailFrame pose="down"/>
         </g>
-        <g mask={pawMotion?`url(#${maskId})`:undefined} data-rig-paw-mask={pawMotion?"source-cutout":undefined}>
+        <g clipPath={pawMotion?`url(#${clipId})`:undefined} data-rig-paw-clip={pawMotion?"source-exact-vector-hole":undefined}>
           <XiaozhiLayers/>
         </g>
         {pawMotion&&<g data-paw-articulation="left-front-source-pixels">

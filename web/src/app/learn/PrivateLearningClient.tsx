@@ -19,7 +19,7 @@ type Pack={schemaVersion:string;title:string;description:string;version:number;
   sourceRefs:{id:string;fileName:string;locator:string}[];
   chapters:{id:string;title:string;blocks:Block[]}[]};
 type Course={id:string;title:string;pack_version:number;pack:Pack;created_at:string};
-type Progress={completedBlockIds:string[];answers:Record<string,number>;simStacks:Record<string,number[]>};
+type Progress={completedBlockIds:string[];answers:Record<string,number>;simStacks:Record<string,number[]>;lastLocation?:{chapterId?:string;blockId?:string}};
 const nav=[
   {id:"home" as const,label:"我的私人课程",href:"/learn",icon:"home" as const},
   {id:"courses" as const,label:"导入课程",href:"/coursepacks",icon:"courses" as const},
@@ -27,7 +27,8 @@ const nav=[
 ];
 const empty=():Progress=>emptyCourseProgress() as Progress;
 
-export default function PrivateLearningClient(){
+export default function PrivateLearningClient({ownerId}:{ownerId:string}){
+  const recentKey="zhixu_recent_course_"+ownerId;
   const [courses,setCourses]=useState<Course[]>([]);
   const [selected,setSelected]=useState<Course|null>(null);
   const [chapterId,setChapterId]=useState("");
@@ -54,13 +55,17 @@ export default function PrivateLearningClient(){
         if(!response.ok)throw new Error("私人课程列表暂时不可用，请重试。");
         const data=await response.json();
         if(!mounted)return;
-        setCourses(ownCourseRows(data.courses) as Course[]);
+        const own=ownCourseRows(data.courses) as Course[];
+        setCourses(own);
+        try{const recent=localStorage.getItem(recentKey);
+          const saved=own.find(course=>course.id===recent);if(saved)void openCourse(saved);
+        }catch{}
       }catch(err){if(mounted)setError(err instanceof Error?err.message:"课程读取失败");}
       finally{if(mounted)setLoading(false);}
     }
     void load();
     return ()=>{mounted=false;seq.current++;};
-  },[]);
+  },[recentKey]);
 
   async function openCourse(course:Course){
     const requestId=++seq.current;
@@ -80,10 +85,17 @@ export default function PrivateLearningClient(){
         completedBlockIds:Array.isArray(data.state?.completedBlockIds)?data.state.completedBlockIds:[],
         answers:data.state?.answers&&typeof data.state.answers==="object"?data.state.answers:{},
         simStacks:data.state?.simStacks&&typeof data.state.simStacks==="object"?data.state.simStacks:{},
+        lastLocation:data.state?.lastLocation&&typeof data.state.lastLocation==="object"?data.state.lastLocation:undefined,
       };
       progressRef.current=loaded;setProgress(loaded);
       const view=courseView(course.pack,loaded);
-      setChapterId(view.chapterId);
+      const last=loaded.lastLocation;
+      const validChapter=course.pack.chapters.some(ch=>ch.id===last?.chapterId);
+      const chosen=validChapter?last!.chapterId!:view.chapterId;
+      setChapterId(chosen);
+      if(course.pack.chapters.find(ch=>ch.id===chosen)?.blocks.some(b=>b.id===last?.blockId))
+        setSectionId(last?.blockId||"");
+      try{localStorage.setItem(recentKey,course.id);}catch{}
     }catch(err){if(requestId===seq.current)setError(err instanceof Error?err.message:"进度读取失败");}
   }
 
@@ -107,10 +119,15 @@ export default function PrivateLearningClient(){
     });
   }
 
+  function saveLocation(nextChapter:string,nextBlock=""){
+    setChapterId(nextChapter);setSectionId(nextBlock);
+    saveProgress(old=>({...old,lastLocation:{chapterId:nextChapter,blockId:nextBlock}}));
+  }
+
   function jump(id:string,pack:Pack){
     const found=pack.chapters.find(ch=>ch.blocks.some(block=>block.id===id));
     if(!found)return;
-    setChapterId(found.id);setSectionId(id);setShowMobileOutline(false);
+    saveLocation(found.id,id);setShowMobileOutline(false);
   }
   useEffect(()=>{
     if(!sectionId)return;
@@ -148,6 +165,7 @@ export default function PrivateLearningClient(){
           {courses.map(course=><option value={course.id} key={course.id}>{course.title}</option>)}
         </select>
         <Link href="/coursepacks" className={s.action}>导入 CoursePack JSON →</Link>
+        <Link href="/learn/math" className={s.action}>条件概率深度实践（合成教学试点） →</Link>
       </div>
       {loading&&<p role="status" className={s.notice}>正在从私人课程接口读取课程…</p>}
       {!loading&&!courses.length&&!error&&<div className={s.empty}>
@@ -168,14 +186,14 @@ export default function PrivateLearningClient(){
         <div className={s.overview}>
           <CourseProgressCard title="当前课程进度" progressPercent={view.progressPercent}
             chapters={view.chapters as ProgressChapter[]}
-            onOpenChapter={id=>{setChapterId(id);setSectionId("");}}
-            onContinue={()=>{setChapterId(view.chapterId);setSectionId("");}}
+            onOpenChapter={id=>saveLocation(id)}
+            onContinue={()=>saveLocation(view.chapterId)}
             onViewAll={()=>document.getElementById("private-course-reader")?.scrollIntoView()}/>
           <SourceFileCard title="课程来源线索" files={sources} onViewAll={()=>window.location.assign("/library")}/>
         </div>
         <div className={s.chapterControls}>
           <label htmlFor="private-chapter-select">阅读章节</label>
-          <select id="private-chapter-select" value={view.chapterId} onChange={e=>{setChapterId(e.target.value);setSectionId("");setCitationId(null);}}>
+          <select id="private-chapter-select" value={view.chapterId} onChange={e=>{saveLocation(e.target.value);setCitationId(null);}}>
             {pack.chapters.map((ch,i)=><option key={ch.id} value={ch.id}>{i+1}. {ch.title}</option>)}
           </select>
         </div>

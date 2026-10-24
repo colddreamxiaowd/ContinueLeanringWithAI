@@ -1,0 +1,65 @@
+name: Zhixu Core public Cloudflare acceptance
+on:
+  push:
+    branches:
+      - deploy/cloudflare-vinext-preview-v1
+    paths:
+      - 'web/src/app/ui-lab/math/**'
+      - 'web/src/app/learn/math/**'
+      - 'web/src/lib/office-reader.mjs'
+      - '.github/workflows/core-math-public.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-math:
+    name: Cloudflare public math and protected account smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    env:
+      ZHIXU_PREVIEW_ORIGIN: https://zhixu-learning-hub-preview.colddreams.workers.dev
+      ZHIXU_PREVIEW_OUT: ../core-math-live
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Wait for the new Cloudflare math route
+        shell: bash
+        run: |
+          for i in {1..65}; do
+            code=$(curl -s --max-time 12 -o /tmp/math-cloudflare.html -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/ui-lab/math/" || true)
+            if [ "$code" = 200 ] && grep -q '条件概率' /tmp/math-cloudflare.html;then
+              echo "Math public route ready, HTTP 200";break
+            fi
+            echo "Attempt ${i}: ${code}";sleep 10
+          done
+          test "$code" = 200
+          grep -q '条件概率' /tmp/math-cloudflare.html
+          auth=$(curl -s -o /dev/null -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/learn/math/")
+          echo "Protected math route: ${auth}";test "$auth" = 307 || test "$auth" = 308
+          api=$(curl -s -o /dev/null -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/api/learning/math-events")
+          echo "Private event API anonymous status: ${api}";test "$api" = 401
+          for route in home reader practice;do
+            page=$(curl -s -o /dev/null -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/ui-lab/integrated/${route}/")
+            echo "${route}: ${page}";test "$page" = 200
+          done
+      - name: Prepare Chrome
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+      - name: Actual public URL Chromium transfer learning and restore (3 sizes)
+        shell: bash
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-math-core.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zhixu-core-math-live-browser
+          path: core-math-live/
+          if-no-files-found: warn
+          retention-days: 14

@@ -8,5 +8,5 @@ export const metadata={title:"私人课程学习 · 知序 Learning Hub"};
 export default async function PrivateLearningPage(){
   const user=await getCurrentUser();
   if(!user)redirect("/login?next=%2Flearn");
-  return <PrivateLearningClient/>;
+  return <PrivateLearningClient ownerId={user.id}/>;
 }

@@ -31,6 +31,8 @@ jobs:
       - run: npm run test:library
       - run: npm run typecheck
       - run: npm run build
+      - name: Verify signed-in two-account exploration events over real HTTP
+        run: node scripts/test-math-private-http.mjs
   workerd-chromium:
     name: Real Cloudflare workerd Chrome Math L3 on 3 widths
     runs-on: ubuntu-latest

@@ -99,11 +99,11 @@ export default function MathWorkbench({accountMode=false}:{accountMode?:boolean}
   const nav=accountMode?[
     {id:"home" as const,label:"私人课程",href:"/learn",icon:"home" as const},
     {id:"courses" as const,label:"我的资料",href:"/coursepacks",icon:"courses" as const},
-    {id:"practice" as const,label:"数学工作台",href:"/learn/math",icon:"practice" as const}
+    {id:"practice" as const,label:"数学工作台",href:"/learn/math",icon:"plan" as const}
   ]:[
     {id:"home" as const,label:"学习首页",href:"/ui-lab/integrated/home",icon:"home" as const},
     {id:"reader" as const,label:"深度阅读",href:"/ui-lab/integrated/reader",icon:"courses" as const},
-    {id:"practice" as const,label:"数学工作台",href:"/ui-lab/math",icon:"practice" as const}
+    {id:"practice" as const,label:"数学工作台",href:"/ui-lab/math",icon:"plan" as const}
   ];
   const targetValue=solved.posterior.numerator/solved.posterior.denominator;
   const guide=stage==="draw"?[

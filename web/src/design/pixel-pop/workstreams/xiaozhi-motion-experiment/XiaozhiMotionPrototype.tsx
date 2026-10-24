@@ -26,18 +26,12 @@ export const MOTION_LABELS:Record<XiaozhiExperimentalAction,string>={
  * Same canonical #F8F8F9 fur, no repainting or antialias overlay fringe. */
 const EYE_FUR_BACKING="M188 246h45v64h-45Z M338 244h45v66h-45Z";
 
-/** Precisely the 17 residual grey/light-grey rectangles assigned to 'face'
+/** Precisely the 17 source-grey rectangles assigned to 'face', padded only into adjacent canonical fur pixels
  * adjacent to the original eyes, not the eye groups. They were verified
- * against canonical XiaozhiLayers pixels. Only paint during the CLOSED frame,
+ * against canonical XiaozhiLayers pixels. Only paint during the CLOSED frame; source-grey pixels are exact and the halo guard includes only existing #F8F8F9 pixels,
  * ABOVE source groups, BEFORE the black eyelids. Do not cover cheek pixels. */
-const FACE_EYE_SHADE_FIX=[
- "M202 248h17v3h-17Z M348 248h4v3h-4Z M369 248h3v3h-3Z",
- "M198 251h4v4h-4Z M226 258h3v4h-3Z M341 258h4v4h-4Z",
- "M226 296h3v4h-3Z M341 296h4v4h-4Z M345 300h3v3h-3Z",
- "M372 300h4v3h-4Z M219 303h3v4h-3Z",
- "M219 248h3v3h-3Z M379 258h4v42h-4Z M191 300h4v3h-4Z",
- "M222 300h4v3h-4Z M372 303h4v4h-4Z M345 255h3v3h-3Z"
-].join(" ");
+const FACE_EYE_SHADE_FIX=
+  "M198 244h28v3h-28Z M344 244h12v4h-12Z M365 244h11v4h-11Z M194 247h32v4h-32Z M344 248h8v3h-8Z M369 248h7v3h-7Z M194 251h8v4h-8Z M222 251h4v3h-4Z M341 251h7v3h-7Z M372 251h4v3h-4Z M222 254h11v4h-11Z M337 254h11v4h-11Z M372 254h15v1h-15Z M194 255h4v3h-4Z M375 255h12v3h-12Z M194 258h1v1h-1Z M226 258h7v4h-7Z M337 258h8v4h-8Z M379 258h8v42h-8Z M229 262h4v4h-4Z M337 262h4v4h-4Z M229 292h4v4h-4Z M337 292h4v4h-4Z M187 296h1v4h-1Z M226 296h7v4h-7Z M337 296h8v4h-8Z M191 300h7v3h-7Z M222 300h11v3h-11Z M337 300h11v4h-11Z M372 300h7v7h-7Z M191 303h4v4h-4Z M219 303h14v1h-14Z M219 304h11v3h-11Z M341 304h7v3h-7Z M215 307h11v4h-11Z M368 307h8v4h-8Z";
 
 export function XiaozhiMotionPrototype({
   action="none",size=200,replay=0,decorative=false
@@ -66,7 +60,7 @@ export function XiaozhiMotionPrototype({
         <XiaozhiLayers/>
         <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none"
           shapeRendering="crispEdges">
-          <path d={FACE_EYE_SHADE_FIX} fill="#F8F8F9" data-motion-eye-shade-fix="source-17-rects"/>
+          <path d={FACE_EYE_SHADE_FIX} fill="#F8F8F9" data-motion-eye-shade-fix="source-grey-fur-guard"/>
           <path d="M194 278h32v6h-32Z M343 278h33v6h-33Z" fill="#08080C"/>
         </g>
       </g>

@@ -9,8 +9,9 @@ import styles from "./motion.module.css";
 /**
  * ISOLATED EXPERIMENT. Never changes XiaozhiLayers, Xiaozhi or the approved
  * 573px, 25-colour native SVG master. Motion is only applied to reusable
- * source-exact <g data-xz-part> groups. Blink compresses the original black-eye
- * groups against a source-colour fur backing, avoiding white-repaint fringe.
+ * source-exact <g data-xz-part> groups. Blink temporarily hides the original
+ * eye groups and shows two separately editable black eyelid paths above a
+ * behind-rig fur backing; no whites painted over black antialias edges.
  */
 export const MOTION_ACTIONS=["none","blink","nod","hop","tail","hello"] as const;
 export type XiaozhiExperimentalAction=typeof MOTION_ACTIONS[number];
@@ -41,6 +42,9 @@ export function XiaozhiMotionPrototype({
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
         <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
         <XiaozhiLayers/>
+        <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none">
+          <path d="M194 278h32v6h-32Z M343 278h33v6h-33Z" fill="#08080C"/>
+        </g>
       </g>
     </svg>
   </span>;

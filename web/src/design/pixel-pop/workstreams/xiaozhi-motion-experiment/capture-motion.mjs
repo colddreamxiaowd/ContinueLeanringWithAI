@@ -72,7 +72,8 @@ try{
   const actions=[];
   for(const [action,label,delay] of [
    ["blink","眨眼",260],["nod","轻轻点头",340],
-   ["hop","小跳跃",350],["tail","摇尾巴",360],["hello","打招呼",360]
+   ["hop","小跳跃",350],["tail","摇尾巴",360],["hello","打招呼",360],
+   ["paw","独立抬爪",400],["wave","挥爪招手",440]
   ]){
     const clicked=await evalJs(`(()=>{let button=[...document.querySelectorAll('button')].find(b=>b.textContent?.includes(${JSON.stringify(label)}));
      if(!button)return false;button.click();return true})()`);
@@ -101,7 +102,27 @@ try{
       throw Error("Blink closed-frame contract failed "+name+": "+JSON.stringify(poseRead));
     if(action==="tail"&&(poseRead.tailOriginal>.01||poseRead.tailUp<.99||poseRead.tailDown>.01))
       throw Error("Native up-tail frame swap contract failed "+name+": "+JSON.stringify(poseRead));
+    if(action==="paw"||action==="wave"){
+      const paw=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');
+        const op=label=>{const el=r?.querySelector('[data-paw-layer="'+label+'"]');return el?Number(getComputedStyle(el).opacity):null};
+        return {masked:!!r?.querySelector('[data-rig-paw-mask="source-cutout"]'),
+          parts:r?.querySelectorAll('[data-xz-part]').length,rest:op("rest"),up:op("up"),wave:op("wave"),
+          vector:!r?.querySelector('image,foreignObject')};})()`);
+      if(!paw.masked||paw.parts!==12||!paw.vector||paw.rest>.01||paw.up<.99||paw.wave>.01)
+        throw Error("Raised source paw is not visibly active: "+name+" "+JSON.stringify(paw));
+      state.pawEvidence=paw;
+    }
     await capture("xiaozhi-"+name+"-"+width+"-"+action,width);
+    if(action==="wave"){
+      await sleep(340);
+      const wavePose=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');
+        const op=label=>Number(getComputedStyle(r.querySelector('[data-paw-layer="'+label+'"]')).opacity);
+        return {rest:op("rest"),up:op("up"),wave:op("wave")};})()`);
+      if(wavePose.wave<.99||wavePose.up>.01||wavePose.rest>.01)
+        throw Error("Second native paw wave pose missing: "+name+" "+JSON.stringify(wavePose));
+      state.waveEvidence=wavePose;
+      await capture("xiaozhi-"+name+"-"+width+"-wave-out",width);
+    }
     if(action==="tail"){
       await sleep(205);
       const down=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');

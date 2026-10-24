@@ -1,0 +1,50 @@
+name: Investigate safe Cloudflare deployment without touching production
+on:
+  push:
+    branches: [fix/cloudflare-preserve-runtime-bindings-20261024]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build:vinext
+      - name: Inspect generated build output structure (no credentials, no deployment)
+        shell: bash
+        run: |
+          echo '--- output file tree ---'
+          find .cloudflare/output/v0 -maxdepth 5 \( -iname '*config*.json' -o -iname '*wrangler*' \) -print | head -60
+          echo '--- config metadata keys only ---'
+          node --input-type=module - <<'NODE'
+          import {readdirSync,readFileSync,existsSync} from 'node:fs';
+          for(const f of ['.cloudflare/output/v0/config.json',
+            '.cloudflare/output/v0/workers/default/worker.config.json',
+            '.cloudflare/output/v0/workers/default/wrangler.json',
+            '.cloudflare/output/v0/workers/default/wrangler.jsonc']){
+             if(!existsSync(f)){console.log(f+' MISSING');continue;}
+             const j=JSON.parse(readFileSync(f,'utf8'));
+             console.log(f,JSON.stringify({topKeys:Object.keys(j),workerName:j.name,envKeys:Object.keys(j.env||{}),
+              manifestKeys:Object.keys(j.manifest||{}),assetKeys:Object.keys(j.assets||{})}));
+          }
+          NODE
+      - name: Check Wrangler keeps Dashboard vars on deploy (dry-run only)
+        shell: bash
+        run: |
+          set +e
+          npx --yes wrangler@4.141.0 deploy --dry-run --keep-vars > /tmp/zhixu-wrangler-dryrun.log 2>&1
+          code=$?
+          echo "WRANGLER_DRYRUN_EXIT=$code"
+          sed -n '1,130p' /tmp/zhixu-wrangler-dryrun.log | sed -E 's/(sb_secret_|sb_publishable_)[A-Za-z0-9_-]+/[REDACTED]/g'
+          exit 0

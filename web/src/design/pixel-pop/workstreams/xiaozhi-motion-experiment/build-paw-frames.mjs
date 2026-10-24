@@ -65,8 +65,10 @@ let result='/** AUTO-GENERATED from canonical XiaozhiLayers; experimental left p
  ' * Original source pixels: 4525. Two integer-grid transforms preserve each\n'+
  ' * source pixel and per-colour histogram. Static source is not modified.\n'+
  ' */\nexport type XiaozhiPawPose="up"|"wave";\n';
+const removalD=paths(new Map([...selected].map(([k])=>[k,"#000000"])))[0].d;
+result+='export const XIAOZHI_PAW_CUTOUT_D='+JSON.stringify(removalD)+';\n';
 result+='export function XiaozhiPawRemoval(){return <g data-xz-paw-removal="source-region" fill="black" stroke="none" shapeRendering="crispEdges">\n';
-for(const p of paths(new Map([...selected].map(([k])=>[k,"#000000"]))))result+=`<path d="${p.d}"/>\n`;
+result+='<path d={XIAOZHI_PAW_CUTOUT_D}/>\n';
 result+='</g>}\n';
 result+='export function XiaozhiPawRest(){return <g data-xz-paw-frame="rest" stroke="none" shapeRendering="crispEdges">\n';
 for(const p of paths(selected))result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;

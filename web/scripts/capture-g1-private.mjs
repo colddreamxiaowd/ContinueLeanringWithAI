@@ -89,8 +89,12 @@ try{
  await until("document.body.textContent.includes('学习记录已保存到当前账号')","reading progress PUT");
  await click("(function(){const x=[...document.querySelectorAll('section[aria-label=单选题] button')].find(x=>x.getAttribute('aria-label')?.startsWith('B，'));if(!x)return false;x.click();return true})()");
  await until("document.body.textContent.includes('学习记录已保存到当前账号')&&document.body.textContent.includes('回答正确')","quiz interaction");
- await sleep(700);
- if(puts<2)throw Error("Expected >=2 PUTs to in-memory progress backend");
+ await click("(function(){const x=[...document.querySelectorAll('[aria-label=可交互的栈操作实验] button')].find(x=>x.textContent.includes('Push 入栈'));if(!x)return false;x.click();return true})()");
+ await until("document.body.textContent.includes('当前栈：[ 1, 7 ]')","stack push state");
+ await click("(function(){const x=[...document.querySelectorAll('[aria-label=可交互的栈操作实验] button')].find(x=>x.textContent.includes('Pop 出栈'));if(!x)return false;x.click();return true})()");
+ await click("(function(){const x=[...document.querySelectorAll('[aria-label=可交互的栈操作实验] button')].find(x=>x.textContent.includes('重置'));if(!x)return false;x.click();return true})()");
+ await sleep(1000);
+ if(puts<5||JSON.stringify(savedProgress.simStacks.sim01)!=="[1]")throw Error("Serialized Push/Pop/Reset was not persisted: "+JSON.stringify({puts,stack:savedProgress.simStacks}));
  // Reload ensures the UI restores progress through GET, not React-only in-memory state.
  await navigate();
  await until("!!document.querySelector('#private-course-select option[value="+JSON.stringify(uuid)+"]')","course recovered");

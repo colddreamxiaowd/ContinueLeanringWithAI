@@ -1,0 +1,48 @@
+name: Cloudflare vinext compatibility (isolated)
+
+on:
+  push:
+    branches:
+      - deploy/cloudflare-vinext-preview-v1
+    paths:
+      - .github/workflows/cloudflare-vinext-compat.yml
+      - web/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vinext-check:
+    name: Next.js 16 / vinext check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+        shell: bash
+    steps:
+      - name: Check out isolated Cloudflare branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install existing locked dependencies
+        run: npm ci
+      - name: Record runtime and check vinext compatibility
+        run: |
+          node --version | tee vinext-check.log
+          npm --version | tee -a vinext-check.log
+          echo '=== vinext compatibility check ===' | tee -a vinext-check.log
+          npx --yes vinext check 2>&1 | tee -a vinext-check.log
+      - name: Upload actual compatibility log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-vinext-check-log
+          path: web/vinext-check.log
+          if-no-files-found: warn
+          retention-days: 14

@@ -60,6 +60,17 @@ function sanitizedSections(reader){
    .filter(x=>typeof x==="string").map(x=>clean(x,500)).slice(0,12)
  }));
 }
+/**
+ * @param {{
+ *   bundle?: any,
+ *   reader?: any,
+ *   mode?: string,
+ *   mastery?: Record<string, number>,
+ *   familyId?: string,
+ *   localFile?: {name:string,size:number}|null,
+ *   notes?: string
+ * }} [options]
+ */
 export function makeCourseHandoff({bundle=null,reader=null,mode="deep",
  mastery={},familyId="",localFile=null,notes=""}={}){
  if(!HANDOFF_MODES.includes(mode))throw Error("INVALID_HANDOFF_MODE");

@@ -34,18 +34,26 @@
 .motionFrame[data-action="blink"] .closedLids{animation:eyeLidsAppear .7s steps(1,end) 1}
 .motionFrame[data-action="nod"] .bodyRig{animation:headBow .95s steps(5,end) 1}
 .motionFrame[data-action="hop"] .bodyRig{animation:gentleHop 1.05s steps(6,end) 1}
-.motionFrame[data-action="tail"] [data-xz-part="tail"]{transform-box:view-box;transform-origin:71% 78%;
-  animation:tailWag .9s steps(5,end) 1}
+/* Native source-pixel poses, not continuous rotations of a disconnected RLE group.
+   All three tail frames are mutually exclusive; the canonical frame returns
+   automatically at 100%. Original fixed hinge spans x<=430 source pixels. */
+.tailUpPose,.tailDownPose{opacity:0;pointer-events:none}
+.motionFrame[data-action="tail"] [data-xz-part="tail"]{animation:sourceTailSwap .95s steps(1,end) 1}
+.motionFrame[data-action="tail"] .tailUpPose{animation:tailUpSwap .95s steps(1,end) 1}
+.motionFrame[data-action="tail"] .tailDownPose{animation:tailDownSwap .95s steps(1,end) 1}
 .motionFrame[data-action="hello"] .bodyRig{animation:helloTilt 1.25s steps(5,end) 1}
 .motionFrame[data-action="hello"] [data-xz-part^="eye-"]{animation:eyeDisappear 1.25s steps(1,end) 1}
 .motionFrame[data-action="hello"] .closedLids{animation:eyeLidsAppear 1.25s steps(1,end) 1}
-.motionFrame[data-action="hello"] [data-xz-part="tail"]{transform-box:view-box;transform-origin:71% 78%;
-  animation:tailWag 1.25s steps(5,end) 1}
+.motionFrame[data-action="hello"] [data-xz-part="tail"]{animation:sourceTailSwap 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] .tailUpPose{animation:tailUpSwap 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] .tailDownPose{animation:tailDownSwap 1.25s steps(1,end) 1}
 @keyframes eyeDisappear{0%,25%,55%,100%{opacity:1}32%,48%{opacity:0}}
 @keyframes eyeLidsAppear{0%,25%,55%,100%{opacity:0}32%,48%{opacity:1}}
 @keyframes headBow{0%,100%{transform:rotate(0deg)}28%{transform:rotate(-4deg) translateY(2px)}52%{transform:rotate(5deg) translateY(7px)}74%{transform:rotate(-2deg)}}
 @keyframes gentleHop{0%,100%{transform:translateY(0) scale(1,1)}13%{transform:translateY(7px) scale(1.035,.96)}35%,50%{transform:translateY(-27px) scale(.985,1.025)}75%{transform:translateY(1px) scale(1.02,.985)}}
-@keyframes tailWag{0%,100%{transform:rotate(0deg)}20%,60%{transform:rotate(10deg)}40%,80%{transform:rotate(-9deg)}}
+@keyframes sourceTailSwap{0%,19%,48%,78%,100%{opacity:1}20%,47%,49%,77%{opacity:0}}
+@keyframes tailUpSwap{0%,19%,48%,100%{opacity:0}20%,47%{opacity:1}}
+@keyframes tailDownSwap{0%,48%,78%,100%{opacity:0}49%,77%{opacity:1}}
 @keyframes helloTilt{0%,100%{transform:rotate(0)}20%,55%{transform:rotate(-5deg)}39%,73%{transform:rotate(6deg)}}
 .controls,.optical,.note{background:#fff;border:3px solid var(--ink);border-radius:12px;box-shadow:5px 5px 0 var(--ink);padding:18px 19px;margin-bottom:22px}
 .sectionIntro h2{font-size:20px;line-height:1.2;margin:0 0 4px;font-weight:950}
@@ -79,7 +87,11 @@
  .actionButton{min-height:57px;gap:8px;padding:9px}.actionButton strong{font-size:12px}.actionMark{width:28px;height:28px;font-size:16px}
  .titleBar h1{font-size:30px}.opticalRow{gap:8px}.opticalRow>div{padding:10px 8px}}
 @media(prefers-reduced-motion:reduce){
-  .bodyRig,.closedLids,.motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{animation:none!important;transform:none!important;opacity:revert-layer}
-  .motionFrame .closedLids{opacity:0!important}
+  .bodyRig,.closedLids,.tailUpPose,.tailDownPose,
+  .motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{
+    animation:none!important;transform:none!important
+  }
+  .motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{opacity:1!important}
+  .motionFrame .closedLids,.motionFrame .tailUpPose,.motionFrame .tailDownPose{opacity:0!important}
   .actionButton,.catStage{transition:none}
 }

@@ -165,8 +165,28 @@ try{
       writeFileSync(join(out,"xiaozhi-"+name+"-source-rest.png"),sourceRest);
       writeFileSync(join(out,"xiaozhi-"+name+"-paw-restored.png"),restored);
       state.restoration={pngBytesIdentical:exactRest,sourceBytes:sourceRest.length,restoredBytes:restored.length};
+      if(!exactRest)throw Error("Paw animation changed approved master at rest: "+name);
     }
     actions.push({action,...state,poseRead});
+  }
+  if(name==="desktop"){
+    // Optical readability is separate from 24/32px protected avatar assets.
+    // These additional screenshots capture the animated full-body rig at
+    // realistic 96/160px sizes without changing any master source paths.
+    await evalJs(`[...document.querySelectorAll('button')].find(b=>b.textContent?.includes('独立抬爪'))?.click()`);
+    await sleep(90);
+    await evalJs(`(()=>{const f=document.querySelector('[data-active-action] [data-action]');
+      for(const a of f.getAnimations({subtree:true})){
+        if(a.effect?.getTiming?.().duration===1050){a.pause();a.currentTime=430;}
+      }
+    })()`);
+    for(const size of [96,160]){
+      const actual=await evalJs(`(()=>{const el=document.querySelector('[data-active-action] [data-action]');
+        el.style.setProperty('--xz-motion-size',${size}+'px');
+        return el.getBoundingClientRect().width;})()`);
+      if(Math.abs(actual-size)>1)throw Error("Optical frame width "+size+" got "+actual);
+      await capture("xiaozhi-desktop-animated-optical-"+size,width);
+    }
   }
   const switched=await evalJs(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('深色'));b?.click();
      return !!b;})()`);

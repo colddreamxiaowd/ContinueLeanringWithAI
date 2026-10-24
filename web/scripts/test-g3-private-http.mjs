@@ -62,7 +62,7 @@ server.stderr.on("data",chunk=>stderr=(stderr+String(chunk)).slice(-2000));
 const check=(condition,message)=>{if(!condition)throw Error(message);};
 const call=async(path,user,method="GET",payload)=>{
  return fetch(app+path,{method,headers:{...(user?{Cookie:"clai_access_token="+user}:{}),
-  ...(payload?{"Content-Type":"application/json"}:{})},redirect:"manual",
+  ...(payload?{"Content-Type":"application/json"}:{})},redirect:"follow",
   ...(payload?{body:JSON.stringify(payload)}:{})});
 };
 try{
@@ -101,7 +101,7 @@ try{
  check((await call("/api/course-plans/"+familyId,"fake-b")).status===404,"B saw A saved mastery");
  const saved=await call("/learn/plans/","fake-a");
  check(saved.status===200,"authenticated studio denied "+saved.status);
- const anon=await call("/learn/plans/",null);
+ const anon=await fetch(app+"/learn/plans/",{redirect:"manual"});
  check([307,308].includes(anon.status),"private studio not login protected");
  const userBGenerate=await call("/api/course-plans","fake-b","POST",
   {libraryItemId:"44444444-4444-4444-8444-444444444444"});

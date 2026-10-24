@@ -1,0 +1,90 @@
+name: Zhixu Core — G4 math and G5 exploration integration
+on:
+  push:
+    branches:
+      - feat/core-learning-math-20261024
+    paths:
+      - '.github/workflows/core-math-ci.yml'
+      - 'web/**'
+      - 'supabase/migrations/202610240003_learning_explorations.sql'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-next:
+    name: Native Next.js types and all relevant tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: node --test tests/v45/g4-math.test.mjs
+      - run: npm run test:v45
+      - run: npm run typecheck
+      - run: npm run build
+  workerd-chromium:
+    name: Real Cloudflare workerd Chrome Math L3 on 3 widths
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    env:
+      ZHIXU_PREVIEW_ORIGIN: http://127.0.0.1:3001
+      ZHIXU_PREVIEW_OUT: ../math-workbench-preview
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:3456
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: synthetic-public-key
+      SUPABASE_SECRET_KEY: sb_secret_synthetic_only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx vinext check
+      - run: npm run build:vinext
+      - name: Start workerd and verify /math and private /learn/math
+        shell: bash
+        run: |
+          npm run start:vinext -- --host 127.0.0.1 --port 3001 > /tmp/math-workerd.log 2>&1 &
+          for i in {1..40}; do
+            code=$(curl -s --max-time 3 -o /tmp/math-page.html -w '%{http_code}' http://127.0.0.1:3001/ui-lab/math/ || true)
+            if [ "$code" = 200 ]; then break;fi
+            sleep 2
+          done
+          echo "Public math HTTP ${code}"
+          test "$code" = 200 || { cat /tmp/math-workerd.log;exit 1;}
+          grep -q '条件概率' /tmp/math-page.html
+          private=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3001/learn/math/)
+          echo "Private math HTTP ${private}"
+          test "$private" = 307 || test "$private" = 308
+          api=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3001/api/learning/math-events)
+          echo "Unauth math events HTTP ${api}"
+          test "$api" = 401
+      - name: Prepare Chrome / Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+      - name: Run real Chrome math learning and three responsive screenshots
+        shell: bash
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-math-core.mjs
+      - name: Upload actual browser math evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhixu-math-core-real-chromium
+          path: math-workbench-preview/
+          if-no-files-found: warn
+          retention-days: 14

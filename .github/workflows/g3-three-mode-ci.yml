@@ -1,0 +1,81 @@
+name: Zhixu G3 — three-mode course planning & shared mastery
+on:
+  push:
+    branches: [feat/g3-three-modes-shared-mastery-20261024]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Tests, types and Next.js production
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run test:v45
+      - run: npm run test:library
+      - run: npm run typecheck
+      - run: npm run build
+  workerd:
+    name: Cloudflare workerd public/private route smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:3456
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: synthetic-key
+      SUPABASE_SECRET_KEY: sb_secret_synthetic_only
+      ZHIXU_PREVIEW_ORIGIN: http://127.0.0.1:3001
+      ZHIXU_PREVIEW_OUT: ../g3-three-mode-screenshots
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx vinext check
+      - run: npm run build:vinext
+      - name: Run workerd and test public modes / private auth
+        shell: bash
+        run: |
+          npm run start:vinext -- --host 127.0.0.1 --port 3001 > /tmp/g3-worker.log 2>&1 &
+          for i in {1..40};do
+            code=$(curl -s --max-time 3 -o /tmp/g3-page.html -w '%{http_code}' http://127.0.0.1:3001/ui-lab/plan-modes/ || true)
+            if [ "$code" = 200 ];then break;fi
+            sleep 2
+          done
+          test "$code" = 200 || { cat /tmp/g3-worker.log;exit 1; }
+          grep -q '一份资料' /tmp/g3-page.html
+          private=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3001/learn/plans/)
+          test "$private" = 307 || test "$private" = 308
+          api=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3001/api/course-plans)
+          test "$api" = 401
+          echo "Three-mode public 200, private redirect, anonymous API 401."
+      - name: Prepare Chrome and fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+      - name: Browser switch/read/mark/reload on three viewport widths
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-g3-three-mode.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zhixu-g3-three-mode-browser
+          path: g3-three-mode-screenshots/
+          if-no-files-found: warn
+          retention-days: 14

@@ -49,15 +49,20 @@ jobs:
         run: npm run build:vinext 2>&1 | tee vinext-build.log
       - name: Start Cloudflare-built Worker preview locally
         run: |
-          npm run start:vinext -- --port 3001 > /tmp/zhixu-cloudflare-start.log 2>&1 &
-          for attempt in {1..45}; do
-            for port in 3001 8787; do
-              if curl -fsS --max-time 5 "http://127.0.0.1:${port}/ui-lab/integrated/home/" -o /dev/null 2>/dev/null; then
-                echo "ZHIXU_PREVIEW_ORIGIN=http://127.0.0.1:${port}" >> "$GITHUB_ENV"
-                echo "Worker preview accessible on port ${port}"
-                exit 0
-              fi
-            done
+          npm run start:vinext -- --port 3001 --host 127.0.0.1 > /tmp/zhixu-cloudflare-start.log 2>&1 &
+          for attempt in {1..25}; do
+            status=$(curl -sS --max-time 4 -o /tmp/zhixu-preview-response.txt -w '%{http_code}' "http://127.0.0.1:3001/ui-lab/integrated/home/" 2>/dev/null || true)
+            if [ "$status" = "200" ]; then
+              echo "ZHIXU_PREVIEW_ORIGIN=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+              echo "Worker preview accessible: HTTP 200"
+              exit 0
+            fi
+            if [ "$attempt" -eq 5 ] || [ "$attempt" -eq 25 ]; then
+              echo "Attempt $attempt: HTTP status ${status:-unreachable}"
+              sed -n '1,45p' /tmp/zhixu-cloudflare-start.log || true
+              head -c 900 /tmp/zhixu-preview-response.txt || true
+              echo
+            fi
             sleep 2
           done
           cat /tmp/zhixu-cloudflare-start.log

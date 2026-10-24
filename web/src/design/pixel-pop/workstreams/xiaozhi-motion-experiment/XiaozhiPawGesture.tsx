@@ -40,11 +40,18 @@ export function XiaozhiPawGesture({pose}:{pose:PawGesturePose}){
  return <g data-experimental-paw-gesture={pose}
    data-gesture-geometry="connected-single-silhouette"
    stroke="none" shapeRendering="crispEdges">
+   {/* Black geometry is painted FIRST, then fur spans BOTH wrist and palm.
+        Avoids the prior black seam that made the paw look like a glove on
+        a string. These overlays are wholly inside the isolated experiment. */}
    <path data-paw-arm-outline="single" fill="#08080C" d={ARM_OUTER}/>
-   <path data-paw-arm-fur="continuous" fill="#F8F8F9" d={ARM_FUR}/>
    <g data-paw-palm="source-palette-new-artwork"
       transform={waving?"translate(-12 2)":undefined}>
-     <path d={PALM_OUTER} fill="#08080C"/>
+     <path data-palm-contour="joined" d={PALM_OUTER} fill="#08080C"/>
+   </g>
+   <path data-paw-arm-fur="continuous" fill="#F8F8F9" d={ARM_FUR}/>
+   <path data-paw-wrist-link="fur-join" fill="#F8F8F9"
+     d="M84 323h16v19H84Z"/>
+   <g data-paw-detail="pink-pads" transform={waving?"translate(-12 2)":undefined}>
      <path d={PALM_FUR} fill="#F8F8F9"/>
      <path d={TOE_PADS} fill="#FA9C9E"/>
      <path d={CENTER_PAD} fill="#FB7A83"/>

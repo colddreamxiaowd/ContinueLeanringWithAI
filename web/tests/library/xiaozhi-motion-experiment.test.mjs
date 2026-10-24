@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
+import {execFileSync} from "node:child_process";
 const web=resolve(import.meta.dirname,"../../");
 const moduleSource=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiMotionPrototype.tsx"),"utf8");
 const css=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/motion.module.css"),"utf8");
@@ -51,4 +52,33 @@ test("approved optical avatars and original full master remain imported, never o
  assert.match(css,/\[data-background="dark"\]/);
  assert.match(css,/\[data-background="violet"\]/);
  assert.match(css,/\[data-background="yellow"\]/);
+});
+
+test("closed eyes cover exactly the grey source pixels not owned by eye groups",()=>{
+ const mask=moduleSource.match(/const FACE_EYE_SHADE_FIX=\[([\s\S]*?)\]\.join\(" "\);/);
+ assert.ok(mask,"explicit non-destructive source eye shade patch");
+ const maskRects=[...mask[1].matchAll(/M\d+ \d+h\d+v\d+h-\d+Z/g)].map(m=>m[0]);
+ assert.equal(maskRects.length,17,"17 source-grey face rectangles are intentionally covered");
+ const face=canonical.split('data-xz-part="face"')[1].split('</g>')[0];
+ const sourceGrey=[...face.matchAll(/<path fill="(#[0-9A-F]{6})" d="([^"]+)"/g)]
+  .filter(m=>["#5A5A62","#A0A1A9","#BDC5DC"].includes(m[1]))
+  .flatMap(m=>[...m[2].matchAll(/M\d+ \d+h\d+v\d+h-\d+Z/g)].map(z=>z[0]));
+ for(const r of maskRects)assert.ok(sourceGrey.includes(r),"mask paint must follow approved face pixel: "+r);
+ assert.match(moduleSource,/data-motion-eye-shade-fix="source-17-rects"/);
+ assert.match(moduleSource,/shapeRendering="crispEdges"/);
+});
+test("tail's two native path frames are fully regenerable and preserve source colours",()=>{
+ const generator=resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/build-tail-frames.mjs");
+ assert.doesNotThrow(()=>execFileSync(process.execPath,[generator,"--check"],{stdio:"pipe"}));
+ const tailFrames=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiTailFrames.tsx"),"utf8");
+ assert.match(tailFrames,/data-generated-tail-pose="up"/);
+ assert.match(tailFrames,/data-generated-tail-pose="down"/);
+ assert.match(tailFrames,/hinge fixed x<=430/);
+ assert.doesNotMatch(tailFrames,/<image\b|data:image/);
+ assert.match(moduleSource,/<XiaozhiTailFrame pose="up"\/>/);
+ assert.match(moduleSource,/<XiaozhiTailFrame pose="down"\/>/);
+ assert.match(css,/@keyframes sourceTailSwap/);
+ assert.match(css,/@keyframes tailUpSwap/);
+ assert.match(css,/@keyframes tailDownSwap/);
+ assert.doesNotMatch(css,/tailWag|rotate\(10deg\)/);
 });

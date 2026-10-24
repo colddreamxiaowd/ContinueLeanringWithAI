@@ -101,9 +101,10 @@ test("independent front paw uses a canonical 4525-pixel exact reassembly, not to
  assert.match(frame,/Original source pixels: 4525/);
  for(const pose of ["rest","up","wave"])assert.ok(frame.includes('data-xz-paw-frame="'+pose+'"'));
  assert.match(frame,/data-xz-paw-removal="source-region"/);
- assert.match(moduleSource,/XiaozhiPawRemoval/);
- assert.match(moduleSource,/maskUnits="userSpaceOnUse"/);
- assert.match(moduleSource,/data-rig-paw-mask=\{pawMotion\?"source-cutout":undefined\}/);
+ assert.ok(moduleSource.includes("XIAOZHI_PAW_CUTOUT_D"));
+ assert.ok(moduleSource.includes('clipPathUnits="userSpaceOnUse"'));
+ assert.ok(moduleSource.includes('clipRule="evenodd"'));
+ assert.ok(moduleSource.includes('data-rig-paw-clip={pawMotion?"source-exact-vector-hole":undefined}'));
  assert.match(css,/@keyframes pawRestHide/);
  assert.match(css,/@keyframes pawLiftShow/);
  assert.match(css,/@keyframes pawWaveUp/);

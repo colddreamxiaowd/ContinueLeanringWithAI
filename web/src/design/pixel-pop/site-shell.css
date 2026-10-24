@@ -1,0 +1,66 @@
+/* Alignment bridge: production routes reuse the EXACT Pixel Pop header,
+   navigation, mascot and density behavior of the approved home.
+   Old business/content components inherit legible light paper tokens here,
+   even when the surrounding site uses the dark neobrutalist canvas. */
+.pp-site-shell{
+ --page:#F5F7FF;--surface:#FFFFFF;--surface-soft:#F7F9FD;
+ --surface-hover:#F1EDFF;--border:#D5D7E6;
+ --text:#192039;--text-strong:#12121D;--muted:#59617D;--quiet:#737B97;
+ --primary:#583CE5;--primary-strong:#4426CD;--primary-soft:#EFEAFF;
+ --sidebar:#FFFFFF;--success:#087F5B;--success-soft:#DDF8EE;
+ --warning:#895B16;--warning-soft:#FFF2CE;--info-soft:#EDEFFF;
+ --code-bg:#121B30;--code-text:#E2EBFF;
+ --shadow:5px 5px 0 #12121D;--radius-card:13px;
+ color-scheme:light;
+}
+.pp-site-shell .pp-main{min-width:0;overflow:visible}
+.pp-site-shell .pp-site-theme{width:34px;height:34px;border:2px solid var(--pp-ink);
+ border-radius:7px;background:#FFF;color:#12121D;display:grid;place-items:center}
+.pp-site-shell .pp-site-theme:hover{background:#FFE342}
+.pp-site-shell .pp-site-toolbar{min-height:47px;height:auto;align-items:center;gap:15px}
+.pp-site-shell .pp-site-toolbar>div{display:flex;align-items:center;gap:14px;min-width:0}
+.pp-site-shell .pp-site-toolbar strong{font-weight:950;color:white;font-size:17px}
+.pp-site-shell .pp-site-toolbar .pp-toolbar-overline{display:inline;color:#DED6FF;font-size:10px}
+.pp-site-shell .pp-site-legacy{
+ min-width:0;background:#FFF;color:var(--text);border:3px solid #12121D;
+ box-shadow:5px 5px 0 #12121D;border-radius:12px;
+ padding:clamp(16px,2.6vw,32px);margin:0;
+}
+.pp-site-shell .pp-site-legacy :is(.page-heading h1,.section-title h2,.panel-heading h2){
+ color:var(--text-strong)
+}
+.pp-site-shell .pp-site-legacy .page-content{max-width:none;width:100%;padding:0}
+.pp-site-shell .pp-site-legacy .page-heading{margin-bottom:24px}
+.pp-site-shell .pp-site-legacy .page-heading h1{font-size:clamp(26px,3vw,35px);line-height:1.3}
+.pp-site-shell .pp-site-legacy .section-kicker{font-weight:950;color:var(--pp-purple)}
+.pp-site-shell .pp-site-legacy :is(.course-list-row,.article-body,.reading-nav,
+ .article-aside-card,.library-account-card,.library-panel,.panel,.demo-source-card,
+ .empty-state,.chapter-panel){border:2px solid #12121D;box-shadow:3px 3px 0 #12121D}
+.pp-site-shell .pp-site-legacy :is(.button-primary,.library-tab--active){
+ background:var(--pp-purple);color:#FFF
+}
+.pp-site-shell .pp-site-legacy a:focus-visible,
+.pp-site-shell .pp-site-legacy button:focus-visible{outline:3px solid #246BFF;outline-offset:3px}
+.pp-site-shell .pp-sidebar nav .pp-nav-item{min-height:45px}
+.pp-site-shell .pp-sidebar-bottom .pp-button{max-width:100%}
+.pp-site-shell .pp-site-footer-action{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+.pp-site-shell[data-pp-theme="dark"]{background:#0E1025}
+.pp-site-shell[data-pp-theme="dark"] .pp-main{background:linear-gradient(118deg,#0E1025 0 72%,#583CE5 72% 75%,#0E1025 75%) fixed}
+.pp-site-shell[data-pp-theme="dark"] .pp-site-legacy{background:#F8F8FF;color:#12121D}
+.pp-site-shell[data-pp-theme="dark"] .pp-site-theme{background:#FFE342}
+@media(max-width:980px){
+ .pp-site-shell .pp-site-legacy{padding:17px}
+ .pp-site-shell .pp-site-toolbar{flex-wrap:wrap}
+ .pp-site-shell .pp-site-toolbar>div{flex-wrap:wrap}
+}
+@media(max-width:760px){
+ .pp-site-shell .pp-main{overflow:hidden}
+ .pp-site-shell .pp-site-legacy{padding:13px;border-width:2px;box-shadow:3px 3px 0 #12121D}
+ .pp-site-shell .pp-site-toolbar{align-items:flex-start}
+ .pp-site-shell .pp-site-toolbar>div{gap:4px}
+ .pp-site-shell .pp-site-toolbar strong{font-size:15px}
+ .pp-site-shell .pp-site-toolbar .pp-toolbar-overline{display:none}
+ .pp-site-shell .pp-top-right{gap:4px}
+ .pp-site-shell .pp-site-theme{width:30px;height:30px;flex:none}
+ .pp-site-shell .pp-site-legacy :is(.course-list-row,.library-account-card){flex-wrap:wrap}
+}

@@ -1,0 +1,60 @@
+name: Zhixu one-time runtime connectivity probe
+on:
+  push:
+    branches:
+      - audit/runtime-supabase-connectivity-20261024
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    name: Cloudflare site and Supabase auth connectivity (no real credentials)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Public HTTP + invalid-password authentication smoke
+        shell: bash
+        run: |
+          node <<'NODE'
+          const base="https://zhixu-learning-hub-preview.colddreams.workers.dev";
+          const out=[];
+          const get=async(path)=>{
+            const r=await fetch(base+path,{redirect:"follow",signal:AbortSignal.timeout(12000)});
+            out.push({name:"GET "+path,status:r.status,ok:r.ok});
+            return r;
+          };
+          try{
+            for(const path of ["/login/","/ui-lab/plan-modes/","/api/auth/me","/api/course-plans","/api/feishu/status"]){
+              await get(path);
+            }
+            // This is NOT a user account: invalid TLD and randomly named probe.
+            // Expect a 401 from Supabase rejecting the fake password, not a 503
+            // from a missing key or unreachable auth backend.
+            const email="connectivity-check-"+Date.now()+"@invalid.example";
+            const login=await fetch(base+"/api/auth/login",{
+              method:"POST",redirect:"follow",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({email,password:"invalid-test-password-not-a-secret"}),
+              signal:AbortSignal.timeout(12000)
+            });
+            const loginJson=await login.json().catch(()=>({}));
+            out.push({name:"POST fake login",status:login.status,
+              resultCode:login.status===401?"EXPECTED_INVALID_CREDENTIALS":
+              login.status===503?"AUTH_UNAVAILABLE_OR_MISCONFIGURED":
+              "UNEXPECTED",
+              errorCategory: typeof loginJson?.error==="string"?
+              (/配置|不可用|暂时/.test(loginJson.error)?"backend_unavailable":/邮箱或密码/.test(loginJson.error)?"bad_credentials":"other"):null});
+            console.log("Non-secret runtime probe results:");
+            console.log(JSON.stringify(out,null,2));
+            const has=(name,status)=>out.some(x=>x.name===name&&x.status===status);
+            if(!has("GET /login/",200)||
+               !has("GET /ui-lab/plan-modes/",200)||
+               !has("GET /api/auth/me",401)||
+               !has("GET /api/course-plans",401)||
+               !has("GET /api/feishu/status",401)||
+               !has("POST fake login",401))process.exitCode=1;
+          }catch(e){
+            console.error("Probe failed:",String(e.message||e));
+            process.exitCode=1;
+          }
+          NODE

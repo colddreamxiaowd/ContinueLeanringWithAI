@@ -43,6 +43,7 @@ export default function PrivateLearningClient(){
   const selectedId=useRef("");
   const progressRef=useRef<Progress>(empty());
   const writes=useRef<Promise<void>>(Promise.resolve());
+  const latestWrite=useRef(0);
 
   useEffect(()=>{
     let mounted=true;
@@ -92,6 +93,7 @@ export default function PrivateLearningClient(){
     const next=updater(progressRef.current);
     if(!next)return;
     const id=selected.id;
+    const revision=++latestWrite.current;
     progressRef.current=next;setProgress(next);setSaveMessage("正在保存学习记录…");
     writes.current=writes.current.catch(()=>{}).then(async()=>{
       const response=await fetch("/api/coursepacks/"+encodeURIComponent(id)+"/progress",{
@@ -99,9 +101,9 @@ export default function PrivateLearningClient(){
       });
       if(!response.ok)throw new Error("PROGRESS_SAVE_FAILED");
     }).then(()=>{
-      if(selectedId.current===id)setSaveMessage("学习记录已保存到当前账号");
+      if(selectedId.current===id&&revision===latestWrite.current)setSaveMessage("学习记录已保存到当前账号");
     }).catch(()=>{
-      if(selectedId.current===id)setSaveMessage("保存失败：当前页面的变化尚未确认落库，请刷新后重试。");
+      if(selectedId.current===id&&revision===latestWrite.current)setSaveMessage("保存失败：当前页面的变化尚未确认落库，请刷新后重试。");
     });
   }
 

@@ -79,6 +79,17 @@ jobs:
           ZHIXU_PREVIEW_OUT: ../cloudflare-browser-preview
         run: |
           CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-zhixu-unified.mjs
+      - name: Export browser-tested vinext configuration
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-vinext-tested-config
+          path: |
+            web/package.json
+            web/package-lock.json
+            web/.gitignore
+            web/vite.config.ts
+            web/cloudflare.config.ts
+          retention-days: 7
       - name: Upload actual compatibility log
         if: always()
         uses: actions/upload-artifact@v4
@@ -93,3 +104,32 @@ jobs:
             cloudflare-browser-preview/
           if-no-files-found: warn
           retention-days: 14
+
+  persist-config:
+    name: Save tested Cloudflare config (isolated branch only)
+    needs: vinext-check
+    if: github.ref == 'refs/heads/deploy/cloudflare-vinext-preview-v1'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out current isolated deploy branch
+        uses: actions/checkout@v4
+        with:
+          ref: deploy/cloudflare-vinext-preview-v1
+      - name: Restore verified config files (no build scripts in write job)
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-vinext-tested-config
+          path: web
+      - name: Commit only vinext configuration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add web/package.json web/package-lock.json web/.gitignore web/vite.config.ts web/cloudflare.config.ts
+          if git diff --cached --quiet; then
+            echo 'Generated Cloudflare configuration already committed.'
+            exit 0
+          fi
+          git commit -m "build(cloudflare): preserve browser-tested vinext Workers configuration"
+          git push origin HEAD:deploy/cloudflare-vinext-preview-v1

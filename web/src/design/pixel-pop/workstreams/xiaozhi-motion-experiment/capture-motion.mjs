@@ -117,9 +117,13 @@ try{
       const paw=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');
         const op=label=>{const el=r?.querySelector('[data-paw-layer="'+label+'"]');return el?Number(getComputedStyle(el).opacity):null};
         return {masked:!!r?.querySelector('[data-rig-paw-clip="source-exact-vector-hole"]'),
-          parts:r?.querySelectorAll('[data-xz-part]').length,rest:op("rest"),up:op("up"),wave:op("wave"),
+          parts:r?.querySelectorAll('[data-xz-part]').length,
+          original:op("rest"),up:op("up"),wave:op("wave"),
+          masterOpacity:Number(getComputedStyle(r.querySelector('[data-paw-master-rest]')).opacity),
+          articulatedOpacity:Number(getComputedStyle(r.querySelector('[data-rig-paw-clip]')).opacity),
           vector:!r?.querySelector('image,foreignObject')};})()`);
-      if(!paw.masked||paw.parts!==12||!paw.vector||paw.rest>.01||paw.up<.99||paw.wave>.01)
+      if(!paw.masked||paw.parts!==24||!paw.vector||paw.original>.01||paw.up<.99||paw.wave>.01||
+         paw.masterOpacity>.01||paw.articulatedOpacity<.99)
         throw Error("Raised source paw is not visibly active: "+name+" "+JSON.stringify(paw));
       state.pawEvidence=paw;
     }

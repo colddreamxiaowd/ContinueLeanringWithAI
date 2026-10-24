@@ -85,8 +85,14 @@ try{
         transparent:!frame?.querySelector('image,foreignObject')};})()`);
     if(state.action!==action||state.frameAction!==action||state.animationCount<1||!state.transparent)
       throw Error("Motion did not run: "+JSON.stringify({name,action,state}));
+    if(name==="desktop"&&action==="hop")await capture("hop-real-frame-070",width);
     await sleep(Math.max(0,delay-70));
     await capture("xiaozhi-"+name+"-"+width+"-"+action,width);
+    if(name==="desktop"&&action==="hop"){
+      await capture("hop-real-frame-350",width);
+      await sleep(190);await capture("hop-real-frame-540",width);
+      await sleep(250);await capture("hop-real-frame-790",width);
+    }
     actions.push({action,...state});
   }
   const switched=await evalJs(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.textContent?.includes('深色'));b?.click();

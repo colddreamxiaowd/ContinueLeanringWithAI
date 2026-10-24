@@ -103,7 +103,7 @@ export function CoursePackClient(){
     <header className={style.hero}><div><div className={style.kicker}>COURSEPACK v0.1 · PRIVATE BY DEFAULT</div>
       <h1>把资料变成真正能学习的课程</h1>
       <p>导入结构化 CoursePack → 预览 → 私人保存 → 动手操作、答题并保存学习记录。</p></div>
-      <span className={style.privacy}>🔒 原始飞书文件不会随课程公开</span></header>
+      <span className={style.privacy}>🔒 原始飞书文件不会随课程公开</span></header>\n    <p><a href="/learn" style={{display:"inline-block",fontWeight:850,padding:"10px 14px",margin:"6px 0 18px",border:"2px solid #12121d",borderRadius:8,background:"#ffe342",color:"#12121d"}}>进入 Pixel Pop 私人学习界面 →</a></p>
     <div className={style.columns}>
       <aside className={style.side}>
         <h2>我的私人课程 <span>{courses.length}</span></h2>

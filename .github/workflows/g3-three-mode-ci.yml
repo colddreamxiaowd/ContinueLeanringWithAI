@@ -25,6 +25,8 @@ jobs:
       - run: npm run test:library
       - run: npm run typecheck
       - run: npm run build
+      - name: Two-account real HTTP plan and mastery acceptance (synthetic Supabase)
+        run: node scripts/test-g3-private-http.mjs
   workerd:
     name: Cloudflare workerd public/private route smoke
     runs-on: ubuntu-latest

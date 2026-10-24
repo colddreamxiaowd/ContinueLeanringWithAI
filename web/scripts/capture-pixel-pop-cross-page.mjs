@@ -120,6 +120,19 @@ try {
    records.push({viewport:label,path:route.path,file:name,shell:true,
     overflow:false,paper:state.paper,ink:state.ink});
   }
+  // Shared search is not decoration: it filters real catalog rows.
+  await visit("/courses/?q=%E6%95%B0%E6%8D%AE");
+  await until("document.body.textContent.includes('正在搜索')");
+  const filtered=await js("({rows:document.querySelectorAll('.course-list-row').length,empty:document.body.textContent.includes('没有匹配的课程')})");
+  if(filtered.rows!==1||filtered.empty)throw Error("Course search did not filter: "+JSON.stringify(filtered));
+  if(width===390){
+   await visit("/courses/");
+   const opened=await js("(()=>{const b=document.querySelector('[aria-label=\\\"展开课程搜索\\\"]');if(!b)return false;b.click();return true;})()");
+   if(!opened)throw Error("mobile search toggle missing");
+   await until("document.querySelector('.pp-site-search--open')!==null");
+   const box=await js("(()=>{const x=document.querySelector('.pp-site-search--open');const r=x.getBoundingClientRect();return {width:r.width,viewport:innerWidth}})()");
+   if(box.width<280||box.width>box.viewport)throw Error("mobile search overlay cramped "+JSON.stringify(box));
+  }
   await visit("/courses/");
   const didClick=await js("(()=>{const b=document.querySelector('[aria-label=\"切换深色主题\"]');if(!b)return false;b.click();return true})()");
   if(!didClick)throw Error("Missing theme toggle");

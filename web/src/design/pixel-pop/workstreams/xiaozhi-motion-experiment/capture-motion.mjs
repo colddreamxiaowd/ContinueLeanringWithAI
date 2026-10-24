@@ -49,6 +49,16 @@ try{
     clip:{x:0,y:0,width,height,scale:1}});
   writeFileSync(join(out,name+".png"),Buffer.from(r.data,"base64"));
  };
+ /** Pixel-level restoration comparison: crop precisely the same SVG bounding
+     box before/after a gesture. PNG bytes are stable on one Chromium process
+     at one viewport; write evidence even when the two frames differ. */
+ const captureOnlySvg=async()=>{
+   const box=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] svg').getBoundingClientRect();
+     return {x:r.x,y:r.y,width:r.width,height:r.height};})()`);
+   const shot=await cmd("Page.captureScreenshot",{format:"png",fromSurface:true,captureBeyondViewport:true,
+     clip:{...box,scale:1}});
+   return Buffer.from(shot.data,"base64");
+ };
  for(const [name,width,height] of [["desktop",1440,900],["tablet",768,1024],["mobile",390,844]]){
   await cmd("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<=500});
   await cmd("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value:"no-preference"}]});
@@ -69,6 +79,7 @@ try{
   // Canonical reference and experimental rig side by side, same complete pixel master.
   await evalJs(`[...document.querySelectorAll('button')].find(b=>b.textContent.includes("原版静止"))?.click()`);
   await sleep(100);await capture("xiaozhi-"+name+"-"+width+"-idle",width);
+  const sourceRest=await captureOnlySvg();
   const actions=[];
   for(const [action,label,delay] of [
    ["blink","眨眼",260],["nod","轻轻点头",340],
@@ -142,6 +153,14 @@ try{
       await capture("hop-real-frame-350",width);
       await sleep(190);await capture("hop-real-frame-540",width);
       await sleep(250);await capture("hop-real-frame-790",width);
+    }
+    if(action==="paw"){
+      await sleep(880);
+      const restored=await captureOnlySvg();
+      const exactRest=sourceRest.equals(restored);
+      writeFileSync(join(out,"xiaozhi-"+name+"-source-rest.png"),sourceRest);
+      writeFileSync(join(out,"xiaozhi-"+name+"-paw-restored.png"),restored);
+      state.restoration={pngBytesIdentical:exactRest,sourceBytes:sourceRest.length,restoredBytes:restored.length};
     }
     actions.push({action,...state,poseRead});
   }

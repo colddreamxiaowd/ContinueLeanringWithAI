@@ -185,7 +185,7 @@ export default function ChatGptCourseHandoff({bundle=null,familyId="",mastery={}
       <label htmlFor="gpt-standalone-mode">希望生成哪种课程？</label>
       <select id="gpt-standalone-mode" value={localMode}
        onChange={e=>{setLocalMode(e.target.value as Mode);setHandoff(null);}}>
-       {HANDOFF_MODES.map(item=><option key={item} value={item}>{MODE_LABELS[item]}</option>)}
+       {HANDOFF_MODES.map(item=><option key={item} value={item}>{MODE_LABELS[item as Mode]}</option>)}
       </select>
       <p className={s.muted}>文件不会通过此控件上传服务器；之后请你在 ChatGPT 会话中手动附上原文件。</p>
      </>}

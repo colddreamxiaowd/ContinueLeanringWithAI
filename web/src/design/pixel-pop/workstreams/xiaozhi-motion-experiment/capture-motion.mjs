@@ -56,7 +56,7 @@ try{
   const baseline=await evalJs(`(()=>{const lab=document.querySelector('[data-xz-lab="true"]');
     const canvases=[...document.querySelectorAll('[data-motion-rig="exact-parent"]')];
     const svg=document.querySelector('[data-active-action] svg');
-    return {lab:!!lab,rigs:canvases.length,parts:[...document.querySelectorAll('[data-xz-part]')].length,
+    return {lab:!!lab,rigs:canvases.length,parts:canvases.reduce((n,root)=>n+root.querySelectorAll('[data-xz-part]').length,0),
       black:getComputedStyle(lab).getPropertyValue('--ink').trim(),
       nestedRaster:svg?.querySelectorAll('image,foreignObject').length??-1,
       documentWidth:document.documentElement.scrollWidth,

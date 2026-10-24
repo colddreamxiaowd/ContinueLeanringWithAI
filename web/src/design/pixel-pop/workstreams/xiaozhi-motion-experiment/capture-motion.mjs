@@ -114,8 +114,12 @@ try{
     }
     await capture("xiaozhi-"+name+"-"+width+"-"+action,width);
     if(action==="wave"){
-      await sleep(340);
+      // Deterministic animation-position proof: full-page screenshots are slower
+      // than a 1.4-second CSS sequence and must never decide which frame is seen.
       const wavePose=await evalJs(`(()=>{const r=document.querySelector('[data-active-action] [data-action]');
+        for(const a of r.getAnimations({subtree:true})){
+          if(a.effect?.getTiming?.().duration===1400){a.pause();a.currentTime=770;}
+        }
         const op=label=>Number(getComputedStyle(r.querySelector('[data-paw-layer="'+label+'"]')).opacity);
         return {rest:op("rest"),up:op("up"),wave:op("wave")};})()`);
       if(wavePose.wave<.99||wavePose.up>.01||wavePose.rest>.01)

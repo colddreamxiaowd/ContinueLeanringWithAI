@@ -28,6 +28,7 @@ jobs:
       - run: npm ci
       - run: node --test tests/v45/g4-math.test.mjs
       - run: npm run test:v45
+      - run: npm run test:library
       - run: npm run typecheck
       - run: npm run build
   workerd-chromium:

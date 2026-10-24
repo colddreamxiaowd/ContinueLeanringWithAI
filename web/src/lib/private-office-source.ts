@@ -40,7 +40,7 @@ export async function getPrivateOfficeSource(userId:string,itemId:string){
    ownerId:userId,libraryItemId:itemId,fileName:item.name,
    mimeType:"application/vnd.openxmlformats-officedocument",originalHash:sourceHash
  });
- return {itemId,fileName:item.name,sourceHash,sections,sourceChunks};
+ return {itemId,fileName:item.name,sourceHash,sections,sourceChunks,original};
 }
 export function privateSourceError(error:unknown){
  const code=error instanceof Error?error.message:"OFFICE_READ_FAILED";

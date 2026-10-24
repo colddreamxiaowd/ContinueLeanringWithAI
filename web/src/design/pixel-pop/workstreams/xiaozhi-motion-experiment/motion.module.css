@@ -24,17 +24,21 @@
   background:transparent;flex:none}
 .motionSvg{display:block;width:100%;height:100%;overflow:visible;background:transparent;outline:none;filter:none}
 .bodyRig{transform-box:view-box;transform-origin:50% 76%;will-change:transform}
-.blinkOverlay{opacity:0;pointer-events:none}
-.motionFrame[data-action="blink"] .blinkOverlay{animation:blinkFrame .7s steps(1,end) 1}
+.motionFrame [data-xz-part="eye-left"],.motionFrame [data-xz-part="eye-right"]{
+  transform-box:view-box;will-change:transform
+}
+.motionFrame [data-xz-part="eye-left"]{transform-origin:37% 48.6%}
+.motionFrame [data-xz-part="eye-right"]{transform-origin:62.8% 48.5%}
+.motionFrame[data-action="blink"] [data-xz-part^="eye-"]{animation:eyeClose .7s steps(1,end) 1}
 .motionFrame[data-action="nod"] .bodyRig{animation:headBow .95s steps(5,end) 1}
 .motionFrame[data-action="hop"] .bodyRig{animation:gentleHop 1.05s steps(6,end) 1}
 .motionFrame[data-action="tail"] [data-xz-part="tail"]{transform-box:view-box;transform-origin:71% 78%;
   animation:tailWag .9s steps(5,end) 1}
 .motionFrame[data-action="hello"] .bodyRig{animation:helloTilt 1.25s steps(5,end) 1}
-.motionFrame[data-action="hello"] .blinkOverlay{animation:blinkFrame 1.25s steps(1,end) 1}
+.motionFrame[data-action="hello"] [data-xz-part^="eye-"]{animation:eyeClose 1.25s steps(1,end) 1}
 .motionFrame[data-action="hello"] [data-xz-part="tail"]{transform-box:view-box;transform-origin:71% 78%;
   animation:tailWag 1.25s steps(5,end) 1}
-@keyframes blinkFrame{0%,25%,55%,100%{opacity:0}32%,48%{opacity:1}}
+@keyframes eyeClose{0%,25%,55%,100%{transform:scaleY(1)}32%,48%{transform:scaleY(.13)}}
 @keyframes headBow{0%,100%{transform:rotate(0deg)}28%{transform:rotate(-4deg) translateY(2px)}52%{transform:rotate(5deg) translateY(7px)}74%{transform:rotate(-2deg)}}
 @keyframes gentleHop{0%,100%{transform:translateY(0) scale(1,1)}13%{transform:translateY(7px) scale(1.035,.96)}35%,50%{transform:translateY(-27px) scale(.985,1.025)}75%{transform:translateY(1px) scale(1.02,.985)}}
 @keyframes tailWag{0%,100%{transform:rotate(0deg)}20%,60%{transform:rotate(10deg)}40%,80%{transform:rotate(-9deg)}}
@@ -71,7 +75,6 @@
  .actionButton{min-height:57px;gap:8px;padding:9px}.actionButton strong{font-size:12px}.actionMark{width:28px;height:28px;font-size:16px}
  .titleBar h1{font-size:30px}.opticalRow{gap:8px}.opticalRow>div{padding:10px 8px}}
 @media(prefers-reduced-motion:reduce){
-  .bodyRig,.motionFrame .blinkOverlay,.motionFrame [data-xz-part="tail"]{animation:none!important;transform:none!important}
-  .blinkOverlay{opacity:0!important}
+  .bodyRig,.motionFrame [data-xz-part^="eye-"],.motionFrame [data-xz-part="tail"]{animation:none!important;transform:none!important}
   .actionButton,.catStage{transition:none}
 }

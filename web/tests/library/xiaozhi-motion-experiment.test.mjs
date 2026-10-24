@@ -137,13 +137,12 @@ test("hand-shaped raised pose is a distinct, source-palette-only experimental la
 test("compact kitten paw stays near cheek and never grows an elongated forearm",()=>{
  const gesture=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiPawGesture.tsx"),"utf8");
  const paths=["ARM_OUTER","PALM_OUTER"].map(name=>{
-   const marker=new RegExp("const "+name+"\\\\s*=\\\\s*\\\"([^\\\"]+)\\\"");
-   const m=gesture.match(marker);
+   const m=gesture.split("const "+name+"=")[1]?.match(/"([^"]+)"/);
    assert.ok(m,"Missing "+name+" path");
    return m[1];
  });
  function bounds(path){
-   const ops=path.match(/[A-Za-z]|-?\\d+/g);
+   const ops=path.match(/[A-Za-z]|-?[0-9]+/g);
    let x=0,y=0,startX=0,startY=0;
    const xs=[],ys=[];
    for(let i=0;i<ops.length;){

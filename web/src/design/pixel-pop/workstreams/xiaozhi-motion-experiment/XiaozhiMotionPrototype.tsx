@@ -25,6 +25,19 @@ export const MOTION_LABELS:Record<XiaozhiExperimentalAction,string>={
  * Same canonical #F8F8F9 fur, no repainting or antialias overlay fringe. */
 const EYE_FUR_BACKING="M188 246h45v64h-45Z M338 244h45v66h-45Z";
 
+/** Precisely the 17 residual grey/light-grey rectangles assigned to 'face'
+ * adjacent to the original eyes, not the eye groups. They were verified
+ * against canonical XiaozhiLayers pixels. Only paint during the CLOSED frame,
+ * ABOVE source groups, BEFORE the black eyelids. Do not cover cheek pixels. */
+const FACE_EYE_SHADE_FIX=[
+ "M202 248h17v3h-17Z M348 248h4v3h-4Z M369 248h3v3h-3Z",
+ "M198 251h4v4h-4Z M226 258h3v4h-3Z M341 258h4v4h-4Z",
+ "M226 296h3v4h-3Z M341 296h4v4h-4Z M345 300h3v3h-3Z",
+ "M372 300h4v3h-4Z M219 303h3v4h-3Z",
+ "M219 248h3v3h-3Z M379 258h4v42h-4Z M191 300h4v3h-4Z",
+ "M222 300h4v3h-4Z M372 303h4v4h-4Z M345 255h3v3h-3Z"
+].join(" ");
+
 export function XiaozhiMotionPrototype({
   action="none",size=200,replay=0,decorative=false
 }:{
@@ -42,7 +55,9 @@ export function XiaozhiMotionPrototype({
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
         <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
         <XiaozhiLayers/>
-        <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none">
+        <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none"
+          shapeRendering="crispEdges">
+          <path d={FACE_EYE_SHADE_FIX} fill="#F8F8F9" data-motion-eye-shade-fix="source-17-rects"/>
           <path d="M194 278h32v6h-32Z M343 278h33v6h-33Z" fill="#08080C"/>
         </g>
       </g>

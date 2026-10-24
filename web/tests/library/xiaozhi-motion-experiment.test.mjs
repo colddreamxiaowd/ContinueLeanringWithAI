@@ -17,19 +17,20 @@ test("independent motion lab uses exactly the frozen native 12-part rig",()=>{
  assert.doesNotMatch(moduleSource,/<image\b|data:image\/png|<foreignObject/i);
  assert.doesNotMatch(css,/filter:drop-shadow|stroke:\s*white/);
 });
-test("closed-eyes overlay repaints ONLY the canonical eye pixels before adding eyelids",()=>{
- const source = moduleSource.match(/const ORIGINAL_EYE_PIXEL_MASKS=([\s\S]*?);/);
- assert.ok(source);
- const labels=["eye-left","eye-right"];
- for(const name of labels){
-   const g=canonical.split('data-xz-part="'+name+'"')[1]?.split('</g>')[0];
-   assert.ok(g,"part "+name);
-   const d=g.match(/<path fill="#08080C" d="([^"]+)"/)?.[1];
-   assert.ok(d);
-   for(const rect of d.split(/\s+(?=M\d)/))assert.ok(source[1].includes(rect),"Missing exactly masked eye region "+rect);
+test("blink preserves canonical eye geometry and only moves their own semantic groups",()=>{
+ const names=["eye-left","eye-right"];
+ for(const name of names){
+  const g=canonical.split('data-xz-part="'+name+'"')[1]?.split('</g>')[0];
+  assert.ok(g,"canonical part "+name);
+  assert.match(g,/fill="#08080C"/);
+  assert.match(css,new RegExp('data-xz-part\\^="eye-"'));
  }
- assert.match(moduleSource,/fill="#F8F8F9"/);
- assert.match(moduleSource,/M194 277h32v5h-32Z/);
+ assert.match(moduleSource,/EYE_FUR_BACKING=/);
+ assert.match(moduleSource,/M188 246h45v64h-45Z M338 244h45v66h-45Z/);
+ assert.match(moduleSource,/data-motion-eye-backing="true"/);
+ assert.doesNotMatch(moduleSource,/blinkOverlay|ORIGINAL_EYE_PIXEL_MASKS/);
+ assert.match(css,/@keyframes eyeClose/);
+ assert.match(css,/transform:scaleY\\(\\.13\\)/);
 });
 test("four core moves and greeting are one-shot and reduced motion safe",()=>{
  for(const action of ["blink","nod","hop","tail","hello"]){

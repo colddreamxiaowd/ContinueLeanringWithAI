@@ -166,6 +166,7 @@ export default function PrivateLearningClient({ownerId}:{ownerId:string}){
         </select>
         <Link href="/coursepacks" className={s.action}>导入 CoursePack JSON →</Link>
         <Link href="/learn/math" className={s.action}>条件概率深度实践（合成教学试点） →</Link>
+        <Link href="/learn/plans" className={s.action}>同一份资料 · 三种课程方案 →</Link>
       </div>
       {loading&&<p role="status" className={s.notice}>正在从私人课程接口读取课程…</p>}
       {!loading&&!courses.length&&!error&&<div className={s.empty}>

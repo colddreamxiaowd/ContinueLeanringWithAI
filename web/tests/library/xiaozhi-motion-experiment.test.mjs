@@ -111,3 +111,16 @@ test("independent front paw uses a canonical 4525-pixel exact reassembly, not to
  assert.doesNotMatch(css,/pawWag.*rotate|pawLift.*rotate/);
  for(const action of ["paw","wave"])assert.ok(moduleSource.includes('"'+action+'"'));
 });
+
+test("hand-shaped raised pose is a distinct, source-palette-only experimental layer",()=>{
+ const gesture=readFileSync(resolve(web,"src/design/pixel-pop/workstreams/xiaozhi-motion-experiment/XiaozhiPawGesture.tsx"),"utf8");
+ assert.match(gesture,/data-experimental-paw-gesture=\{pose\}/);
+ assert.match(moduleSource,/XiaozhiPawGesture pose="up"/);
+ assert.match(moduleSource,/XiaozhiPawGesture pose="wave"/);
+ assert.doesNotMatch(gesture,/<image\b|foreignObject|data:image/);
+ assert.doesNotMatch(gesture,/animation|style=.*rotate/);
+ const sourcePalette=new Set([...canonical.matchAll(/fill="(#[0-9A-F]{6})"/g)].map(m=>m[1]));
+ for(const match of gesture.matchAll(/fill="(#[0-9A-F]{6})"/g))
+   assert.ok(sourcePalette.has(match[1]),"not an approved source palette colour "+match[1]);
+ assert.match(gesture,/data-paw-connector="resting-shoulder"/);
+});

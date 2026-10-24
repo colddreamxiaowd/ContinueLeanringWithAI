@@ -1,0 +1,90 @@
+name: Zhixu UI — Pixel Pop cross-page production alignment
+on:
+  push:
+    branches:
+      - fix/unified-pixel-pop-production-shell-20261024
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Native Next.js / all relevant tests / types
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run test:v45
+      - run: npm run test:library
+      - run: npm run typecheck
+      - run: npm run build
+  workerd-chrome:
+    name: Cloudflare workerd / real Chromium responsive visual QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    defaults:
+      run:
+        working-directory: web
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:3456
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: synthetic-publishable-key
+      SUPABASE_SECRET_KEY: sb_secret_synthetic_only
+      ZHIXU_PREVIEW_ORIGIN: http://127.0.0.1:3001
+      ZHIXU_PREVIEW_OUT: ../pixel-pop-cross-page-preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx vinext check
+      - run: npm run build:vinext
+      - name: Start workerd; check sources, article and private guards
+        shell: bash
+        run: |
+          npm run start:vinext -- --host 127.0.0.1 --port 3001 > /tmp/zhixu-pixel-pop-workerd.log 2>&1 &
+          for i in {1..55}; do
+            status=$(curl -s --max-time 4 -o /tmp/zhixu-home.html -w '%{http_code}' http://127.0.0.1:3001/ || true)
+            if [ "$status" = 200 ]; then break; fi
+            sleep 2
+          done
+          test "$status" = 200 || { tail -100 /tmp/zhixu-pixel-pop-workerd.log; exit 1; }
+          for route in courses sources read/circular-queue; do
+            status=$(curl -s --max-time 12 -o /tmp/zhixu-page.html -w '%{http_code}' "http://127.0.0.1:3001/$route/" || true)
+            echo "$route HTTP $status"
+            test "$status" = 200 || { tail -100 /tmp/zhixu-pixel-pop-workerd.log; exit 1; }
+          done
+          demo=$(curl -s --max-time 12 -o /tmp/zhixu-demo.html -w '%{http_code}' http://127.0.0.1:3001/sources/demo/27b4dc73c54fc7cc9504445ba88a4ba396591092e5281d04fbaf561d29ccf77c/ || true)
+          echo "Synthetic source detail HTTP $demo"
+          test "$demo" = 200 || { tail -100 /tmp/zhixu-pixel-pop-workerd.log; exit 1; }
+          for route in library coursepacks; do
+            status=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:3001/$route/")
+            echo "$route anonymous HTTP $status"
+            test "$status" = 307 || test "$status" = 308 || exit 1
+          done
+      - name: Install Chinese fonts
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+      - name: Actual browser — cross-page light/dark 1440 / 768 / 390
+        shell: bash
+        run: CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-pixel-pop-cross-page.mjs
+      - name: Upload actual screenshots and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhixu-pixel-pop-cross-page-chrome
+          path: pixel-pop-cross-page-preview/
+          if-no-files-found: warn
+          retention-days: 14

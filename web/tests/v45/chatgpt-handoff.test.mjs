@@ -58,7 +58,7 @@ test("standalone no-Feishu path never includes file bytes or fake extracts",()=>
  assert.match(handoffPrompt(out),/期末|限时|考试/);
  assert.match(handoffPrompt(out),/stack-simulator/);
  assert.match(handoffPrompt(out),/0-based/);
- assert.match(handoffPrompt(out),/独立的 CoursePack JSON/);
+ assert.match(handoffPrompt(out),/完整合法的 CoursePack JSON 文件/);
  assert.equal(validateCoursePack({
   schemaVersion:"0.1",title:"手工题目",description:"手动生成",
   version:1,visibility:"private",sourceRefs:[],

@@ -1,0 +1,52 @@
+name: Deploy Zhixu to Cloudflare Workers (manual Git push gate)
+
+# This is intentionally isolated from main and ordinary commits.
+# After adding CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN GitHub Actions secrets,
+# create or edit cloudflare-deploy-request.txt on the branch below to authorize one deploy.
+on:
+  push:
+    branches:
+      - deploy/cloudflare-vinext-preview-v1
+    paths:
+      - cloudflare-deploy-request.txt
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zhixu-cloudflare-worker-preview
+  cancel-in-progress: false
+
+jobs:
+  deploy-worker:
+    name: Deploy full-stack Worker to Cloudflare (Free account)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Confirm credentials were supplied securely
+        shell: bash
+        run: |
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Add CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN as GitHub Actions repository secrets first."
+            exit 1
+          fi
+      - name: Check out isolated Cloudflare deployment branch
+        uses: actions/checkout@v4
+      - name: Set up tested Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install exact locked dependencies
+        run: npm ci
+      - name: Build Next.js for Cloudflare Workers
+        run: npm run build:vinext
+      - name: Deploy vinext Worker using Cloudflare API token
+        run: npm run deploy:vinext

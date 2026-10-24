@@ -19,7 +19,7 @@ export default function Sources() {
 
     <div className="inline-info">
       <Info size={18}/>
-      <p>真实飞书资料尚未连接。下面的“合成演示资料”由 Python V4.3 流水线实际处理项目内合成的 PPTX 得到，不是云盘同步，也不计入真实资料或正式发布数量。<Link href="/review/v2">查看 V2 审查内容 →</Link></p>
+      <p>这里展示的是可公开访问的合成示例，与私人飞书资料库分开。真正授权的文件及同步状态请进入「我的飞书资料」查看；本页不读取账号私有文件。<Link href="/review/v2">查看 V2 审查内容 →</Link></p>
     </div>
 
     <section className="demo-source-section" aria-labelledby="demo-source-title">
@@ -47,14 +47,14 @@ export default function Sources() {
           </Link>
         ))}
       </div>
-      <p className="demo-source-note">以上 JSON 由 <code>python scripts/v45_export_synthetic.py</code> 生成并提交；真实飞书同步仍为 0。</p>
+      <p className="demo-source-note">以上 JSON 由 <code>python scripts/v45_export_synthetic.py</code> 生成并提交；该页面不代表私人飞书同步数量。</p>
     </section>
 
     <div className="empty-state">
       <div className="empty-state-icon"><FolderOpen size={34}/></div>
-      <h2>还没有连接真实资料</h2>
-      <p>飞书授权与 PPT/PDF 同步将在后续阶段验证。当前页面不会假装已经扫描你的云端文件。</p>
-      <div className="tag tag-demo">网站实时飞书同步：尚未配置</div>
+      <h2>私人资料请到「我的飞书资料」查看</h2>
+      <p>这里是对外公开的合成来源演示。已授权账号的资料索引、PPTX 阅读与同步功能位于登录后的私人资料库。</p>
+      <div className="tag tag-demo">公开演示不包含私人资料</div>
     </div>
 
     <div className="workflow-steps">

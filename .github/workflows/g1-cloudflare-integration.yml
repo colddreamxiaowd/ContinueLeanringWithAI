@@ -1,0 +1,142 @@
+name: G1 + Cloudflare integration — real build and browser acceptance
+
+on:
+  push:
+    branches:
+      - integrate/g1-cloudflare-20261024
+    paths:
+      - '.github/workflows/g1-cloudflare-integration.yml'
+      - 'web/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nextjs-private:
+    name: Native Next.js + G1 synthetic CoursePack CRUD/restore
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    defaults:
+      run:
+        working-directory: web
+        shell: bash
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:3456
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: synthetic-public-key
+      SUPABASE_SECRET_KEY: sb_secret_synthetic_only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install integrated lockfile
+        run: npm ci
+      - name: Run PR39 private course unit tests
+        run: node --test tests/v45/g1-private-course.test.mjs
+      - name: Existing V4.5 test suite
+        run: npm run test:v45
+      - name: Check TypeScript
+        run: npm run typecheck
+      - name: Compile native Next.js application
+        run: npm run build
+      - name: Start production Next.js app for synthetic private workflow
+        run: |
+          npx next start --hostname 127.0.0.1 --port 3001 > /tmp/g1-next-integrated.log 2>&1 &
+          for attempt in {1..40}; do
+            if curl -fsS "http://127.0.0.1:3001/ui-lab/integrated/home/" -o /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/g1-next-integrated.log
+          exit 1
+      - name: Install Chinese fonts / locate Chrome
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+          command -v google-chrome || command -v chromium
+      - name: G1 saved course / quiz / stack persistence and Chromium screenshots
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-g1-private.mjs
+      - name: Upload real browser evidence (synthetic Supabase only)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g1-integrated-nextjs-synthetic-browser
+          path: g1-private-preview/
+          if-no-files-found: warn
+          retention-days: 14
+
+  vinext-worker:
+    name: vinext workerd + 3-viewport unified demo + G1 auth gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    defaults:
+      run:
+        working-directory: web
+        shell: bash
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:3456
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: synthetic-public-key
+      SUPABASE_SECRET_KEY: sb_secret_synthetic_only
+      ZHIXU_PREVIEW_OUT: ../g1-cloudflare-integration-preview
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install locked integrated dependencies
+        run: npm ci
+      - name: Check vinext compatibility for G1 merged app
+        run: npx vinext check
+      - name: Build integrated Cloudflare Worker
+        run: npm run build:vinext 2>&1 | tee g1-vinext-build.log
+      - name: Start actual built workerd
+        run: |
+          npm run start:vinext -- --port 3001 --host 127.0.0.1 > /tmp/g1-cloudflare-worker.log 2>&1 &
+          for attempt in {1..45}; do
+            status=$(curl -s --max-time 3 -o /tmp/g1-cloudflare-home.html -w '%{http_code}' http://127.0.0.1:3001/ui-lab/integrated/home/ || true)
+            if [ "$status" = 200 ]; then echo "Worker HOME HTTP 200";exit 0;fi
+            sleep 2
+          done
+          echo "::error::Integrated workerd failed to serve home"
+          cat /tmp/g1-cloudflare-worker.log
+          head -c 900 /tmp/g1-cloudflare-home.html || true
+          exit 1
+      - name: Verify unauthenticated private route in actual Worker
+        run: |
+          status=$(curl -s --max-time 8 -o /tmp/g1-learn.html -w '%{http_code}' http://127.0.0.1:3001/learn/ || true)
+          echo "/learn/ status=${status}"
+          head -c 800 /tmp/g1-learn.html || true
+          echo
+          if [ "$status" != "307" ] && [ "$status" != "308" ]; then
+            echo "::error::Private /learn/ must redirect unauthenticated visitors"
+            cat /tmp/g1-cloudflare-worker.log
+            exit 1
+          fi
+          curl -s -I --max-time 8 http://127.0.0.1:3001/learn/ | grep -i '^location:' | grep -i 'login'
+      - name: Prepare Chrome and Chinese font
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+          command -v google-chrome || command -v chromium
+      - name: Exercise real Worker demo on 1440 / 768 / 390
+        env:
+          ZHIXU_PREVIEW_ORIGIN: http://127.0.0.1:3001
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-zhixu-unified.mjs
+      - name: Upload workerd browser and compile evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g1-integrated-workerd-browser
+          path: |
+            g1-cloudflare-integration-preview/
+            web/g1-vinext-build.log
+          if-no-files-found: warn
+          retention-days: 14

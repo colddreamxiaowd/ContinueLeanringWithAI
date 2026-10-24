@@ -17,6 +17,14 @@ function validState(s:unknown): s is {
   if (!stacks||typeof stacks!=="object"||Array.isArray(stacks)||
     Object.keys(stacks).length>100||!Object.entries(stacks).every(([k,x])=>
       k.length<=80&&Array.isArray(x)&&x.length<=20&&x.every(n=>Number.isSafeInteger(n))))return false;
+  // Optional v0.1-compatible bookmark: preserve current state and add only a small locator.
+  if (v.lastLocation !== undefined) {
+    const location=v.lastLocation;
+    if(!location||typeof location!=="object"||Array.isArray(location))return false;
+    const data=location as Record<string,unknown>;
+    const valid=(x:unknown)=>x===undefined||(typeof x==="string"&&x.length<=80&&/^[A-Za-z0-9_-]*$/.test(x));
+    if(!valid(data.chapterId)||!valid(data.blockId))return false;
+  }
   return true;
 }
 async function checkOwner(userId:string,id:string) {

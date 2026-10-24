@@ -33,6 +33,8 @@ export default function IntegratedHome(){
    <div className={s.bottomLink}>
      <Link href="/ui-lab/integrated/reader">阅读「栈的 Push / Pop」 →</Link>
      <Link href="/ui-lab/integrated/practice">直接体验 Push / Pop 实验 →</Link>
+     <Link href="/ui-lab/math">挑战条件概率 · 自主解题与迁移 →</Link>
+     <Link href="/ui-lab/plan-modes">体验同一份资料 · 三模式切换与共享掌握 →</Link>
    </div>
  </div>;
 }

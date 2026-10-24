@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import {PopButton,PopPanel,PixelCat,ProgressRing} from "@/design/pixel-pop/primitives";
 import "./pixel-pop.css";
+import {PixelPopSiteShell} from "./PixelPopSiteShell";
 
 type Density="minimal"|"balanced"|"normal";
 type View="home"|"reader"|"lab"|"quiz";
@@ -17,14 +18,6 @@ const DENSITIES:{id:Density;label:string;description:string}[]=[
   {id:"minimal",label:"极简",description:"专注内容"},
   {id:"balanced",label:"较简",description:"平衡体验"},
   {id:"normal",label:"正常",description:"丰富探索"},
-];
-const SIDE_LINKS=[
-  {href:"/",label:"首页",icon:Home},
-  {href:"/coursepacks",label:"互动课程",icon:GraduationCap},
-  {href:"/courses",label:"课程体系",icon:BookOpen},
-  {href:"/library",label:"我的飞书资料",icon:LibraryBig},
-  {href:"/experiments",label:"互动实验",icon:FlaskConical},
-  {href:"/sources",label:"来源资料",icon:FolderOpen},
 ];
 const DEMO_LESSONS=[
   {name:"栈的基本概念",done:true},
@@ -257,69 +250,28 @@ function QuizContent(){
 export default function PixelPopHome(){
   const [density,setDensity]=useState<Density>("balanced");
   const [view,setView]=useState<View>("home");
-  const [menuOpen,setMenuOpen]=useState(false);
-  const [search,setSearch]=useState("");
   useEffect(()=>{
     try{const saved=localStorage.getItem("zhixu_pixel_pop_density");
       if(saved==="minimal"||saved==="balanced"||saved==="normal")setDensity(saved);}catch{/* storage unavailable */}
   },[]);
   function changeMode(mode:Density){setDensity(mode);try{localStorage.setItem("zhixu_pixel_pop_density",mode);}catch{/* storage unavailable */}}
   const title={home:"学习首页",reader:"沉浸阅读",lab:"交互实验",quiz:"理解练习"}[view];
-  return <div className="pp-root" data-density={density}>
-    <a className="pp-skip" href="#pp-main">跳转到主要内容</a>
-    <div className="pp-frame">
-      <header className="pp-topbar">
-        <Link href="/" className="pp-brand" onClick={()=>setView("home")}><div className="pp-brand-icon"><GraduationCap size={25}/></div>
-          <strong>知序 <span>Learning Hub</span></strong></Link>
-        <div className="pp-search"><Search size={19}/><input type="search" aria-label="搜索演示页面" placeholder="搜索页面或知识点…"
-          value={search} onChange={e=>setSearch(e.target.value)}/><kbd>⌘ K</kbd>
-          {!!search&&<div className="pp-search-result" role="status">试用入口：<Link href="/courses">查看正式课程列表</Link></div>}
+  return <PixelPopSiteShell density={density} onDensityChange={setDensity}
+    toolbar={<div className="pp-toolbar">
+      <div><span className="pp-toolbar-overline">PIXEL POP DESIGN SYSTEM / {title}</span>
+        <div className="pp-view-tabs" aria-label="页面演示">
+          {NAV_VIEWS.map(v=><button type="button" key={v.id} aria-pressed={view===v.id}
+            className={view===v.id?"pp-tab pp-tab--current":"pp-tab"} onClick={()=>setView(v.id)}>{v.label}</button>)}
         </div>
-        <div className="pp-top-right">
-          <span className="pp-demo-label">UI PREVIEW v1</span>
-          <div className="pp-avatar"><PixelCat size={42}/><span>小知</span></div>
-          <button type="button" className="pp-mobile-menu" aria-label={menuOpen?"关闭导航":"打开导航"} onClick={()=>setMenuOpen(!menuOpen)}>
-            {menuOpen?<X size={21}/>:<Menu size={21}/>}
-          </button>
-        </div>
-      </header>
-      <div className="pp-workspace">
-        <aside className={"pp-sidebar"+(menuOpen?" pp-sidebar--open":"")}>
-          <span className="pp-sidebar-caption">LEARNING SPACE</span>
-          <nav aria-label="主导航">
-            {SIDE_LINKS.map(({href,label,icon:Icon})=><Link key={href} href={href} onClick={()=>setMenuOpen(false)}
-              className={"pp-nav-item"+(href==="/"?" pp-nav-item--active":"")}><Icon size={20}/><span>{label}</span></Link>)}
-          </nav>
-          <div className="pp-sidebar-bottom">
-            <div className="pp-mascot-scene pp-decoration"><PixelCat size={102} cheer/></div>
-            <div className="pp-sidebar-quote">把知识变成<br/><strong>真正的理解。</strong></div>
-            <PopButton variant="yellow" href="/coursepacks">打开 CoursePack</PopButton>
-            <Link href="/library" className="pp-side-link"><Settings2 size={16}/> 我的资料设置</Link>
-          </div>
-        </aside>
-        <main id="pp-main" className="pp-main">
-          <div className="pp-toolbar">
-            <div><span className="pp-toolbar-overline">PIXEL POP DESIGN SYSTEM / {title}</span>
-              <div className="pp-view-tabs" aria-label="页面演示">
-                {NAV_VIEWS.map(v=><button type="button" key={v.id} aria-pressed={view===v.id}
-                  className={view===v.id?"pp-tab pp-tab--current":"pp-tab"} onClick={()=>setView(v.id)}>{v.label}</button>)}
-              </div>
-            </div>
-            <fieldset className="pp-density-switch"><legend>布局密度</legend>
-              {DENSITIES.map(m=><button type="button" key={m.id}
-                title={m.description} aria-pressed={density===m.id} onClick={()=>changeMode(m.id)}>{m.label}</button>)}
-            </fieldset>
-          </div>
+      </div>
+      <fieldset className="pp-density-switch"><legend>布局密度</legend>
+        {DENSITIES.map(m=><button type="button" key={m.id} title={m.description}
+          aria-pressed={density===m.id} onClick={()=>changeMode(m.id)}>{m.label}</button>)}
+      </fieldset>
+    </div>}>
           {view==="home"&&<DashboardContent go={setView}/>}
           {view==="reader"&&<ReaderContent go={setView}/>}
           {view==="lab"&&<LabContent/>}
           {view==="quiz"&&<QuizContent/>}
-          <footer className="pp-footer">
-            <span>知序 Pixel Pop v1 · 65% 新粗野主义 / 25% 像素学院 / 10% 留白</span>
-            <span>当前为可交互 UI 概念页，所有进度与例题均为演示。</span>
-          </footer>
-        </main>
-      </div>
-    </div>
-  </div>;
+  </PixelPopSiteShell>;
 }

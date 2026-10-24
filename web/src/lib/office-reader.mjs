@@ -1,4 +1,5 @@
 import { inflateRawSync } from 'node:zlib';
+import {pptxVisibleSlideOrder,xlsxVisibleSheetOrder} from './office-locators.mjs';
 
 // Bounded on-demand extraction: do not store private original files or text.
 const MAX_INPUT = 15 * 1024 * 1024, MAX_PART = 3 * 1024 * 1024;
@@ -65,17 +66,27 @@ function paragraphs(xml, paragraphTag, textTag) {
 export function extractOfficeSections(buffer, filename) {
   const format = String(filename).split('.').pop().toLowerCase();
   if (!['pptx', 'docx', 'xlsx'].includes(format)) throw new Error('OFFICE_TYPE_UNSUPPORTED');
-  const wanted = format === 'pptx' ? name => /^ppt\/slides\/slide\d+\.xml$/.test(name)
+  const wanted = format === 'pptx' ? name => /^ppt\/slides\/slide\d+\.xml$/.test(name) ||
+      name === 'ppt/presentation.xml' || name === 'ppt/_rels/presentation.xml.rels'
     : format === 'docx' ? name => name === 'word/document.xml'
-    : name => name === 'xl/sharedStrings.xml' || /^xl\/worksheets\/sheet\d+\.xml$/.test(name);
+    : name => name === 'xl/sharedStrings.xml' || /^xl\/worksheets\/sheet\d+\.xml$/.test(name) ||
+      name === 'xl/workbook.xml' || name === 'xl/_rels/workbook.xml.rels';
   const parts = readZipParts(buffer, wanted);
   let sections;
   if (format === 'pptx') {
-    sections = [...parts.keys()].map(name => ({ name, number: Number(name.match(/^ppt\/slides\/slide(\d+)\.xml$/)?.[1]) }))
-      .filter(s => Number.isFinite(s.number)).sort((a,b) => a.number-b.number).map(({name, number}) => {
-        const lines = paragraphs(parts.get(name), 'a:p', 'a:t');
-        return { label: '第 ' + number + ' 页', title: lines[0] || '第 ' + number + ' 页', paragraphs: lines };
-      });
+    const order=pptxVisibleSlideOrder(parts);
+    const fallback=[...parts.keys()].filter(name=>/^ppt\/slides\/slide\d+\.xml$/.test(name))
+      .sort((a,b)=>Number(a.match(/slide(\d+)/)?.[1])-Number(b.match(/slide(\d+)/)?.[1]));
+    sections=(order||fallback).map((name,index)=>{
+      const xml=parts.get(name),number=order?index+1:Number(name.match(/slide(\d+)/)?.[1]);
+      const lines=paragraphs(xml, 'a:p', 'a:t');
+      const warnings=[];
+      if(!order)warnings.push('PPTX 缺少完整幻灯片顺序映射；此编号来自文件名，实际顺序未确认');
+      if(/<a:blip(?=[\\s/>])|<p:pic(?=[\\s/>])/.test(xml))warnings.push('本页含图像，图像内容尚未完整理解');
+      return {label:'第 '+number+' 页',title:lines[0]||'第 '+number+' 页',paragraphs:lines,
+        locator:{kind:'slide',value:String(number)},sourcePart:name,
+        locatorVerified:Boolean(order),extractionStatus:warnings.length?'partial':'complete',warnings};
+    });
   } else if (format === 'docx') {
     const xml = parts.get('word/document.xml');
     if (!xml) throw new Error('OFFICE_NO_READABLE_CONTENT');
@@ -83,12 +94,19 @@ export function extractOfficeSections(buffer, filename) {
     sections = [];
     for (let i = 0; i < lines.length; i += 75) {
       const chunk = lines.slice(i, i + 75);
-      sections.push({ label: '正文 ' + (Math.floor(i / 75) + 1), title: chunk[0].slice(0,85), paragraphs: chunk });
+      sections.push({ label: '正文 ' + (Math.floor(i / 75) + 1), title: chunk[0].slice(0,85), paragraphs: chunk,
+        locator:{kind:'paragraph',value:(i+1)+'-'+(i+chunk.length)},
+        sourcePart:'word/document.xml',locatorVerified:true,extractionStatus:'partial',
+        warnings:['当前段落提取不包含图片、复杂公式或脚注的完整内容'] });
     }
   } else {
     const strings = [...(parts.get('xl/sharedStrings.xml') || '').matchAll(/<si(?=[\s>])[^>]*>[\s\S]*?<\/si>/g)].map(([item]) => taggedText(item, 't'));
-    sections = [...parts.keys()].map(name => ({ name, number: Number(name.match(/^xl\/worksheets\/sheet(\d+)\.xml$/)?.[1]) }))
-      .filter(s => Number.isFinite(s.number)).sort((a,b) => a.number-b.number).map(({name, number}) => {
+    const ordered=xlsxVisibleSheetOrder(parts);
+    const fallback=[...parts.keys()].filter(name=>/^xl\/worksheets\/sheet\d+\.xml$/.test(name))
+      .sort((a,b)=>Number(a.match(/sheet(\d+)/)?.[1])-Number(b.match(/sheet(\d+)/)?.[1]))
+      .map(name=>({part:name,label:'工作表文件 '+(name.match(/sheet(\d+)/)?.[1]||'?')}));
+    sections=(ordered||fallback).map(({part:name,label},index) => {
+        const number=index+1;
         const rows = [];
         for (const [row] of parts.get(name).matchAll(/<row(?=[\s>])[^>]*>[\s\S]*?<\/row>/g)) {
           const cells = [];
@@ -101,7 +119,12 @@ export function extractOfficeSections(buffer, filename) {
           if (cells.length) rows.push(cells.join('　｜　'));
           if (rows.length >= 200) break;
         }
-        return { label: '工作表 ' + number, title: '工作表 ' + number, paragraphs: rows };
+        return { label:ordered?'工作表 '+label:label,title:ordered?label:label,paragraphs:rows,
+          locator:{kind:'sheet',value:ordered?label:name},sourcePart:name,
+          locatorVerified:Boolean(ordered),extractionStatus:'partial',
+          warnings:ordered?['仅提取部分单元格文本；图表/公式与后续行未完整解析']:
+          ['工作簿缺少工作表名称映射；显示的是底层文件名而非确认的工作表名称'] };
+      
       });
   }
   if (!sections.length) throw new Error('OFFICE_NO_READABLE_CONTENT');

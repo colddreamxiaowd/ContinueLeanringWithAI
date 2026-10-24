@@ -1,0 +1,63 @@
+name: Zhixu Cloudflare public deployment smoke
+
+on:
+  push:
+    branches:
+      - deploy/cloudflare-vinext-preview-v1
+    paths:
+      - .github/workflows/zhixu-cloudflare-public-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-browser:
+    name: Public workers.dev / Chromium three-viewports
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      ZHIXU_PREVIEW_ORIGIN: https://zhixu-learning-hub-preview.colddreams.workers.dev
+      ZHIXU_PREVIEW_OUT: ../cloudflare-public-browser
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm public HTTPS responds at all three pages
+        shell: bash
+        run: |
+          for page in home reader practice; do
+            echo "Checking /ui-lab/integrated/${page}/"
+            status=$(curl --location --silent --show-error --max-time 20 \
+              --output "/tmp/zhixu-${page}.html" \
+              --write-out '%{http_code}' \
+              "$ZHIXU_PREVIEW_ORIGIN/ui-lab/integrated/${page}/")
+            echo "${page}: HTTP ${status}; size $(wc -c </tmp/zhixu-${page}.html) bytes"
+            if [ "$status" != 200 ]; then
+              head -c 800 "/tmp/zhixu-${page}.html"
+              echo "::error::Public Worker returned HTTP ${status} for ${page}"
+              exit 1
+            fi
+          done
+      - name: Install Chinese fonts and locate Chrome
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+          command -v google-chrome || command -v chromium
+      - name: Browser-level navigation, density, quiz and screenshot validation
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" \
+            node scripts/capture-zhixu-unified.mjs
+      - name: Archive public site real browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zhixu-cloudflare-public-browser
+          path: cloudflare-public-browser/
+          if-no-files-found: warn
+          retention-days: 14

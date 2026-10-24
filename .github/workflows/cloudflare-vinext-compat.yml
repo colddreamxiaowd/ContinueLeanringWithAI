@@ -1,0 +1,140 @@
+name: Cloudflare vinext compatibility (isolated)
+
+on:
+  push:
+    branches:
+      - deploy/cloudflare-vinext-preview-v1
+    paths:
+      - .github/workflows/cloudflare-vinext-compat.yml
+      - web/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  vinext-check:
+    name: Next.js 16 / vinext check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+        shell: bash
+    steps:
+      - name: Check out isolated Cloudflare branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install existing locked dependencies
+        run: npm ci
+      - name: Confirm original Next.js production build still works
+        run: npm run build
+      - name: Confirm original TypeScript check still works
+        run: npm run typecheck
+      - name: Record runtime and check vinext compatibility
+        run: |
+          node --version | tee vinext-check.log
+          npm --version | tee -a vinext-check.log
+          echo '=== vinext compatibility check ===' | tee -a vinext-check.log
+          npx --yes vinext check 2>&1 | tee -a vinext-check.log
+      - name: Initialize official Cloudflare vinext configuration (runner only)
+        if: hashFiles('web/vite.config.ts') == ''
+        env:
+          CI: 'true'
+        run: |
+          npx --yes vinext init --platform=cloudflare --name=zhixu-learning-hub-preview --data-cache=none --image-optimization=none --cdn-cache=workers-cache 2>&1 | tee vinext-init.log
+          echo '--- generated files ---'
+          git status --short
+      - name: Build full-stack Workers target with vinext
+        run: npm run build:vinext 2>&1 | tee vinext-build.log
+      - name: Start Cloudflare-built Worker preview locally
+        run: |
+          npm run start:vinext -- --port 3001 --host 127.0.0.1 > /tmp/zhixu-cloudflare-start.log 2>&1 &
+          for attempt in {1..25}; do
+            status=$(curl -sS --max-time 4 -o /tmp/zhixu-preview-response.txt -w '%{http_code}' "http://127.0.0.1:3001/ui-lab/integrated/home/" 2>/dev/null || true)
+            if [ "$status" = "200" ]; then
+              echo "ZHIXU_PREVIEW_ORIGIN=http://127.0.0.1:3001" >> "$GITHUB_ENV"
+              echo "Worker preview accessible: HTTP 200"
+              exit 0
+            fi
+            if [ "$attempt" -eq 5 ] || [ "$attempt" -eq 25 ]; then
+              echo "Attempt $attempt: HTTP status ${status:-unreachable}"
+              sed -n '1,45p' /tmp/zhixu-cloudflare-start.log || true
+              head -c 900 /tmp/zhixu-preview-response.txt || true
+              echo
+            fi
+            sleep 2
+          done
+          cat /tmp/zhixu-cloudflare-start.log
+          exit 1
+      - name: Make Chinese font and Chromium available
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+          fc-match 'WenQuanYi Micro Hei'
+          command -v google-chrome || command -v chromium
+      - name: Actual browser navigation and 3 viewport screenshots
+        env:
+          ZHIXU_PREVIEW_OUT: ../cloudflare-browser-preview
+        run: |
+          CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-zhixu-unified.mjs
+      - name: Export browser-tested vinext configuration
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-vinext-tested-config
+          path: |
+            web/package.json
+            web/package-lock.json
+            web/.gitignore
+            web/vite.config.ts
+            web/cloudflare.config.ts
+          retention-days: 7
+      - name: Upload actual compatibility log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudflare-vinext-investigation
+          path: |
+            web/vinext-check.log
+            web/vinext-init.log
+            web/vinext-build.log
+            web/vite.config.ts
+            web/cloudflare.config.ts
+            cloudflare-browser-preview/
+          if-no-files-found: warn
+          retention-days: 14
+
+  persist-config:
+    name: Save tested Cloudflare config (isolated branch only)
+    needs: vinext-check
+    if: github.ref == 'refs/heads/deploy/cloudflare-vinext-preview-v1'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out current isolated deploy branch
+        uses: actions/checkout@v4
+        with:
+          ref: deploy/cloudflare-vinext-preview-v1
+      - name: Restore verified config files (no build scripts in write job)
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-vinext-tested-config
+          path: web
+      - name: Commit only vinext configuration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add web/package.json web/package-lock.json web/.gitignore web/vite.config.ts web/cloudflare.config.ts
+          if git diff --cached --quiet; then
+            echo 'Generated Cloudflare configuration already committed.'
+            exit 0
+          fi
+          git commit -m "build(cloudflare): preserve browser-tested vinext Workers configuration"
+          git push origin HEAD:deploy/cloudflare-vinext-preview-v1

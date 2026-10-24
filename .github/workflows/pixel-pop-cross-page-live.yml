@@ -1,0 +1,65 @@
+name: Zhixu Pixel Pop — public Cloudflare cross-page acceptance
+on:
+  push:
+    branches: [deploy/cloudflare-vinext-preview-v1]
+    paths:
+      - 'web/src/design/pixel-pop/PixelPopSiteShell.tsx'
+      - 'web/src/design/pixel-pop/site-shell.css'
+      - 'web/src/design/pixel-pop/pixel-pop-home.tsx'
+      - 'web/src/components/app-shell.tsx'
+      - 'web/src/components/library-client.tsx'
+      - 'web/src/lib/v45-demo-data.mjs'
+      - 'web/src/app/sources/**'
+      - 'web/src/app/courses/page.tsx'
+      - 'web/scripts/capture-pixel-pop-cross-page.mjs'
+      - '.github/workflows/pixel-pop-cross-page-live.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-visual:
+    name: Real Cloudflare pages, sources and actual Chrome 3 viewport visual QA
+    runs-on: ubuntu-latest
+    timeout-minutes: 23
+    defaults:
+      run:
+        working-directory: web
+    env:
+      ZHIXU_PREVIEW_ORIGIN: https://zhixu-learning-hub-preview.colddreams.workers.dev
+      ZHIXU_PREVIEW_OUT: ../pixel-pop-cross-page-live
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Wait for newly deployed Cloudflare Worker
+        shell: bash
+        run: |
+          for i in {1..65}; do
+            home=$(curl -s --max-time 10 -o /tmp/pixel-home.html -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/" || true)
+            sources=$(curl -s --max-time 10 -o /tmp/pixel-sources.html -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/sources/" || true)
+            demo=$(curl -s --max-time 10 -o /tmp/pixel-sources-demo.html -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/sources/demo/27b4dc73c54fc7cc9504445ba88a4ba396591092e5281d04fbaf561d29ccf77c/" || true)
+            if [ "$home" = 200 ] && [ "$sources" = 200 ] && [ "$demo" = 200 ] && grep -q '合成演示资料' /tmp/pixel-sources.html; then break; fi
+            echo "attempt $i: home=$home sources=$sources demo=$demo"
+            sleep 10
+          done
+          test "$home" = 200 && test "$sources" = 200 && test "$demo" = 200
+          grep -q '合成演示资料' /tmp/pixel-sources.html
+          for route in library coursepacks; do
+            status=$(curl -s -o /dev/null -w '%{http_code}' "$ZHIXU_PREVIEW_ORIGIN/$route/")
+            test "$status" = 307 || test "$status" = 308 || exit 1
+          done
+      - name: Install Chinese font
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-wqy-microhei
+          fc-cache -f
+      - name: Real public-site browser visual QA and search interaction
+        run: CHROME_BIN="$(command -v google-chrome || command -v chromium)" node scripts/capture-pixel-pop-cross-page.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zhixu-pixel-pop-live-cross-page-screenshots
+          path: pixel-pop-cross-page-live/
+          if-no-files-found: warn
+          retention-days: 14

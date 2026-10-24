@@ -63,6 +63,9 @@ function errorText(code: string): string {
     feishu_connect_failed: "飞书连接失败。请确认应用已发布、云空间只读权限已启用。",
     login_required: "请先登录网站账号，再连接飞书。",
     FEISHU_NOT_CONNECTED: "请先连接自己的飞书账号。",
+    FEISHU_APP_NOT_CONFIGURED: "飞书应用运行时凭据未配置：请检查 Cloudflare 的 FEISHU_APP_ID、FEISHU_APP_SECRET。此前的资料索引仍可在「我的资料」查看。",
+    FEISHU_ENCRYPTION_KEY_NOT_CONFIGURED: "飞书 Token 加密密钥尚未配置：请在 Cloudflare 恢复原来的 FEISHU_TOKEN_ENCRYPTION_KEY，不要创建新值替换旧密钥。",
+    FEISHU_CREDENTIAL_DECRYPT_FAILED: "旧飞书授权无法用当前密钥解密：请检查是否使用了原来的 FEISHU_TOKEN_ENCRYPTION_KEY。",
     FEISHU_REAUTH_REQUIRED: "飞书授权已过期，请重新连接飞书。",
     FEISHU_PERMISSION_DENIED: "飞书拒绝访问该资料。请检查文件夹分享权限及云空间读取/下载权限。",
     FEISHU_API_FAILED: "读取飞书目录失败，请稍后重试。",
@@ -127,7 +130,12 @@ export function LibraryClient({ accountEmail }: { accountEmail: string }) {
       if (!append) setDriveItems([]);
       setDriveHasMore(false);
       setDriveNextPageToken(null);
-      setMessage(errorText(error instanceof Error ? error.message : "FEISHU_API_FAILED"), true);
+      const code = error instanceof Error ? error.message : "FEISHU_API_FAILED";
+      if (["FEISHU_APP_NOT_CONFIGURED","FEISHU_ENCRYPTION_KEY_NOT_CONFIGURED",
+        "FEISHU_CREDENTIAL_DECRYPT_FAILED"].includes(code)) {
+        setActiveTab("synced");
+      }
+      setMessage(errorText(code), true);
     } finally {
       setBrowseLoading(false);
     }

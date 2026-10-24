@@ -68,6 +68,9 @@ let result='/** AUTO-GENERATED from canonical XiaozhiLayers; experimental left p
 result+='export function XiaozhiPawRemoval(){return <g data-xz-paw-removal="source-region" fill="black" stroke="none" shapeRendering="crispEdges">\n';
 for(const p of paths(new Map([...selected].map(([k])=>[k,"#000000"]))))result+=`<path d="${p.d}"/>\n`;
 result+='</g>}\n';
+result+='export function XiaozhiPawRest(){return <g data-xz-paw-frame="rest" stroke="none" shapeRendering="crispEdges">\n';
+for(const p of paths(selected))result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;
+result+='</g>}\n';
 result+='export function XiaozhiPawFrame({pose}:{pose:XiaozhiPawPose}){return pose==="up" ? <g data-xz-paw-frame="up" stroke="none" shapeRendering="crispEdges">\n';
 for(const p of paths(warp(.35)))result+=`<path fill="${p.colour}" d="${p.d}"/>\n`;
 result+='</g> : <g data-xz-paw-frame="wave" stroke="none" shapeRendering="crispEdges">\n';

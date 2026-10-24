@@ -12,6 +12,7 @@ const NAV=[
  {href:"/",label:"首页",icon:Home},
  {href:"/learn",label:"私人学习",icon:GraduationCap},
  {href:"/learn/plans",label:"三模式制课",icon:BookOpen},
+ {href:"/learn/gpt-handoff",label:"ChatGPT 制课交接",icon:BookOpen},
  {href:"/coursepacks",label:"互动课程",icon:GraduationCap},
  {href:"/courses",label:"课程体系",icon:BookOpen},
  {href:"/library",label:"我的飞书资料",icon:LibraryBig},

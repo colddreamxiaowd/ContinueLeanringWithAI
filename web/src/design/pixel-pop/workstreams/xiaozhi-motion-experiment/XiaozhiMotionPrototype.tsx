@@ -4,6 +4,7 @@ import {useState} from "react";
 import type {CSSProperties} from "react";
 import {XiaozhiLayers} from "../../mascot/XiaozhiLayers";
 import {Xiaozhi} from "../../mascot/Xiaozhi";
+import {XiaozhiTailFrame} from "./XiaozhiTailFrames";
 import styles from "./motion.module.css";
 
 /**
@@ -17,7 +18,7 @@ export const MOTION_ACTIONS=["none","blink","nod","hop","tail","hello"] as const
 export type XiaozhiExperimentalAction=typeof MOTION_ACTIONS[number];
 export const MOTION_LABELS:Record<XiaozhiExperimentalAction,string>={
   none:"原版静止",blink:"眨眼",nod:"轻轻点头",hop:"小跳跃",
-  tail:"摇尾巴（风险实验）",hello:"打招呼（组合）"
+  tail:"摇尾巴（逐像素帧）",hello:"打招呼（组合）"
 };
 
 /* Static backing is drawn UNDER the source-exact rig, fully covered at rest.
@@ -54,6 +55,14 @@ export function XiaozhiMotionPrototype({
       shapeRendering="crispEdges" focusable="false" xmlns="http://www.w3.org/2000/svg">
       <g className={styles.bodyRig} data-motion-rig="exact-parent">
         <path d={EYE_FUR_BACKING} fill="#F8F8F9" stroke="none" data-motion-eye-backing="true"/>
+        {/* Native, source-derived tail alternatives render behind face and torso.
+            The ORIGINAL tail remains visible except during deliberate frame swap. */}
+        <g className={styles.tailUpPose} data-tail-swap="up">
+          <XiaozhiTailFrame pose="up"/>
+        </g>
+        <g className={styles.tailDownPose} data-tail-swap="down">
+          <XiaozhiTailFrame pose="down"/>
+        </g>
         <XiaozhiLayers/>
         <g className={styles.closedLids} data-motion-eyelids="two-pixel-paths" stroke="none"
           shapeRendering="crispEdges">
@@ -126,7 +135,7 @@ export function XiaozhiMotionLab(){
         </div>
       </section>
       <div className={styles.note}>
-        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；摇尾巴会移动「tail」区域，尾根遮挡需人工检查。此处不宣称已实现完整骨骼、挥爪或所有表情。
+        <strong>技术边界：</strong> 点头和跳跃是整体结构变换；眨眼使用原始双眼语义组及下层毛色；尾巴采用「尾根不动、末端逐像素位移」的两个原生 SVG 帧，衔接仍需实际浏览器验收。此处不宣称已实现完整骨骼、挥爪或所有表情。
       </div>
     </div>
   </div>;

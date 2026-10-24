@@ -1,78 +1,21 @@
-import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/public-auth";
-import { downloadFeishuFile } from "@/lib/feishu";
-import { dbSelectOne } from "@/lib/supabase-rest";
-import { extractOfficeSections } from "@/lib/office-reader.mjs";
-import {officeSourceChunks,sha256Office} from "@/lib/source-chunks.mjs";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-const MAX_BYTES = 15 * 1024 * 1024;
-
-type PrivateFile = { name: string; source_token: string; item_type: string };
-
-export async function GET(
-  request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
-  const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
-  const { id } = await context.params;
-  if (!/^[0-9a-f-]{36}$/i.test(id)) {
-    return NextResponse.json({ error: "ITEM_ID_INVALID" }, { status: 400 });
+import {NextResponse} from "next/server";
+import {getCurrentUser} from "@/lib/public-auth";
+import {getPrivateOfficeSource,privateSourceError} from "@/lib/private-office-source";
+export const runtime="nodejs";
+export const dynamic="force-dynamic";
+export async function GET(request:Request,context:{params:Promise<{id:string}>}){
+ const user=await getCurrentUser();
+ if(!user)return NextResponse.json({error:"AUTH_REQUIRED"},{status:401});
+ try{
+  const {id}=await context.params;
+  const source=await getPrivateOfficeSource(user.id,id);
+  if(new URL(request.url).searchParams.get("format")==="chunks"){
+   return NextResponse.json({sourceChunks:source.sourceChunks,sourceCount:source.sourceChunks.length},{
+    headers:{"Cache-Control":"private, no-store"}});
   }
-
-  try {
-    const item = await dbSelectOne<PrivateFile>("library_items", new URLSearchParams({
-      select: "name,source_token,item_type", id: "eq." + id,
-      user_id: "eq." + user.id, limit: "1",
-    }));
-    if (!item) return NextResponse.json({ error: "ITEM_NOT_FOUND" }, { status: 404 });
-    if (item.item_type !== "file" || !/\.(pptx|docx|xlsx)$/i.test(item.name)) {
-      return NextResponse.json({ error: "OFFICE_TYPE_UNSUPPORTED" }, { status: 415 });
-    }
-    const upstream = await downloadFeishuFile(user.id, item.source_token);
-    const body = upstream.body;
-    if (!body) throw new Error("FEISHU_DOWNLOAD_FAILED");
-    const chunks: Buffer[] = [];
-    let total = 0;
-    const reader = body.getReader();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const bytes = Buffer.from(value);
-        total += bytes.length;
-        if (total > MAX_BYTES) {
-          await reader.cancel().catch(() => {});
-          return NextResponse.json({ error: "OFFICE_SIZE_UNSUPPORTED" }, { status: 413 });
-        }
-        chunks.push(bytes);
-      }
-    } finally {
-      reader.releaseLock();
-    }
-    const original=Buffer.concat(chunks);
-    const result=extractOfficeSections(original, item.name);
-    // Opt-in internal material extraction. Both modes already checked the
-    // authenticated owner and Feishu access; neither is publicly cached.
-    if(new URL(request.url).searchParams.get("format")==="chunks"){
-      const sourceChunks=officeSourceChunks(result,{
-        ownerId:user.id,libraryItemId:id,fileName:item.name,
-        mimeType:"application/vnd.openxmlformats-officedocument",
-        originalHash:sha256Office(original)
-      });
-      return NextResponse.json({sourceChunks,sourceCount:sourceChunks.length},
-        {headers:{"Cache-Control":"private, no-store"}});
-    }
-    return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
-  } catch (error) {
-    const code = error instanceof Error ? error.message : "OFFICE_READ_FAILED";
-    const status = code === "OFFICE_TYPE_UNSUPPORTED" ? 415
-      : code === "OFFICE_SIZE_UNSUPPORTED" ? 413
-      : code === "OFFICE_FILE_INVALID" || code === "OFFICE_NO_READABLE_CONTENT" ? 422
-      : code === "FEISHU_REAUTH_REQUIRED" ? 401
-      : code === "FEISHU_PERMISSION_DENIED" ? 403 : 502;
-    return NextResponse.json({ error: code }, { status });
-  }
+  return NextResponse.json(source.sections,{headers:{"Cache-Control":"private, no-store"}});
+ }catch(error){
+  const {code,status}=privateSourceError(error);
+  return NextResponse.json({error:code},{status});
+ }
 }

@@ -60,7 +60,7 @@ export default function CoursePlanStudio({demo=false,ownerId=""}:{demo?:boolean;
    if(stored){const raw=JSON.parse(stored);
     if(raw&&typeof raw==="object"){
      const rows=Object.entries(raw).map(([concept_id,level])=>({concept_id,level}));
-     setMastery(normalizeMastery(rows,sample.topics));
+     setMastery(normalizeMastery(rows,sample.topics) as Record<string,number>);
     }}
   }catch{}
   setTopicId(sample.topics[0].id);
@@ -94,7 +94,7 @@ export default function CoursePlanStudio({demo=false,ownerId=""}:{demo?:boolean;
     mastery?:Array<{concept_id:string;level:number}>}>;
    if(!response.ok||!data.family?.bundle)throw Error(data.error||"PLAN_READ_FAILED");
    setFamilyId(data.family.id);setBundle(data.family.bundle);
-   setMastery(normalizeMastery(data.mastery,data.family.bundle.topics));
+   setMastery(normalizeMastery(data.mastery,data.family.bundle.topics) as Record<string,number>);
    setTopicId(data.family.bundle.topics[0]?.id||"");
    setMode("deep");
   }catch(err){setError(friendly(err instanceof Error?err.message:"PLAN_READ_FAILED"));}

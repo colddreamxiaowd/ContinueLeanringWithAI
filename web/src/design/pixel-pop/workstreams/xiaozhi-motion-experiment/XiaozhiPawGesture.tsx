@@ -9,14 +9,50 @@
  */
 export type PawGesturePose="up"|"wave";
 
-/** One closed eight-direction-free staircase from visible wrist to shoulder.
- * The connector overlaps source-backed shoulder around (153,405), so no
- * detached glove or dark gaps appear during motion.
+/** Source-grid centerline from the palm wrist to the ORIGINAL left shoulder.
+ * An identical pixel brush in every sample guarantees a CLOSED, thick arm:
+ * no dark beads, no missing pixels at the bends, consistent 6px edge weight.
+ * All geometry stays integer and is merged into native SVG RLE paths.
  */
-const ARM_OUTER=
-  "M76 326h26v9h12v15h12v14h12v13h13v15h14v8h11v18h-30v-8h-12v-14h-12v-13h-12v-12H98v-15H86v-13H76Z";
-const ARM_FUR=
-  "M84 335h13v8h11v13h12v13h12v14h13v15h13v6h9v8h-13v-8h-13v-14h-13v-13h-12v-12h-12v-15H92v-9h-8Z";
+const ARM_JOINTS:readonly (readonly [number,number])[]=[
+  [160,407],[146,395],[133,383],[121,370],[111,358],[101,346],[91,334]
+];
+function sourceGridRibbon(radius:number):string{
+  const rows=new Map<number,Set<number>>();
+  const pixel=(x:number,y:number)=>{
+    let row=rows.get(y);
+    if(!row){row=new Set<number>();rows.set(y,row);}
+    row.add(x);
+  };
+  for(let segment=0;segment<ARM_JOINTS.length-1;segment++){
+    const [ax,ay]=ARM_JOINTS[segment], [bx,by]=ARM_JOINTS[segment+1];
+    const n=Math.max(Math.abs(bx-ax),Math.abs(by-ay));
+    for(let i=0;i<=n;i++){
+      const x=Math.round(ax+(bx-ax)*i/n),y=Math.round(ay+(by-ay)*i/n);
+      for(let yy=y-radius;yy<=y+radius;yy++)
+        for(let xx=x-radius;xx<=x+radius;xx++)pixel(xx,yy);
+    }
+  }
+  type R={x:number,y:number,w:number,h:number};
+  const rects:R[]=[];
+  let active=new Map<string,R>();
+  for(let y=0;y<573;y++){
+    const xs=[...(rows.get(y)||[])].sort((a,b)=>a-b);
+    const next=new Map<string,R>();
+    for(let i=0;i<xs.length;){
+      const x=xs[i];let w=1;
+      while(i+w<xs.length&&xs[i+w]===x+w)w++;
+      const key=x+":"+w,old=active.get(key);
+      if(old&&old.y+old.h===y){old.h++;next.set(key,old);}
+      else{const fresh={x,y,w,h:1};rects.push(fresh);next.set(key,fresh);}
+      i+=w;
+    }
+    active=next;
+  }
+  return rects.map(r=>`M${r.x} ${r.y}h${r.w}v${r.h}h-${r.w}Z`).join(" ");
+}
+const ARM_OUTER=sourceGridRibbon(16); // 33 source px
+const ARM_FUR=sourceGridRibbon(10); // 21 source px, 6 px border
 
 /** A chubby kitten paw, with three stepped knuckle bumps instead of a
  * rectangle mitten. All corners and pads use whole source coordinates.

@@ -18,11 +18,13 @@ export type StackPlaygroundProps = {
   initialStack?:number[];
   capacity?:number;
   onOperation?:(operation:StackAction)=>void;
+  /** Optional persistence bridge; reports the stack restored by Reset. */
+  onReset?:(stack:number[])=>void;
   className?:string;
 };
 
 export function StackPlayground({
-  initialStack=[],capacity=6,onOperation,className=""
+  initialStack=[],capacity=6,onOperation,onReset,className=""
 }:StackPlaygroundProps){
   const limit=normalizeCapacity(capacity);
   const initial=initialStack.slice(0,limit).filter(Number.isSafeInteger);
@@ -59,6 +61,7 @@ export function StackPlayground({
     setLastKind(null);
     setPopVisual(null);
     setDetailsOpen(false);
+    onReset?.(start.current.slice());
   };
   const padded=stackTimeline(start.current,stack,history);
   return <section className={styles.playground+" "+className} aria-label="可交互的栈操作实验">
